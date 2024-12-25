@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { Button } from "@/components/ui/button";
+import { NewProductFormModal } from "./new-product-form-modal";
 
 export function Header() {
   return (
@@ -16,12 +16,7 @@ export function Header() {
         className="dark:invert"
       />
 
-      <Button
-        variant="secondary"
-        className="text-sm text-muted-foreground transition-colors hover:text-primary"
-      >
-        Adicionar produto
-      </Button>
+      <NewProductFormModal />
     </header>
   );
 }
