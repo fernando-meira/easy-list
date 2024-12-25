@@ -37,6 +37,16 @@ const eslintConfig = [
 
       // Espaçamento consistente em torno das chaves
       "object-curly-spacing": ["error", "always"],
+
+      // Limita o número de linhas vazias consecutivas
+      "no-multiple-empty-lines": [
+        "error",
+        {
+          max: 1,    // Permite no máximo 1 linha vazia consecutiva
+          maxEOF: 0, // Não permite linha vazia no final do arquivo
+          maxBOF: 0  // Não permite linha vazia no início do arquivo
+        }
+      ]
     }
   }
 ];
