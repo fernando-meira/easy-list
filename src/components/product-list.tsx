@@ -2,8 +2,10 @@
 
 import React from "react";
 
-import { UnitEnum } from "@/types/enums";
-import { Product } from "@/types/interfaces";
+import { PrettyStatusEnum, StatusEnum } from "@/types/enums";
+import { Checkbox } from "@/components/ui/checkbox";
+import { LucideShoppingCart, Pencil, Trash2 } from "lucide-react";
+import { convertToCurrency } from "@/utils/convertToCurrency/convertToCurrency";
 import {
   Select,
   SelectContent,
@@ -11,65 +13,105 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
+import { products } from "@/data/products";
+import { CalculateProductValue } from "@/utils/calculateProductValue/calculateProductValue";
 
 export function ProductList() {
-  const [filter, setFilter] = React.useState("all");
-
-  const products: Product[] = React.useMemo(() => {
-    return [{
-      id: 1,
-      quantity: "1",
-      price: "10,00",
-      addToCart: true,
-      name: "Produto 1",
-      unit: UnitEnum.unit,
-    },
-    {
-      id: 2,
-      quantity: "1",
-      price: "20,00",
-      addToCart: false,
-      name: "Produto 2",
-      unit: UnitEnum.kg,
-    }
-    ];
-  }, []);
+  const [filter, setFilter] = React.useState<StatusEnum>(StatusEnum.all);
 
   return (
     <div className="w-full">
       <header className="flex items-center justify-between gap-4 w-full">
         <h3 className="text-lg font-semibold">Lista de produtos</h3>
 
-        <Select value={filter} onValueChange={(value: "all" | "inCart" | "outOfCart") => setFilter(value)}>
+        <Select value={filter} onValueChange={(value: StatusEnum) => setFilter(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filtro de produtos" />
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value={StatusEnum.all}>{PrettyStatusEnum.all}</SelectItem>
 
-            <SelectItem value="inCart">No carrinho</SelectItem>
+            <SelectItem value={StatusEnum.inCart}>{PrettyStatusEnum.inCart}</SelectItem>
 
-            <SelectItem value="outOfCart">Fora do carrinho</SelectItem>
+            <SelectItem value={StatusEnum.outOfCart}>{PrettyStatusEnum.outOfCart}</SelectItem>
           </SelectContent>
         </Select>
       </header>
 
-      <div className="flex flex-col gap-4 mt-4">
+      <div className="flex flex-col  mt-4">
         {products.map((product) => (
-          <div key={product.id} className="flex items-center justify-between gap-4 p-4 border rounded-md">
-            <p>{product.name}</p>
+          <Accordion type="single" collapsible key={product.id}>
+            <AccordionItem value="item">
+              <AccordionTrigger className="flex justify-normal py-4 hover:no-underline">
+                <div className="flex flex-1 gap-2 items-center">
+                  <Checkbox
+                    id={`cart-${product.id}`}
+                    checked={product.addToCart}
+                    // onCheckedChange={() => toggleCart(product.id)}
+                  />
+                  <strong>{product.name}</strong>
 
-            <div className="flex items-center gap-2">
-              {product.quantity && <span>{product.quantity}</span>}
+                  {product.addToCart && (
+                    <LucideShoppingCart className="h-4 w-4 text-teal-400" />
+                  )}
+                </div>
 
-              {product.unit && <span>{product.unit}</span>}
+                <div className="flex gap-2 mr-2">
+                  {product.quantity && product.unit && (
+                    <span>{`${product.quantity} ${product.unit}`}</span>
+                  )}
 
-              {product.price && <span>{product.price}</span>}
+                  {product.price && product.quantity && product.unit && (
+                    <span className="font-semibold text-teal-400">
+                      {CalculateProductValue({
+                        quantity: product.quantity,
+                        price: product.price,
+                        unit: product.unit,
+                      })}
+                    </span>
+                  )}
+                </div>
+              </AccordionTrigger>
 
-              {product.addToCart && <span>🛒</span>}
-            </div>
-          </div>
+              <AccordionContent >
+                <div className="flex flex-row gap-4">
+                  <div className="flex flex-1 flex-col gap-2">
+                    {product.quantity && (
+                      <p>
+                        <strong>Quantidade:</strong> {product.quantity} {product.unit}
+                      </p>
+                    )}
+
+                    {product.price && (
+                      <p>
+                        <strong>Preço por {product.unit}:</strong> R$ {convertToCurrency(product.price)}
+                      </p>
+                    )}
+
+                    <p><strong>Status:</strong> {product.addToCart ? "No carrinho" : "Fora do carrinho"}</p>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-2 bg-teal-100 p-2 rounded cursor-pointer">
+                      <Pencil className="h-4 w-4 text-teal-400" />
+                    </div>
+
+                    <div className="flex gap-2 bg-rose-100 p-2 rounded cursor-pointer">
+                      <Trash2 className="h-4 w-4 text-rose-500" />
+                    </div>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         ))}
       </div>
     </div>

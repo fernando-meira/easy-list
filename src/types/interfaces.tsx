@@ -1,10 +1,10 @@
-import { UnitEnum } from "./enums";
+import { PrettyUnitEnum, UnitEnum } from "./enums";
 
 export interface Product {
   id: number;
   name: string;
   price?: string;
-  unit?: UnitEnum;
   quantity?: string;
   addToCart: boolean;
+  unit?: PrettyUnitEnum | UnitEnum;
 }

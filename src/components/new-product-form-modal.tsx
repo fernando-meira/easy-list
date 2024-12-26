@@ -1,10 +1,12 @@
 import React from "react";
 
-import { UnitEnum } from "@/types/enums";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { PrettyUnitEnum, UnitEnum } from "@/types/enums";
+import { capitalizeFirstLetter } from "@/utils/captalizeFirstLetter/captalizeFirstLetter";
+
 import {
   Dialog,
   DialogContent,
@@ -103,7 +105,7 @@ export function NewProductFormModal() {
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
-                  placeholder={unit === "unit" ? "Quantidade" : "Peso"}
+                  placeholder={unit === UnitEnum.unit ? "Quantidade" : "Peso"}
                   className="flex-grow"
                 />
 
@@ -113,11 +115,11 @@ export function NewProductFormModal() {
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value="unit">{UnitEnum.unit}</SelectItem>
+                    <SelectItem value="unit">{capitalizeFirstLetter(PrettyUnitEnum.unit)}</SelectItem>
 
-                    <SelectItem value="kg">{UnitEnum.kg}</SelectItem>
+                    <SelectItem value="kg">{capitalizeFirstLetter(PrettyUnitEnum.kg)}</SelectItem>
 
-                    <SelectItem value="grams">{UnitEnum.grams}</SelectItem>
+                    <SelectItem value="grams">{capitalizeFirstLetter(PrettyUnitEnum.grams)}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
