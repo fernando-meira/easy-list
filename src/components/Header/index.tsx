@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { NewProductFormModal } from "./new-product-form-modal";
+import { NewProductForm } from "@/components";
 
 export function Header() {
   return (
@@ -16,7 +16,7 @@ export function Header() {
         className="dark:invert"
       />
 
-      <NewProductFormModal />
+      <NewProductForm />
     </header>
   );
 }
