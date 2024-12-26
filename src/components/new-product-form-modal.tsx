@@ -1,4 +1,6 @@
 import React from "react";
+
+import { UnitEnum } from "@/types/enums";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -25,7 +27,7 @@ export function NewProductFormModal() {
   const [price, setPrice] = React.useState("");
   const [quantity, setQuantity] = React.useState("");
   const [addToCart, setAddToCart] = React.useState(false);
-  const [unit, setUnit] = React.useState<"unit" | "grams" | "kg">("unit");
+  const [unit, setUnit] = React.useState<UnitEnum>(UnitEnum.unit);
   const [editingId, setEditingId] = React.useState<number | null>(null);
 
   const addOrEditProduct = (e: React.FormEvent<HTMLFormElement>) => {
@@ -44,9 +46,9 @@ export function NewProductFormModal() {
     setName("");
     setPrice("");
     setQuantity("");
-    setUnit("unit");
     setEditingId(null);
     setAddToCart(false);
+    setUnit(UnitEnum.unit);
   };
 
   return (
@@ -105,17 +107,17 @@ export function NewProductFormModal() {
                   className="flex-grow"
                 />
 
-                <Select value={unit} onValueChange={(value: "unit" | "grams") => setUnit(value)}>
+                <Select value={unit} onValueChange={(value: UnitEnum) => setUnit(value)}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Selecione a quantidade" />
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value="unit">Unidade</SelectItem>
+                    <SelectItem value="unit">{UnitEnum.unit}</SelectItem>
 
-                    <SelectItem value="kg">Kg</SelectItem>
+                    <SelectItem value="kg">{UnitEnum.kg}</SelectItem>
 
-                    <SelectItem value="grams">Gramas</SelectItem>
+                    <SelectItem value="grams">{UnitEnum.grams}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
