@@ -2,10 +2,12 @@
 
 import * as React from "react";
 
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { capitalizeFirstLetter } from "@/utils";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { PrettyUnitEnum, UnitEnum } from "@/types/enums";
 import {
   Select,
   SelectContent,
@@ -22,8 +24,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { PrettyUnitEnum, UnitEnum } from "@/types/enums";
-import { capitalizeFirstLetter } from "@/utils/captalizeFirstLetter/captalizeFirstLetter";
 
 interface AddProductDrawerProps {
   name: string;

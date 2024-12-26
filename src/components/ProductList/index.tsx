@@ -2,8 +2,9 @@
 
 import React from "react";
 
-import { PrettyStatusEnum, StatusEnum } from "@/types/enums";
+import { calculateProductValue } from "@/utils";
 import { Checkbox } from "@/components/ui/checkbox";
+import { PrettyStatusEnum, StatusEnum } from "@/types/enums";
 import { LucideShoppingCart, Pencil, Trash2 } from "lucide-react";
 import {
   Select,
@@ -14,7 +15,6 @@ import {
 } from "@/components/ui/select";
 
 import { products } from "@/data/products";
-import { CalculateProductValue } from "@/utils/calculateProductValue/calculateProductValue";
 
 export function ProductList() {
   const [filter, setFilter] = React.useState<StatusEnum>(StatusEnum.all);
@@ -63,7 +63,7 @@ export function ProductList() {
 
                 {product.price && product.quantity && product.unit && (
                   <span className="font-semibold text-teal-400">
-                    {CalculateProductValue({
+                    {calculateProductValue({
                       quantity: product.quantity,
                       price: product.price,
                       unit: product.unit,
