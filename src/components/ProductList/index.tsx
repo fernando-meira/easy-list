@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 
 import { calculateProductValue } from "@/utils";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useProducts } from "@/context/ProductContext";
 import { PrettyStatusEnum, StatusEnum } from "@/types/enums";
 import { LucideShoppingCart, Pencil, Trash2 } from "lucide-react";
 import {
@@ -14,34 +15,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { products } from "@/data/products";
-
 export function ProductList() {
+  const { products } = useProducts();
+
   const [filter, setFilter] = React.useState<StatusEnum>(StatusEnum.all);
 
-  return (
-    <div className="w-full">
-      <header className="flex items-center justify-between gap-4 w-full">
-        <h3 className="text-lg font-semibold">Lista de produtos</h3>
+  const renderProducts = useMemo(() => {
+    if (products?.length === 0) {
+      return (
+        <div className="flex items-center justify-center w-full h-[200px]">
+          <p className="text-sm text-muted-foreground">Nenhum produto cadastrado</p>
+        </div>
+      );
+    }
 
-        <Select value={filter} onValueChange={(value: StatusEnum) => setFilter(value)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filtro de produtos" />
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectItem value={StatusEnum.all}>{PrettyStatusEnum.all}</SelectItem>
-
-            <SelectItem value={StatusEnum.inCart}>{PrettyStatusEnum.inCart}</SelectItem>
-
-            <SelectItem value={StatusEnum.outOfCart}>{PrettyStatusEnum.outOfCart}</SelectItem>
-          </SelectContent>
-        </Select>
-      </header>
-
+    return (
       <div className="flex flex-col  mt-4">
         <ul>
-          {products.map((product) => (
+          {products?.map((product) => (
             <li key={product.id} className="flex items-center py-4 hover:no-underline border-b">
               <div className="flex flex-1 gap-2 items-center">
                 <Checkbox
@@ -85,6 +76,30 @@ export function ProductList() {
           ))}
         </ul>
       </div>
+    );
+  }, [products]);
+
+  return (
+    <div className="w-full">
+      <header className="flex items-center justify-between gap-4 w-full">
+        <h3 className="text-lg font-semibold">Lista de produtos</h3>
+
+        <Select value={filter} onValueChange={(value: StatusEnum) => setFilter(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filtro de produtos" />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectItem value={StatusEnum.all}>{PrettyStatusEnum.all}</SelectItem>
+
+            <SelectItem value={StatusEnum.inCart}>{PrettyStatusEnum.inCart}</SelectItem>
+
+            <SelectItem value={StatusEnum.outOfCart}>{PrettyStatusEnum.outOfCart}</SelectItem>
+          </SelectContent>
+        </Select>
+      </header>
+
+      {renderProducts}
     </div>
   );
 }

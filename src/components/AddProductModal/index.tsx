@@ -1,8 +1,11 @@
+import React from "react";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { capitalizeFirstLetter } from "@/utils";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useProducts } from "@/context/ProductContext";
 import { PrettyUnitEnum, UnitEnum } from "@/types/enums";
 import {
   Select,
@@ -21,37 +24,29 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-interface AddProductModalProps {
-  name: string;
-  price: string;
-  unit: UnitEnum;
-  quantity: string;
-  addToCart: boolean;
-  editingId: number | null;
-  cancelEditing: () => void;
-  setName: (name: string) => void;
-  setUnit: (unit: UnitEnum) => void;
-  setPrice: (price: string) => void;
-  setQuantity: (quantity: string) => void;
-  setAddToCart: (addToCart: boolean) => void;
-  addOrEditProduct: (e: React.FormEvent<HTMLFormElement>) => void;
-}
+export const AddProductModal = () => {
+  const { addProduct } = useProducts();
 
-export const AddProductModal = ({
-  unit,
-  name,
-  price,
-  setUnit,
-  setName,
-  quantity,
-  setPrice,
-  addToCart,
-  editingId,
-  setQuantity,
-  setAddToCart,
-  cancelEditing,
-  addOrEditProduct,
-}: AddProductModalProps) => {
+  const [name, setName] = React.useState("");
+  const [price, setPrice] = React.useState("");
+  const [quantity, setQuantity] = React.useState("");
+  const [addToCart, setAddToCart] = React.useState(false);
+  const [unit, setUnit] = React.useState<UnitEnum>(UnitEnum.unit);
+  const [editingId, setEditingId] = React.useState<number | null>(null);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    addProduct({ id: Date.now(), name, price, quantity, addToCart, unit });
+
+    setName("");
+    setPrice("");
+    setQuantity("");
+    setEditingId(null);
+    setAddToCart(false);
+    setUnit(UnitEnum.unit);
+  };
+
   return <Dialog>
     <DialogTrigger asChild>
       <Button variant="outline">Adicionar produto</Button>
@@ -66,7 +61,7 @@ export const AddProductModal = ({
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={addOrEditProduct} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="col-span-2 space-y-2">
           <Label htmlFor="name">Produto</Label>
 
@@ -154,7 +149,7 @@ export const AddProductModal = ({
           </Button>
 
           {editingId !== null && (
-            <Button variant="outline" onClick={cancelEditing}>
+            <Button variant="outline" onClick={() => setEditingId(null)}>
             Cancelar edição
             </Button>
           )}

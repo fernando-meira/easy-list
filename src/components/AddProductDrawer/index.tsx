@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { capitalizeFirstLetter } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useProducts } from "@/context/ProductContext";
 import { PrettyUnitEnum, UnitEnum } from "@/types/enums";
 import {
   Select,
@@ -25,37 +26,29 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-interface AddProductDrawerProps {
-  name: string;
-  price: string;
-  unit: UnitEnum;
-  quantity: string;
-  addToCart: boolean;
-  editingId: number | null;
-  cancelEditing: () => void;
-  setName: (name: string) => void;
-  setUnit: (unit: UnitEnum) => void;
-  setPrice: (price: string) => void;
-  setQuantity: (quantity: string) => void;
-  setAddToCart: (addToCart: boolean) => void;
-  addOrEditProduct: (e: React.FormEvent<HTMLFormElement>) => void;
-}
+export const AddProductDrawer = () => {
+  const { addProduct } = useProducts();
 
-export const AddProductDrawer = ({
-  unit,
-  name,
-  price,
-  setUnit,
-  setName,
-  quantity,
-  setPrice,
-  addToCart,
-  editingId,
-  setQuantity,
-  setAddToCart,
-  cancelEditing,
-  addOrEditProduct,
-}: AddProductDrawerProps) => {
+  const [name, setName] = React.useState("");
+  const [price, setPrice] = React.useState("");
+  const [quantity, setQuantity] = React.useState("");
+  const [addToCart, setAddToCart] = React.useState(false);
+  const [unit, setUnit] = React.useState<UnitEnum>(UnitEnum.unit);
+  const [editingId, setEditingId] = React.useState<number | null>(null);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    addProduct({ id: Date.now(), name, price, quantity, addToCart, unit });
+
+    setName("");
+    setPrice("");
+    setQuantity("");
+    setEditingId(null);
+    setAddToCart(false);
+    setUnit(UnitEnum.unit);
+  };
+
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -70,17 +63,17 @@ export const AddProductDrawer = ({
             <DrawerDescription>Adicione um novo produto à sua lista. Clique em salvar para confirmar.</DrawerDescription>
           </DrawerHeader>
 
-          <form onSubmit={addOrEditProduct} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="col-span-2 space-y-2">
               <Label htmlFor="name">Produto</Label>
 
               <Input
+                required
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nome do produto"
-                required
               />
             </div>
 
@@ -89,8 +82,8 @@ export const AddProductDrawer = ({
                 <Label htmlFor="price">Preço</Label>
 
                 <Input
+                  step="1"
                   id="price"
-                  step="0.01"
                   type="number"
                   value={price}
                   placeholder="Preço"
@@ -110,7 +103,6 @@ export const AddProductDrawer = ({
                     placeholder={unit === UnitEnum.unit ? "Quantidade" : "Peso"}
                     className="flex-grow"
                   />
-
                   <Select value={unit} onValueChange={(value: UnitEnum) => setUnit(value)}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Unidade de medida"/>
@@ -126,20 +118,6 @@ export const AddProductDrawer = ({
                   </Select>
                 </div>
               </div>
-            </div>
-
-            <div>
-              {unit === "grams" && (
-                <p className="text-sm text-muted-foreground mt-1">
-            O calculo do preço ser&aacute; feito com base no peso em gramas
-                </p>
-              )}
-
-              {unit === "kg" && (
-                <p className="text-sm text-muted-foreground mt-1">
-            O cálculo do preço ser&aacute; feito com base no peso em quilos
-                </p>
-              )}
             </div>
 
             <div className="flex items-center space-x-2 mt-2">
@@ -158,14 +136,12 @@ export const AddProductDrawer = ({
               </Button>
 
               {editingId !== null && (
-                <Button variant="outline" onClick={cancelEditing}>
+                <Button variant="outline" onClick={() => setEditingId(null)}>
             Cancelar edição
                 </Button>
               )}
             </DrawerFooter>
-
           </form>
-
         </div>
       </DrawerContent>
     </Drawer>
