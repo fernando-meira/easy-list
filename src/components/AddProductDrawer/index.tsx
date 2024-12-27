@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useForm } from "react-hook-form";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -26,28 +27,36 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
+interface FormValues {
+  name: string;
+  price: string;
+  quantity: string;
+  addToCart: boolean;
+  unit: UnitEnum;
+}
+
 export const AddProductDrawer = () => {
   const { addProduct } = useProducts();
+  const { register, handleSubmit, reset, watch, setValue } = useForm<FormValues>({
+    defaultValues: {
+      name: "",
+      price: "",
+      quantity: "",
+      addToCart: false,
+      unit: UnitEnum.unit,
+    },
+  });
 
-  const [name, setName] = React.useState("");
-  const [price, setPrice] = React.useState("");
-  const [quantity, setQuantity] = React.useState("");
-  const [addToCart, setAddToCart] = React.useState(false);
-  const [unit, setUnit] = React.useState<UnitEnum>(UnitEnum.unit);
-  const [editingId, setEditingId] = React.useState<number | null>(null);
+  const onSubmit = (data: FormValues) => {
+    addProduct({
+      id: Date.now(),
+      ...data,
+    });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    addProduct({ id: Date.now(), name, price, quantity, addToCart, unit });
-
-    setName("");
-    setPrice("");
-    setQuantity("");
-    setEditingId(null);
-    setAddToCart(false);
-    setUnit(UnitEnum.unit);
+    reset();
   };
+
+  const unit = watch("unit");
 
   return (
     <Drawer>
@@ -59,11 +68,10 @@ export const AddProductDrawer = () => {
         <div className="mx-auto w-full max-w-full p-4">
           <DrawerHeader>
             <DrawerTitle>Adicionar produto</DrawerTitle>
-
             <DrawerDescription>Adicione um novo produto à sua lista. Clique em salvar para confirmar.</DrawerDescription>
           </DrawerHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="col-span-2 space-y-2">
               <Label htmlFor="name">Produto</Label>
 
@@ -71,9 +79,8 @@ export const AddProductDrawer = () => {
                 required
                 id="name"
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
                 placeholder="Nome do produto"
+                {...register("name")}
               />
             </div>
 
@@ -85,9 +92,8 @@ export const AddProductDrawer = () => {
                   step="1"
                   id="price"
                   type="number"
-                  value={price}
                   placeholder="Preço"
-                  onChange={(e) => setPrice(e.target.value)}
+                  {...register("price")}
                 />
               </div>
 
@@ -98,12 +104,14 @@ export const AddProductDrawer = () => {
                   <Input
                     id="quantity"
                     type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
                     placeholder={unit === UnitEnum.unit ? "Quantidade" : "Peso"}
                     className="flex-grow"
+                    {...register("quantity")}
                   />
-                  <Select value={unit} onValueChange={(value: UnitEnum) => setUnit(value)}>
+                  <Select
+                    value={unit}
+                    onValueChange={(value: UnitEnum) => setValue("unit", value)}
+                  >
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Unidade de medida"/>
                     </SelectTrigger>
@@ -123,23 +131,15 @@ export const AddProductDrawer = () => {
             <div className="flex items-center space-x-2 mt-2">
               <Checkbox
                 id="add-to-cart"
-                checked={addToCart}
-                onCheckedChange={(checked) => setAddToCart(checked as boolean)}
+                checked={watch("addToCart")}
+                onCheckedChange={(checked) => setValue("addToCart", checked as boolean)}
               />
 
               <Label htmlFor="add-to-cart">Adicionar ao carrinho</Label>
             </div>
 
             <DrawerFooter>
-              <Button type="submit">
-                {editingId !== null ? "Atualizar produto" : "Adicionar produto"}
-              </Button>
-
-              {editingId !== null && (
-                <Button variant="outline" onClick={() => setEditingId(null)}>
-            Cancelar edição
-                </Button>
-              )}
+              <Button type="submit">Adicionar produto</Button>
             </DrawerFooter>
           </form>
         </div>
