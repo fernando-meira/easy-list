@@ -10,6 +10,12 @@ export enum PrettyUnitEnum {
   grams = 'gramas',
 }
 
+export enum AbbreviationUnitEnum {
+  kg = 'kg(s)',
+  unit = 'uni.',
+  grams = 'g.',
+}
+
 export enum StatusEnum {
   all = 'all',
   inCart = 'inCart',

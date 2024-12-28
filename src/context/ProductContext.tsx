@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { ProductProps } from '@/types/interfaces';
+import { convertUnitToAbbreviationUnit } from '@/utils';
 import { LocalStorageEnum, StatusEnum } from '@/types/enums';
 
 interface ProductsContextType {
@@ -45,7 +46,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       id, price, name, addToCart, quantity, unit,
     };
 
-    return setProducts((state) => [...state, newProduct]);
+    return setProducts((state) => [...state, convertUnitToAbbreviationUnit(newProduct)]);
   };
 
   const removeProduct = (id: number) => {
@@ -74,7 +75,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     const storedProducts = localStorage.getItem(LocalStorageEnum.products);
 
     if (storedProducts) {
-      setProducts(JSON.parse(storedProducts));
+      setProducts(JSON.parse(storedProducts).map((product: ProductProps) => convertUnitToAbbreviationUnit(product)));
     }
   }, []);
 
