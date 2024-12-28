@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import { calculateProductValue } from '@/utils';
 import { ProductListHeader } from '@/components';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -46,19 +47,13 @@ export function ProductList() {
                 )}
               </div>
 
-              <div className="flex gap-2 mr-2 align-center">
+              <div className="flex gap-2 align-center">
                 {product.quantity && product.unit && (
-                  <span>{`${product.quantity} ${product.unit}`}</span>
-                )}
-
-                {product.price && product.quantity && product.unit && (
-                  <span className="font-semibold text-teal-400">
-                    {calculateProductValue({
-                      unit: product.unit,
-                      price: product.price,
-                      quantity: product.quantity,
-                    })}
-                  </span>
+                  <Badge variant="outline" className="self-center text-xs">{`${product.quantity} ${product.unit}`} { product.price && calculateProductValue({
+                    unit: product.unit,
+                    price: product.price,
+                    quantity: product.quantity,
+                  })}</Badge>
                 )}
               </div>
 
