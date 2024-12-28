@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react';
 
-import { calculateProductValue } from "@/utils";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useProducts } from "@/context/ProductContext";
-import { PrettyStatusEnum, StatusEnum } from "@/types/enums";
-import { LucideShoppingCart, Pencil, Trash2 } from "lucide-react";
+import { calculateProductValue } from '@/utils';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useProducts } from '@/context/ProductContext';
+import { PrettyStatusEnum, StatusEnum } from '@/types/enums';
+import { LucideShoppingCart, Pencil, Trash2 } from 'lucide-react';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 export function ProductList() {
   const { products } = useProducts();
@@ -32,8 +32,8 @@ export function ProductList() {
     return (
       <div className="flex flex-col  mt-4">
         <ul>
-          {products?.map((product) => (
-            <li key={product.id} className="flex items-center py-4 hover:no-underline border-b">
+          {products?.map((product, index) => (
+            <li key={product.id} className={`flex items-center p-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100' : ''}`}>
               <div className="flex flex-1 gap-2 items-center">
                 <Checkbox
                   id={`cart-${product.id}`}

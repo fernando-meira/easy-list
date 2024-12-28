@@ -1,6 +1,6 @@
-import { products } from "@/data/products";
-import { convertToCurrency } from "@/utils";
-import { calculateTotalValue } from "@/utils";
+import { products } from '@/data/products';
+import { convertToCurrency } from '@/utils';
+import { calculateTotalValue } from '@/utils';
 
 export function Footer() {
   return (

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Image from "next/image";
+import Image from 'next/image';
 
-import { NewProductForm } from "@/components";
+import { NewProductForm } from '@/components';
 
 export function Header() {
   return (

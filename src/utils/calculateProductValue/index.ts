@@ -1,5 +1,5 @@
-import { convertToCurrency } from "@/utils";
-import { PrettyUnitEnum, UnitEnum } from "@/types/enums";
+import { convertToCurrency } from '@/utils';
+import { PrettyUnitEnum, UnitEnum } from '@/types/enums';
 
 interface CalculateProductValueProps {
   price: string;
@@ -8,7 +8,7 @@ interface CalculateProductValueProps {
 }
 
 export const calculateProductValue = ({ quantity, price, unit }: CalculateProductValueProps): string => {
-  if (!price || !quantity) return "0";
+  if (!price || !quantity) return '0';
 
   const numericPrice = parseFloat(price);
   const numericQuantity = parseFloat(quantity);

@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useForm } from "react-hook-form";
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
 
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { capitalizeFirstLetter } from "@/utils";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useProducts } from "@/context/ProductContext";
-import { PrettyUnitEnum, UnitEnum } from "@/types/enums";
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { capitalizeFirstLetter } from '@/utils';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useProducts } from '@/context/ProductContext';
+import { PrettyUnitEnum, UnitEnum } from '@/types/enums';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Drawer,
   DrawerContent,
@@ -25,23 +25,23 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
+} from '@/components/ui/drawer';
 
 interface FormValues {
   name: string;
   price: string;
+  unit: UnitEnum;
   quantity: string;
   addToCart: boolean;
-  unit: UnitEnum;
 }
 
 export const AddProductDrawer = () => {
   const { addProduct } = useProducts();
   const { register, handleSubmit, reset, watch, setValue } = useForm<FormValues>({
     defaultValues: {
-      name: "",
-      price: "",
-      quantity: "",
+      name: '',
+      price: '',
+      quantity: '',
       addToCart: false,
       unit: UnitEnum.unit,
     },
@@ -56,7 +56,7 @@ export const AddProductDrawer = () => {
     reset();
   };
 
-  const unit = watch("unit");
+  const unit = watch('unit');
 
   return (
     <Drawer>
@@ -80,7 +80,7 @@ export const AddProductDrawer = () => {
                 id="name"
                 type="text"
                 placeholder="Nome do produto"
-                {...register("name")}
+                {...register('name')}
               />
             </div>
 
@@ -93,7 +93,7 @@ export const AddProductDrawer = () => {
                   id="price"
                   type="number"
                   placeholder="Preço"
-                  {...register("price")}
+                  {...register('price')}
                 />
               </div>
 
@@ -104,13 +104,14 @@ export const AddProductDrawer = () => {
                   <Input
                     id="quantity"
                     type="number"
-                    placeholder={unit === UnitEnum.unit ? "Quantidade" : "Peso"}
+                    placeholder={unit === UnitEnum.unit ? 'Quantidade' : 'Peso'}
                     className="flex-grow"
-                    {...register("quantity")}
+                    {...register('quantity')}
                   />
+
                   <Select
                     value={unit}
-                    onValueChange={(value: UnitEnum) => setValue("unit", value)}
+                    onValueChange={(value: UnitEnum) => setValue('unit', value)}
                   >
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Unidade de medida"/>
@@ -131,8 +132,8 @@ export const AddProductDrawer = () => {
             <div className="flex items-center space-x-2 mt-2">
               <Checkbox
                 id="add-to-cart"
-                checked={watch("addToCart")}
-                onCheckedChange={(checked) => setValue("addToCart", checked as boolean)}
+                checked={watch('addToCart')}
+                onCheckedChange={(checked) => setValue('addToCart', checked as boolean)}
               />
 
               <Label htmlFor="add-to-cart">Adicionar ao carrinho</Label>

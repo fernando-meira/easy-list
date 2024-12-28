@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState } from 'react';
 
-import { ProductProps } from "@/types/interfaces";
+import { ProductProps } from '@/types/interfaces';
 
 interface ProductsContextType {
   products?: ProductProps[];
@@ -46,7 +46,7 @@ function useProducts(): ProductsContextType {
   const context = useContext(ProductsContext);
 
   if (!context) {
-    throw new Error("useProducts must be used within an ProductsProvider");
+    throw new Error('useProducts must be used within an ProductsProvider');
   }
 
   return context;

@@ -1,16 +1,16 @@
-import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
-import "./globals.css";
-import { ProductsContextProvider } from "@/context/ProductContext";
+import type { Metadata } from 'next';
+import { Manrope } from 'next/font/google';
+import './globals.css';
+import { ProductsContextProvider } from '@/context/ProductContext';
 
 const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
+  subsets: ['latin'],
+  variable: '--font-manrope',
 });
 
 export const metadata: Metadata = {
-  title: "Easy Shop",
-  description: "Sua lista de compras inteligente",
+  title: 'Easy Shop',
+  description: 'Sua lista de compras inteligente',
 };
 
 export default function RootLayout({

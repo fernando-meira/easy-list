@@ -1,5 +1,5 @@
-import { UnitEnum } from "@/types/enums";
-import { Product } from "@/types/interfaces";
+import { UnitEnum } from '@/types/enums';
+import { Product } from '@/types/interfaces';
 
 export const calculateTotalValue = (products: Product[]): { totalProductsValue: number, filteredProductsValue: number } => {
   const calculateValue = (items: Product[]) => {
