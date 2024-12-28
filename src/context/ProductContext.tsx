@@ -6,6 +6,7 @@ import { ProductProps } from '@/types/interfaces';
 
 interface ProductsContextType {
   products?: ProductProps[];
+  removeAllProducts: () => void;
   removeProduct: (id: number) => void;
   addProduct: ({ id, name, price, quantity, addToCart }: ProductProps) => void;
 }
@@ -32,10 +33,14 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
     setProducts(filteredItem);
   }
+  
+  function removeAllProducts() {
+    setProducts([]);
+  }
 
   return (
     <ProductsContext.Provider
-      value={{ products, removeProduct, addProduct: addProduct }}
+      value={{ products, removeProduct, addProduct, removeAllProducts }}
     >
       {children}
     </ProductsContext.Provider>
