@@ -10,8 +10,10 @@ interface ProductsContextType {
   products?: ProductProps[];
   removeAllProducts: () => void;
   toggleCart: (id: number) => void;
+  allProductsWithoutPrice?: boolean;
   filteredProducts?: ProductProps[];
   removeProduct: (id: number) => void;
+  allProductsInCartWithoutPrice?: boolean;
   setFilter: (filter: StatusEnum) => void;
   addProduct: ({ id, name, price, quantity, addToCart }: ProductProps) => void;
 }
@@ -33,6 +35,10 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
     return true;
   }), [products, filter]);
+
+  const allProductsWithoutPrice = useMemo(() => products.every((product) => !product.price || !product.quantity || !product.unit), [products]);
+
+  const allProductsInCartWithoutPrice = useMemo(() => products.filter((product) => product.addToCart).every((product) => !product.price || !product.quantity || !product.unit), [products]);
 
   const addProduct = ({ id, price, name, addToCart, quantity, unit }: ProductProps) => {
     const newProduct = {
@@ -78,7 +84,18 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
   return (
     <ProductsContext.Provider
-      value={{ products, filteredProducts, removeProduct, addProduct, removeAllProducts, filter, setFilter, toggleCart }}
+      value={{
+        filter,
+        products,
+        setFilter,
+        toggleCart,
+        addProduct,
+        removeProduct,
+        filteredProducts,
+        removeAllProducts,
+        allProductsWithoutPrice,
+        allProductsInCartWithoutPrice
+      }}
     >
       {children}
     </ProductsContext.Provider>
