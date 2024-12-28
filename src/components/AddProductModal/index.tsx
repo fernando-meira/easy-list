@@ -1,14 +1,23 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+'use client';
+
+import React from 'react';
+
+import { useForm } from 'react-hook-form';
+
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { capitalizeFirstLetter } from '@/utils';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useProducts } from '@/context/ProductContext';
+import { PrettyUnitEnum, UnitEnum } from '@/types/enums';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -17,41 +26,39 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { PrettyUnitEnum, UnitEnum } from "@/types/enums";
-import { capitalizeFirstLetter } from "@/utils/captalizeFirstLetter/captalizeFirstLetter";
+} from '@/components/ui/dialog';
 
-interface AddProductModalProps {
+interface FormValues {
   name: string;
   price: string;
   unit: UnitEnum;
   quantity: string;
   addToCart: boolean;
-  editingId: number | null;
-  cancelEditing: () => void;
-  setName: (name: string) => void;
-  setUnit: (unit: UnitEnum) => void;
-  setPrice: (price: string) => void;
-  setQuantity: (quantity: string) => void;
-  setAddToCart: (addToCart: boolean) => void;
-  addOrEditProduct: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-export const AddProductModal = ({
-  unit,
-  name,
-  price,
-  setUnit,
-  setName,
-  quantity,
-  setPrice,
-  addToCart,
-  editingId,
-  setQuantity,
-  setAddToCart,
-  cancelEditing,
-  addOrEditProduct,
-}: AddProductModalProps) => {
+export const AddProductModal = () => {
+  const { addProduct } = useProducts();
+  const { register, handleSubmit, reset, watch, setValue } = useForm<FormValues>({
+    defaultValues: {
+      name: '',
+      price: '',
+      quantity: '',
+      addToCart: false,
+      unit: UnitEnum.unit,
+    },
+  });
+
+  const onSubmit = (data: FormValues) => {
+    addProduct({
+      id: Date.now(),
+      ...data,
+    });
+
+    reset();
+  };
+
+  const unit = watch('unit');
+
   return <Dialog>
     <DialogTrigger asChild>
       <Button variant="outline">Adicionar produto</Button>
@@ -66,17 +73,16 @@ export const AddProductModal = ({
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={addOrEditProduct} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="col-span-2 space-y-2">
           <Label htmlFor="name">Produto</Label>
 
           <Input
+            required
             id="name"
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
             placeholder="Nome do produto"
-            required
+            {...register('name')}
           />
         </div>
 
@@ -85,12 +91,11 @@ export const AddProductModal = ({
             <Label htmlFor="price">Preço</Label>
 
             <Input
+              step="1"
               id="price"
-              step="0.01"
               type="number"
-              value={price}
               placeholder="Preço"
-              onChange={(e) => setPrice(e.target.value)}
+              {...register('price')}
             />
           </div>
 
@@ -101,23 +106,25 @@ export const AddProductModal = ({
               <Input
                 id="quantity"
                 type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                placeholder={unit === UnitEnum.unit ? "Quantidade" : "Peso"}
                 className="flex-grow"
+                placeholder={unit === UnitEnum.unit ? 'Quantidade' : 'Peso'}
+                {...register('quantity')}
               />
 
-              <Select value={unit} onValueChange={(value: UnitEnum) => setUnit(value)}>
+              <Select
+                value={unit}
+                onValueChange={(value: UnitEnum) => setValue('unit', value)}
+              >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Selecione a quantidade" />
+                  <SelectValue placeholder="Unidade de medida"/>
                 </SelectTrigger>
 
                 <SelectContent>
-                  <SelectItem value="unit">{capitalizeFirstLetter(PrettyUnitEnum.unit)}</SelectItem>
+                  <SelectItem value={UnitEnum.unit}>{capitalizeFirstLetter(PrettyUnitEnum.unit)}</SelectItem>
 
-                  <SelectItem value="kg">{capitalizeFirstLetter(PrettyUnitEnum.kg)}</SelectItem>
+                  <SelectItem value={UnitEnum.kg}>{capitalizeFirstLetter(PrettyUnitEnum.kg)}</SelectItem>
 
-                  <SelectItem value="grams">{capitalizeFirstLetter(PrettyUnitEnum.grams)}</SelectItem>
+                  <SelectItem value={UnitEnum.grams}>{capitalizeFirstLetter(PrettyUnitEnum.grams)}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -125,13 +132,13 @@ export const AddProductModal = ({
         </div>
 
         <div>
-          {unit === "grams" && (
+          {unit === 'grams' && (
             <p className="text-sm text-muted-foreground mt-1">
             O calculo do preço ser&aacute; feito com base no peso em gramas
             </p>
           )}
 
-          {unit === "kg" && (
+          {unit === 'kg' && (
             <p className="text-sm text-muted-foreground mt-1">
             O cálculo do preço ser&aacute; feito com base no peso em quilos
             </p>
@@ -141,23 +148,15 @@ export const AddProductModal = ({
         <div className="flex items-center space-x-2 mt-2">
           <Checkbox
             id="add-to-cart"
-            checked={addToCart}
-            onCheckedChange={(checked) => setAddToCart(checked as boolean)}
+            checked={watch('addToCart')}
+            onCheckedChange={(checked) => setValue('addToCart', checked as boolean)}
           />
 
           <Label htmlFor="add-to-cart">Adicionar ao carrinho</Label>
         </div>
 
         <DialogFooter>
-          <Button type="submit">
-            {editingId !== null ? "Atualizar produto" : "Adicionar produto"}
-          </Button>
-
-          {editingId !== null && (
-            <Button variant="outline" onClick={cancelEditing}>
-            Cancelar edição
-            </Button>
-          )}
+          <Button type="submit">Adicionar produto</Button>
         </DialogFooter>
       </form>
 

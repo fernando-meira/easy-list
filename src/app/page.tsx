@@ -1,4 +1,4 @@
-import { Footer, Header, ProductList } from "@/components";
+import { Footer, Header, ProductList } from '@/components';
 
 export default function Home() {
   return (

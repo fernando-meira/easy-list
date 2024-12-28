@@ -1,6 +1,6 @@
-import { PrettyUnitEnum, UnitEnum } from "./enums";
+import { PrettyUnitEnum, UnitEnum } from './enums';
 
-export interface Product {
+export interface ProductProps {
   id: number;
   name: string;
   price?: string;
