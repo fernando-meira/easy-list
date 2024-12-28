@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/select';
 
 export function ProductList() {
-  const { products } = useProducts();
+  const { products, removeProduct } = useProducts();
 
   const [filter, setFilter] = React.useState<StatusEnum>(StatusEnum.all);
 
@@ -64,11 +64,11 @@ export function ProductList() {
               </div>
 
               <div className="flex flex-row gap-2">
-                <div className="flex gap-2 bg-teal-100 p-2 rounded cursor-pointer">
+                <div onClick={() => {}} className="flex gap-2 bg-teal-100 p-2 rounded cursor-pointer">
                   <Pencil className="h-4 w-4 text-teal-400" />
                 </div>
 
-                <div className="flex gap-2 bg-rose-100 p-2 rounded cursor-pointer">
+                <div onClick={() => removeProduct(product.id)} className="flex gap-2 bg-rose-100 p-2 rounded cursor-pointer">
                   <Trash2 className="h-4 w-4 text-rose-500" />
                 </div>
               </div>
