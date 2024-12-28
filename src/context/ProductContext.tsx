@@ -1,13 +1,18 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { ProductProps } from '@/types/interfaces';
+import { LocalStorageEnum, StatusEnum } from '@/types/enums';
 
 interface ProductsContextType {
+  filter: StatusEnum;
   products?: ProductProps[];
   removeAllProducts: () => void;
+  toggleCart: (id: number) => void;
+  filteredProducts?: ProductProps[];
   removeProduct: (id: number) => void;
+  setFilter: (filter: StatusEnum) => void;
   addProduct: ({ id, name, price, quantity, addToCart }: ProductProps) => void;
 }
 
@@ -19,28 +24,61 @@ export const ProductsContext = createContext({} as ProductsContextType);
 
 function ProductsContextProvider({ children }: ProductsProviderProps) {
   const [products, setProducts] = useState<ProductProps[]>([]);
+  const [filter, setFilter] = useState<StatusEnum>(StatusEnum.all);
 
-  function addProduct({ id, price, name, addToCart, quantity, unit }: ProductProps) {
+  const filteredProducts = useMemo(() => products.filter((product) => {
+    if (filter === StatusEnum.all) return true;
+    if (filter === StatusEnum.inCart) return product.addToCart;
+    if (filter === StatusEnum.outOfCart) return !product.addToCart;
+
+    return true;
+  }), [products, filter]);
+
+  const addProduct = ({ id, price, name, addToCart, quantity, unit }: ProductProps) => {
     const newProduct = {
       id, price, name, addToCart, quantity, unit,
     };
 
     return setProducts((state) => [...state, newProduct]);
-  }
+  };
 
-  function removeProduct(id: number) {
+  const removeProduct = (id: number) => {
     const filteredItem = products.filter((product) => product.id !== id);
 
     setProducts(filteredItem);
-  }
+  };
 
-  function removeAllProducts() {
+  const removeAllProducts = useMemo(() => () => {
     setProducts([]);
-  }
+  }, []);
+
+  const toggleCart = useCallback((id: number) => {
+    const updatedProducts = products.map((product) => {
+      if (product.id === id) {
+        return { ...product, addToCart: !product.addToCart };
+      }
+
+      return product;
+    });
+
+    setProducts(updatedProducts);
+  }, [products]);
+
+  useEffect(() => {
+    const storedProducts = localStorage.getItem(LocalStorageEnum.products);
+
+    if (storedProducts) {
+      setProducts(JSON.parse(storedProducts));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('products', JSON.stringify(products));
+  }, [products]);
 
   return (
     <ProductsContext.Provider
-      value={{ products, removeProduct, addProduct, removeAllProducts }}
+      value={{ products, filteredProducts, removeProduct, addProduct, removeAllProducts, filter, setFilter, toggleCart }}
     >
       {children}
     </ProductsContext.Provider>

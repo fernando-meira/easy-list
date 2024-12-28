@@ -3,25 +3,16 @@
 import React, { useMemo } from 'react';
 
 import { calculateProductValue } from '@/utils';
+import { ProductListHeader } from '@/components';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProducts } from '@/context/ProductContext';
-import { PrettyStatusEnum, StatusEnum } from '@/types/enums';
 import { LucideShoppingCart, Pencil, Trash2 } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 export function ProductList() {
-  const { products, removeProduct } = useProducts();
-
-  const [filter, setFilter] = React.useState<StatusEnum>(StatusEnum.all);
+  const { products, filteredProducts, removeProduct, toggleCart } = useProducts();
 
   const renderProducts = useMemo(() => {
-    if (products?.length === 0) {
+    if (!products) {
       return (
         <div className="flex items-center justify-center w-full h-[200px]">
           <p className="text-sm text-muted-foreground">Nenhum produto cadastrado</p>
@@ -29,16 +20,24 @@ export function ProductList() {
       );
     }
 
+    if (!!products && filteredProducts?.length === 0) {
+      return (
+        <div className="flex items-center justify-center w-full h-[200px]">
+          <p className="text-sm text-muted-foreground">Não existe produtos para esse filtro</p>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col  mt-4">
         <ul>
-          {products?.map((product, index) => (
+          {(filteredProducts || products)?.map((product, index) => (
             <li key={product.id} className={`flex items-center p-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100' : ''}`}>
               <div className="flex flex-1 gap-2 items-center">
                 <Checkbox
                   id={`cart-${product.id}`}
                   checked={product.addToCart}
-                // onCheckedChange={() => toggleCart(product.id)}
+                  onCheckedChange={() => toggleCart(product.id)}
                 />
                 <strong>{product.name}</strong>
 
@@ -55,9 +54,9 @@ export function ProductList() {
                 {product.price && product.quantity && product.unit && (
                   <span className="font-semibold text-teal-400">
                     {calculateProductValue({
-                      quantity: product.quantity,
-                      price: product.price,
                       unit: product.unit,
+                      price: product.price,
+                      quantity: product.quantity,
                     })}
                   </span>
                 )}
@@ -77,27 +76,11 @@ export function ProductList() {
         </ul>
       </div>
     );
-  }, [products, removeProduct]);
+  }, [products, removeProduct, filteredProducts, toggleCart]);
 
   return (
     <div className="w-full">
-      <header className="flex items-center justify-between gap-4 w-full">
-        <h3 className="text-lg font-semibold">Lista de produtos</h3>
-
-        <Select value={filter} onValueChange={(value: StatusEnum) => setFilter(value)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filtro de produtos" />
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectItem value={StatusEnum.all}>{PrettyStatusEnum.all}</SelectItem>
-
-            <SelectItem value={StatusEnum.inCart}>{PrettyStatusEnum.inCart}</SelectItem>
-
-            <SelectItem value={StatusEnum.outOfCart}>{PrettyStatusEnum.outOfCart}</SelectItem>
-          </SelectContent>
-        </Select>
-      </header>
+      <ProductListHeader />
 
       {renderProducts}
     </div>

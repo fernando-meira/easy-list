@@ -21,13 +21,14 @@ export function Header() {
       />
 
       <div className="flex items-center gap-4">
-        <NewProductForm />
-
         {!!products && products.length > 0 && (
           <Button variant="destructive" onClick={removeAllProducts}>
           Limpar lista
           </Button>
         )}
+
+        <NewProductForm />
+
       </div>
 
     </header>

@@ -21,3 +21,7 @@ export enum PrettyStatusEnum {
   inCart = 'No carrinho',
   outOfCart = 'Fora do carrinho',
 }
+
+export enum LocalStorageEnum {
+  products = 'products',
+}

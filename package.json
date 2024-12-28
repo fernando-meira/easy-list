@@ -7,7 +7,8 @@
     "lint": "next lint",
     "build": "next build",
     "start": "next start",
-    "lint:fix": "next lint --fix"
+    "lint:fix": "next lint --fix",
+    "dev:host": "next dev --hostname 0.0.0.0"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.2",
