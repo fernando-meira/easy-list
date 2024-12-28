@@ -33,7 +33,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
     setProducts(filteredItem);
   }
-  
+
   function removeAllProducts() {
     setProducts([]);
   }
