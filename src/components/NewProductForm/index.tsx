@@ -3,7 +3,7 @@
 import React from 'react';
 
 import { useWindowSize } from '@/hooks/useWindowSize';
-import { AddProductDrawer, AddProductModal } from '@/components';
+import { AddProductModal, AddProductSheet } from '@/components';
 
 export function NewProductForm() {
   const { isDesktop } = useWindowSize();
@@ -11,6 +11,6 @@ export function NewProductForm() {
   return isDesktop ? (
     <AddProductModal />
   ) : (
-    <AddProductDrawer />
+    <AddProductSheet />
   );
 }
