@@ -1,8 +1,8 @@
 import { UnitEnum } from '@/types/enums';
-import { Product } from '@/types/interfaces';
+import { ProductProps } from '@/types/interfaces';
 
-export const calculateTotalValue = (products: Product[]): { totalProductsValue: number, filteredProductsValue: number } => {
-  const calculateValue = (items: Product[]) => {
+export const calculateTotalValue = (products: ProductProps[]): { totalProductsValue: number, filteredProductsValue: number } => {
+  const calculateValue = (items: ProductProps[]) => {
     return items.reduce((total, product) => {
       if (product.price === undefined || product.quantity === undefined) return total;
 

@@ -77,7 +77,7 @@ export function ProductList() {
         </ul>
       </div>
     );
-  }, [products]);
+  }, [products, removeProduct]);
 
   return (
     <div className="w-full">

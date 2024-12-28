@@ -1,14 +1,21 @@
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { FlatCompat } from '@eslint/eslintrc';
+import reactHooks from 'eslint-plugin-react-hooks'; // Importa o plugin
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
 const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
+
 const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
+    plugins: {
+      'react-hooks': reactHooks, // Define o plugin como um objeto
+    },
     rules: {
       // Força uso de aspas simples e ponto e vírgula
       'quotes': ['error', 'single'],
@@ -19,8 +26,8 @@ const eslintConfig = [
       'sort-imports': [
         'error',
         {
-          'ignoreDeclarationSort': true, // Mantém os grupos de declarações
-          'ignoreCase': true             // Ignora case na ordenação
+          'ignoreDeclarationSort': true,
+          'ignoreCase': true,
         }
       ],
       // Remove espaços extras
@@ -33,12 +40,15 @@ const eslintConfig = [
       'no-multiple-empty-lines': [
         'error',
         {
-          max: 1,    // Permite no máximo 1 linha vazia consecutiva
-          maxEOF: 0, // Não permite linha vazia no final do arquivo
-          maxBOF: 0  // Não permite linha vazia no início do arquivo
+          max: 1,
+          maxEOF: 0,
+          maxBOF: 0,
         }
-      ]
-    }
-  }
+      ],
+      // Verifica e corrige dependências de hooks React
+      'react-hooks/exhaustive-deps': 'warn',
+    },
+  },
 ];
+
 export default eslintConfig;
