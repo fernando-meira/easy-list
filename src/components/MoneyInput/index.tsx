@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { formatCurrency } from '@/utils';
 import { Input } from '@/components/ui/input';
@@ -19,27 +19,24 @@ type MoneyInputProps = {
 export const MoneyInput = (props: MoneyInputProps) => {
   const [inputValue, setInputValue] = useState<string>(props.value ? formatCurrency(Number(props.value)) : '');
 
-  // Usando useMemo para pegar o valor atual do formulário
-  const formValue = useMemo(() => props.form.getValues(props.name), [props.form, props.name]);
-
-  // Atualiza o valor do inputValue quando o valor do formulário for alterado
   useEffect(() => {
-    // Verifica se o valor do formulário mudou e atualiza o inputValue, se necessário
+    const formValue = props.form.getValues(props.name);
+
     if (formValue !== undefined && formValue !== inputValue) {
       setInputValue(formatCurrency(Number(formValue)));
     }
-  }, [formValue, inputValue]); // Agora, depende apenas de formValue e inputValue
+  }, [props.form, props.name, props.form.getValues(props.name), inputValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/\D/g, ''); // Remove qualquer caractere não numérico
-    const numericValue = (Number(rawValue) / 100).toFixed(2); // Converte para centavos
-    setInputValue(rawValue); // Atualiza o estado local
-    props.form.setValue(props.name, numericValue, { shouldValidate: true }); // Atualiza o valor no formulário
+    const rawValue = e.target.value.replace(/\D/g, '');
+    const numericValue = (Number(rawValue) / 100).toFixed(2);
+    setInputValue(rawValue);
+    props.form.setValue(props.name, numericValue, { shouldValidate: true });
   };
 
   const handleBlur = () => {
     if (inputValue) {
-      const formattedValue = formatCurrency(Number(inputValue) / 100); // Formata como moeda
+      const formattedValue = formatCurrency(Number(inputValue) / 100);
       setInputValue(formattedValue);
     }
   };
@@ -47,7 +44,7 @@ export const MoneyInput = (props: MoneyInputProps) => {
   const handleFocus = () => {
     const currentValue = props.form.getValues(props.name);
     if (currentValue) {
-      setInputValue((Number(currentValue) * 100).toString()); // Exibe o valor sem o formato de moeda
+      setInputValue((Number(currentValue) * 100).toString()); // Exibir em formato sem a moeda
     }
   };
 
