@@ -13,7 +13,6 @@ import { ProductListHeader, ProductManagerSheet } from '@/components';
 
 export function ProductList() {
   const { products, filteredProducts, removeProduct, toggleCart } = useProducts();
-  console.log('🥲  products:', products);
 
   const [openEditSheet, setOpenEditSheet] = React.useState<boolean>(false);
   const [selectedProducts, setSelectedProducts] = React.useState<ProductProps | undefined>(undefined);
