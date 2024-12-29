@@ -72,7 +72,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
         </SheetTrigger>
       )}
 
-      <SheetContent className="w-full sm:w-[540px]">
+      <SheetContent className="sm:w-[540px]">
         <SheetHeader>
           <SheetTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar' : 'Adicionar'} produto</SheetTitle>
           <SheetDescription>
