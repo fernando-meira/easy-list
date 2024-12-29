@@ -7,9 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { capitalizeFirstLetter } from '@/utils';
 import { Button } from '@/components/ui/button';
+import { ProductProps } from '@/types/interfaces';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProducts } from '@/context/ProductContext';
-import { PrettyUnitEnum, UnitEnum } from '@/types/enums';
+import { AddOrEditProductTypeEnum, UnitEnum } from '@/types/enums';
 import {
   Select,
   SelectContent,
@@ -27,18 +28,18 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 
-interface FormValues {
-  name: string;
-  price: string;
-  unit: UnitEnum;
-  quantity: string;
-  addToCart: boolean;
+interface ProductManagerSheetProps {
+  open?: boolean;
+  product?: ProductProps;
+  type?: AddOrEditProductTypeEnum;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const AddProductSheet = () => {
-  const { addProduct } = useProducts();
-  const { register, handleSubmit, reset, watch, setValue } = useForm<FormValues>({
-    defaultValues: {
+export const ProductManagerSheet = ({ open, type, product, onOpenChange }: ProductManagerSheetProps) => {
+  const { addProduct, editProduct } = useProducts();
+
+  const { register, handleSubmit, reset, watch, setValue } = useForm<ProductProps>({
+    defaultValues: product || {
       name: '',
       price: '',
       quantity: '',
@@ -47,28 +48,45 @@ export const AddProductSheet = () => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    addProduct({
-      id: Date.now(),
-      ...data,
-    });
+  const onSubmit = (data: ProductProps) => {
+    if (type === AddOrEditProductTypeEnum.edit && product) {
+      editProduct({ id: product.id, product: data });
+
+    } else {
+      addProduct({
+        ...data,
+        id: Number(Date.now()),
+      });
+    }
 
     reset();
+
+    if (onOpenChange) {
+      onOpenChange(false);
+    }
   };
 
   const unit = watch('unit');
 
+  React.useEffect(() => {
+    if (product && type === AddOrEditProductTypeEnum.edit) {
+      reset(product);
+    }
+  }, [product, type, reset]);
+
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline">Adicionar produto</Button>
-      </SheetTrigger>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      {type === AddOrEditProductTypeEnum.add && (
+        <SheetTrigger asChild>
+          <Button variant="outline">Adicionar produto</Button>
+        </SheetTrigger>
+      )}
 
       <SheetContent>
         <div className="mx-auto w-full max-w-full">
           <SheetHeader>
-            <SheetTitle>Adicionar produto</SheetTitle>
-            <SheetDescription>Adicione um novo produto à sua lista. Clique em salvar para confirmar.</SheetDescription>
+            <SheetTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</SheetTitle>
+            <SheetDescription>{type === AddOrEditProductTypeEnum.edit ? 'Edite o produto selecionado' : 'Adicione um novo produto à sua lista. Clique em salvar para confirmar.'}</SheetDescription>
           </SheetHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -103,8 +121,8 @@ export const AddProductSheet = () => {
                 <Input
                   id="quantity"
                   type="number"
-                  placeholder={unit === UnitEnum.unit ? 'Quantidade' : 'Peso'}
                   className="flex-grow"
+                  placeholder={unit === UnitEnum.unit ? 'Quantidade' : 'Peso'}
                   {...register('quantity')}
                 />
 
@@ -117,11 +135,11 @@ export const AddProductSheet = () => {
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value={UnitEnum.unit}>{capitalizeFirstLetter(PrettyUnitEnum.unit)}</SelectItem>
+                    <SelectItem value={UnitEnum.unit}>{capitalizeFirstLetter(UnitEnum.unit)}</SelectItem>
 
-                    <SelectItem value={UnitEnum.kg}>{capitalizeFirstLetter(PrettyUnitEnum.kg)}</SelectItem>
+                    <SelectItem value={UnitEnum.kg}>{capitalizeFirstLetter(UnitEnum.kg)}</SelectItem>
 
-                    <SelectItem value={UnitEnum.grams}>{capitalizeFirstLetter(PrettyUnitEnum.grams)}</SelectItem>
+                    <SelectItem value={UnitEnum.grams}>{capitalizeFirstLetter(UnitEnum.grams)}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -138,7 +156,7 @@ export const AddProductSheet = () => {
             </div>
 
             <SheetFooter>
-              <Button type="submit">Adicionar produto</Button>
+              <Button type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
             </SheetFooter>
           </form>
         </div>

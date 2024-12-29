@@ -27,8 +27,7 @@ export function Header() {
           </Button>
         )}
 
-        <NewProductForm />
-
+        <NewProductForm/>
       </div>
 
     </header>

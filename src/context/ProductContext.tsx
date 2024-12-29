@@ -3,8 +3,12 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { ProductProps } from '@/types/interfaces';
-import { convertUnitToAbbreviationUnit } from '@/utils';
 import { LocalStorageEnum, StatusEnum } from '@/types/enums';
+
+export interface EditProductProps {
+  id: number;
+  product: ProductProps;
+}
 
 interface ProductsContextType {
   filter: StatusEnum;
@@ -16,6 +20,7 @@ interface ProductsContextType {
   removeProduct: (id: number) => void;
   allProductsInCartWithoutPrice?: boolean;
   setFilter: (filter: StatusEnum) => void;
+  editProduct: ({ id, product }: EditProductProps) => void;
   addProduct: ({ id, name, price, quantity, addToCart }: ProductProps) => void;
 }
 
@@ -46,7 +51,19 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       id, price, name, addToCart, quantity, unit,
     };
 
-    return setProducts((state) => [...state, convertUnitToAbbreviationUnit(newProduct)]);
+    return setProducts((state) => [...state, newProduct]);
+  };
+
+  const editProduct = ({ id, product }: { id: number, product: ProductProps }) => {
+    const updatedProducts = products.map((item) => {
+      if (item.id === id) {
+        return { ...item, ...product };
+      }
+
+      return item;
+    });
+
+    setProducts(updatedProducts);
   };
 
   const removeProduct = (id: number) => {
@@ -75,7 +92,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     const storedProducts = localStorage.getItem(LocalStorageEnum.products);
 
     if (storedProducts) {
-      setProducts(JSON.parse(storedProducts).map((product: ProductProps) => convertUnitToAbbreviationUnit(product)));
+      setProducts(JSON.parse(storedProducts));
     }
   }, []);
 
@@ -91,6 +108,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         setFilter,
         toggleCart,
         addProduct,
+        editProduct,
         removeProduct,
         filteredProducts,
         removeAllProducts,

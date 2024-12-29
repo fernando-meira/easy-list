@@ -4,13 +4,18 @@ import React, { useMemo } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { calculateProductValue } from '@/utils';
-import { ProductListHeader } from '@/components';
+import { ProductProps } from '@/types/interfaces';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProducts } from '@/context/ProductContext';
+import { AddOrEditProductTypeEnum } from '@/types/enums';
 import { LucideShoppingCart, Pencil, Trash2 } from 'lucide-react';
+import { ProductListHeader, ProductManagerSheet } from '@/components';
 
 export function ProductList() {
   const { products, filteredProducts, removeProduct, toggleCart } = useProducts();
+
+  const [openEditSheet, setOpenEditSheet] = React.useState<boolean>(false);
+  const [selectedProducts, setSelectedProducts] = React.useState<ProductProps | undefined>(undefined);
 
   const renderProducts = useMemo(() => {
     if (!products) {
@@ -58,7 +63,7 @@ export function ProductList() {
               </div>
 
               <div className="flex flex-row gap-2">
-                <div onClick={() => {}} className="flex gap-2 bg-teal-100 p-2 rounded cursor-pointer">
+                <div onClick={() => {setSelectedProducts(product); setOpenEditSheet(true);}} className="flex gap-2 bg-teal-100 p-2 rounded cursor-pointer">
                   <Pencil className="h-4 w-4 text-teal-400" />
                 </div>
 
@@ -78,6 +83,13 @@ export function ProductList() {
       <ProductListHeader />
 
       {renderProducts}
+
+      <ProductManagerSheet
+        open={openEditSheet}
+        product={selectedProducts}
+        onOpenChange={setOpenEditSheet}
+        type={AddOrEditProductTypeEnum.edit}
+      />
     </div>
   );
 }
