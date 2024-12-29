@@ -20,10 +20,8 @@ export function ConfirmCleanProductListDrawer() {
           </DrawerDescription>
         </DrawerHeader>
 
-        <DrawerFooter>
+        <DrawerFooter className="mb-8">
           <Button variant="destructive" onClick={removeAllProducts}>Limpar lista</Button>
-
-          <Button>Cancelar</Button>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

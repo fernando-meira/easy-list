@@ -13,12 +13,13 @@ import { ProductListHeader, ProductManagerSheet } from '@/components';
 
 export function ProductList() {
   const { products, filteredProducts, removeProduct, toggleCart } = useProducts();
+  console.log('🥲  products:', products);
 
   const [openEditSheet, setOpenEditSheet] = React.useState<boolean>(false);
   const [selectedProducts, setSelectedProducts] = React.useState<ProductProps | undefined>(undefined);
 
   const renderProducts = useMemo(() => {
-    if (!products) {
+    if (!products || products.length === 0) {
       return (
         <div className="flex items-center justify-center w-full h-[200px]">
           <p className="text-sm text-muted-foreground">Nenhum produto cadastrado</p>
@@ -26,7 +27,7 @@ export function ProductList() {
       );
     }
 
-    if (!!products && filteredProducts?.length === 0) {
+    if (products.length > 0 && filteredProducts?.length === 0) {
       return (
         <div className="flex items-center justify-center w-full h-[200px]">
           <p className="text-sm text-muted-foreground">Não existe produtos para esse filtro</p>

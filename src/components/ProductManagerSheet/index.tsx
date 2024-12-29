@@ -110,6 +110,8 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
 
               <div className="flex gap-2">
                 <Input
+                  min={0}
+                  step={0.1}
                   id="quantity"
                   type="number"
                   className="flex-grow"

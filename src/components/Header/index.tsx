@@ -26,7 +26,6 @@ export function Header() {
 
         <NewProductForm/>
       </div>
-
     </header>
   );
 }
