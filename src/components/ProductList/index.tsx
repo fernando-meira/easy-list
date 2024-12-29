@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import { calculateProductValue } from '@/utils';
 import { ProductListHeader } from '@/components';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -32,7 +33,7 @@ export function ProductList() {
       <div className="flex flex-col  mt-4">
         <ul>
           {(filteredProducts || products)?.map((product, index) => (
-            <li key={product.id} className={`flex items-center p-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100' : ''}`}>
+            <li key={product.id} className={`flex items-center gap-2 p-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100' : ''}`}>
               <div className="flex flex-1 gap-2 items-center">
                 <Checkbox
                   id={`cart-${product.id}`}
@@ -46,19 +47,13 @@ export function ProductList() {
                 )}
               </div>
 
-              <div className="flex gap-2 mr-2 align-center">
+              <div className="flex gap-2 align-center">
                 {product.quantity && product.unit && (
-                  <span>{`${product.quantity} ${product.unit}`}</span>
-                )}
-
-                {product.price && product.quantity && product.unit && (
-                  <span className="font-semibold text-teal-400">
-                    {calculateProductValue({
-                      unit: product.unit,
-                      price: product.price,
-                      quantity: product.quantity,
-                    })}
-                  </span>
+                  <Badge variant="outline" className="self-center text-xs">{`${product.quantity} ${product.unit}`} { product.price && calculateProductValue({
+                    unit: product.unit,
+                    price: product.price,
+                    quantity: product.quantity,
+                  })}</Badge>
                 )}
               </div>
 

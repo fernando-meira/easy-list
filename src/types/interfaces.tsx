@@ -1,4 +1,4 @@
-import { PrettyUnitEnum, UnitEnum } from './enums';
+import { AbbreviationUnitEnum, PrettyUnitEnum, UnitEnum } from './enums';
 
 export interface ProductProps {
   id: number;
@@ -6,5 +6,5 @@ export interface ProductProps {
   price?: string;
   quantity?: string;
   addToCart: boolean;
-  unit?: PrettyUnitEnum | UnitEnum;
+  unit?: PrettyUnitEnum | UnitEnum | AbbreviationUnitEnum;
 }

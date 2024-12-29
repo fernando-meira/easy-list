@@ -1,15 +1,15 @@
-import { UnitEnum } from '@/types/enums';
+import { AbbreviationUnitEnum, PrettyUnitEnum, UnitEnum } from '@/types/enums';
 import { ProductProps } from '@/types/interfaces';
 
 export const calculateTotalValue = (products: ProductProps[]): { totalProductsValue: number, filteredProductsValue: number } => {
   const calculateValue = (items: ProductProps[]) => {
-    return items.reduce((total, product) => {
-      if (product.price === undefined || product.quantity === undefined) return total;
+    const filteredProductsWithDefinedValues = items.filter((product) => product.price && product.quantity && product.unit);
 
-      const price = parseFloat(product.price);
-      const rawQuantity = parseFloat(product.quantity);
+    return filteredProductsWithDefinedValues.reduce((total, product) => {
+      const price = product.price && parseFloat(product.price) || 0;
+      const rawQuantity = product.quantity && parseFloat(product.quantity) || 0;
 
-      if (product.unit === UnitEnum.grams) {
+      if (!!product.unit && (product.unit === UnitEnum.grams || product.unit === AbbreviationUnitEnum.grams || product.unit === PrettyUnitEnum.grams)) {
         const quantityInKg = rawQuantity / 1000;
         return total + (price * quantityInKg);
       }

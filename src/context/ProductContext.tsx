@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { ProductProps } from '@/types/interfaces';
+import { convertUnitToAbbreviationUnit } from '@/utils';
 import { LocalStorageEnum, StatusEnum } from '@/types/enums';
 
 interface ProductsContextType {
@@ -10,8 +11,10 @@ interface ProductsContextType {
   products?: ProductProps[];
   removeAllProducts: () => void;
   toggleCart: (id: number) => void;
+  allProductsWithoutPrice?: boolean;
   filteredProducts?: ProductProps[];
   removeProduct: (id: number) => void;
+  allProductsInCartWithoutPrice?: boolean;
   setFilter: (filter: StatusEnum) => void;
   addProduct: ({ id, name, price, quantity, addToCart }: ProductProps) => void;
 }
@@ -34,12 +37,16 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     return true;
   }), [products, filter]);
 
+  const allProductsWithoutPrice = useMemo(() => products.every((product) => !product.price || !product.quantity || !product.unit), [products]);
+
+  const allProductsInCartWithoutPrice = useMemo(() => products.filter((product) => product.addToCart).every((product) => !product.price || !product.quantity || !product.unit), [products]);
+
   const addProduct = ({ id, price, name, addToCart, quantity, unit }: ProductProps) => {
     const newProduct = {
       id, price, name, addToCart, quantity, unit,
     };
 
-    return setProducts((state) => [...state, newProduct]);
+    return setProducts((state) => [...state, convertUnitToAbbreviationUnit(newProduct)]);
   };
 
   const removeProduct = (id: number) => {
@@ -68,7 +75,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     const storedProducts = localStorage.getItem(LocalStorageEnum.products);
 
     if (storedProducts) {
-      setProducts(JSON.parse(storedProducts));
+      setProducts(JSON.parse(storedProducts).map((product: ProductProps) => convertUnitToAbbreviationUnit(product)));
     }
   }, []);
 
@@ -78,7 +85,18 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
   return (
     <ProductsContext.Provider
-      value={{ products, filteredProducts, removeProduct, addProduct, removeAllProducts, filter, setFilter, toggleCart }}
+      value={{
+        filter,
+        products,
+        setFilter,
+        toggleCart,
+        addProduct,
+        removeProduct,
+        filteredProducts,
+        removeAllProducts,
+        allProductsWithoutPrice,
+        allProductsInCartWithoutPrice
+      }}
     >
       {children}
     </ProductsContext.Provider>
