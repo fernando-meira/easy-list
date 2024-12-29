@@ -9,7 +9,7 @@ export function Header() {
   const { products } = useProducts();
 
   return (
-    <header className="flex items-center justify-between w-full p-4 space-x-4 border-b">
+    <header className="position: fixed top-0 flex items-center justify-between w-full p-4 space-x-4 border-b bg-white">
       <Image
         priority
         width={24}
