@@ -4,13 +4,14 @@ import React from 'react';
 
 import { useForm } from 'react-hook-form';
 
+import { UnitEnum } from '@/types/enums';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { capitalizeFirstLetter } from '@/utils';
+import { ProductProps } from '@/types/interfaces';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProducts } from '@/context/ProductContext';
-import { PrettyUnitEnum, UnitEnum } from '@/types/enums';
 import {
   Select,
   SelectContent,
@@ -28,17 +29,9 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-interface FormValues {
-  name: string;
-  price: string;
-  unit: UnitEnum;
-  quantity: string;
-  addToCart: boolean;
-}
-
 export const AddProductModal = () => {
-  const { addProduct } = useProducts();
-  const { register, handleSubmit, reset, watch, setValue } = useForm<FormValues>({
+  const { managerProduct } = useProducts();
+  const { register, handleSubmit, reset, watch, setValue } = useForm<ProductProps>({
     defaultValues: {
       name: '',
       price: '',
@@ -48,10 +41,9 @@ export const AddProductModal = () => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    addProduct({
-      id: Date.now(),
-      ...data,
+  const onSubmit = (data: ProductProps) => {
+    managerProduct({
+      product: data
     });
 
     reset();
@@ -120,29 +112,15 @@ export const AddProductModal = () => {
                 </SelectTrigger>
 
                 <SelectContent>
-                  <SelectItem value={UnitEnum.unit}>{capitalizeFirstLetter(PrettyUnitEnum.unit)}</SelectItem>
+                  <SelectItem value={UnitEnum.unit}>{capitalizeFirstLetter(UnitEnum.unit)}</SelectItem>
 
-                  <SelectItem value={UnitEnum.kg}>{capitalizeFirstLetter(PrettyUnitEnum.kg)}</SelectItem>
+                  <SelectItem value={UnitEnum.kg}>{capitalizeFirstLetter(UnitEnum.kg)}</SelectItem>
 
-                  <SelectItem value={UnitEnum.grams}>{capitalizeFirstLetter(PrettyUnitEnum.grams)}</SelectItem>
+                  <SelectItem value={UnitEnum.grams}>{capitalizeFirstLetter(UnitEnum.grams)}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
-        </div>
-
-        <div>
-          {unit === 'grams' && (
-            <p className="text-sm text-muted-foreground mt-1">
-            O calculo do preço ser&aacute; feito com base no peso em gramas
-            </p>
-          )}
-
-          {unit === 'kg' && (
-            <p className="text-sm text-muted-foreground mt-1">
-            O cálculo do preço ser&aacute; feito com base no peso em quilos
-            </p>
-          )}
         </div>
 
         <div className="flex items-center space-x-2 mt-2">

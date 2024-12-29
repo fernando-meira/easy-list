@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { MoneyInput } from '../MoneyInput';
 
 interface ProductManagerSheetProps {
   open?: boolean;
@@ -36,9 +37,9 @@ interface ProductManagerSheetProps {
 }
 
 export const ProductManagerSheet = ({ open, type, product, onOpenChange }: ProductManagerSheetProps) => {
-  const { addProduct, editProduct } = useProducts();
+  const { managerProduct } = useProducts();
 
-  const { register, handleSubmit, reset, watch, setValue } = useForm<ProductProps>({
+  const methods = useForm<ProductProps>({
     defaultValues: product || {
       name: '',
       price: '',
@@ -48,31 +49,20 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
     },
   });
 
-  const onSubmit = (data: ProductProps) => {
-    if (type === AddOrEditProductTypeEnum.edit && product) {
-      editProduct({ id: product.id, product: data });
+  const onSubmit = methods.handleSubmit((data: ProductProps) => {
+    managerProduct({ product: data });
 
-    } else {
-      addProduct({
-        ...data,
-        id: Number(Date.now()),
-      });
-    }
+    methods.reset();
+    onOpenChange?.(false);
+  });
 
-    reset();
-
-    if (onOpenChange) {
-      onOpenChange(false);
-    }
-  };
-
-  const unit = watch('unit');
+  const unit = methods.watch('unit');
 
   React.useEffect(() => {
     if (product && type === AddOrEditProductTypeEnum.edit) {
-      reset(product);
+      methods.reset(product);
     }
-  }, [product, type, reset]);
+  }, [product, type, methods.reset, methods]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -82,14 +72,18 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
         </SheetTrigger>
       )}
 
-      <SheetContent>
-        <div className="mx-auto w-full max-w-full">
-          <SheetHeader>
-            <SheetTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</SheetTitle>
-            <SheetDescription>{type === AddOrEditProductTypeEnum.edit ? 'Edite o produto selecionado' : 'Adicione um novo produto à sua lista. Clique em salvar para confirmar.'}</SheetDescription>
-          </SheetHeader>
+      <SheetContent className="w-[400px] sm:w-[540px]">
+        <SheetHeader>
+          <SheetTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar' : 'Adicionar'} produto</SheetTitle>
+          <SheetDescription>
+            {type === AddOrEditProductTypeEnum.edit
+              ? 'Faça alterações no seu produto aqui. Clique em salvar quando terminar.'
+              : 'Adicione um novo produto aqui. Clique em salvar quando terminar.'}
+          </SheetDescription>
+        </SheetHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <FormProvider {...methods}>
+          <form onSubmit={onSubmit} className="space-y-6 py-6">
             <div className="col-span-2 space-y-2">
               <Label htmlFor="name">Produto</Label>
 
@@ -98,19 +92,16 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                 id="name"
                 type="text"
                 placeholder="Nome do produto"
-                {...register('name')}
+                {...methods.register('name')}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price">Preço</Label>
-
-              <Input
-                step="1"
-                id="price"
-                type="number"
+              <MoneyInput
+                label="Preço"
+                form={methods}
                 placeholder="Preço"
-                {...register('price')}
+                {...methods.register('price')}
               />
             </div>
 
@@ -123,12 +114,12 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                   type="number"
                   className="flex-grow"
                   placeholder={unit === UnitEnum.unit ? 'Quantidade' : 'Peso'}
-                  {...register('quantity')}
+                  {...methods.register('quantity')}
                 />
 
                 <Select
                   value={unit}
-                  onValueChange={(value: UnitEnum) => setValue('unit', value)}
+                  onValueChange={(value: UnitEnum) => methods.setValue('unit', value)}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Unidade de medida"/>
@@ -148,8 +139,8 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
             <div className="flex items-center space-x-2 mt-2">
               <Checkbox
                 id="add-to-cart"
-                checked={watch('addToCart')}
-                onCheckedChange={(checked) => setValue('addToCart', checked as boolean)}
+                checked={methods.watch('addToCart')}
+                onCheckedChange={(checked) => methods.setValue('addToCart', checked as boolean)}
               />
 
               <Label htmlFor="add-to-cart">Adicionar ao carrinho</Label>
@@ -159,7 +150,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
               <Button type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
             </SheetFooter>
           </form>
-        </div>
+        </FormProvider>
       </SheetContent>
     </Sheet>
   );

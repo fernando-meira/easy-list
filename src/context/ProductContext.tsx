@@ -20,8 +20,7 @@ interface ProductsContextType {
   removeProduct: (id: number) => void;
   allProductsInCartWithoutPrice?: boolean;
   setFilter: (filter: StatusEnum) => void;
-  editProduct: ({ id, product }: EditProductProps) => void;
-  addProduct: ({ id, name, price, quantity, addToCart }: ProductProps) => void;
+  managerProduct: ({ product }: { product: ProductProps }) => void;
 }
 
 interface ProductsProviderProps {
@@ -46,24 +45,25 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
   const allProductsInCartWithoutPrice = useMemo(() => products.filter((product) => product.addToCart).every((product) => !product.price || !product.quantity || !product.unit), [products]);
 
-  const addProduct = ({ id, price, name, addToCart, quantity, unit }: ProductProps) => {
-    const newProduct = {
-      id, price, name, addToCart, quantity, unit,
+  const managerProduct = ({ product }: { product: ProductProps }) => {
+    if (product.id) {
+      const updatedProducts = products.map((productInList) => {
+        if (productInList.id === product.id) {
+          return { ...productInList, ...product };
+        }
+
+        return productInList;
+      });
+
+      return setProducts(updatedProducts);
+    }
+
+    const addIdInProduct = {
+      ...product,
+      id: Date.now(),
     };
 
-    return setProducts((state) => [...state, newProduct]);
-  };
-
-  const editProduct = ({ id, product }: { id: number, product: ProductProps }) => {
-    const updatedProducts = products.map((item) => {
-      if (item.id === id) {
-        return { ...item, ...product };
-      }
-
-      return item;
-    });
-
-    setProducts(updatedProducts);
+    setProducts([...products, addIdInProduct]);
   };
 
   const removeProduct = (id: number) => {
@@ -107,9 +107,8 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         products,
         setFilter,
         toggleCart,
-        addProduct,
-        editProduct,
         removeProduct,
+        managerProduct,
         filteredProducts,
         removeAllProducts,
         allProductsWithoutPrice,
