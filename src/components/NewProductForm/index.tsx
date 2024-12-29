@@ -2,15 +2,9 @@
 
 import React from 'react';
 
-import { useWindowSize } from '@/hooks/useWindowSize';
-import { AddProductModal, AddProductSheet } from '@/components';
+import { ProductManagerSheet } from '@/components';
+import { AddOrEditProductTypeEnum } from '@/types/enums';
 
 export function NewProductForm() {
-  const { isDesktop } = useWindowSize();
-
-  return isDesktop ? (
-    <AddProductModal />
-  ) : (
-    <AddProductSheet />
-  );
+  return <ProductManagerSheet type={AddOrEditProductTypeEnum.add} />;
 }

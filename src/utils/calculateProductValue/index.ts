@@ -1,10 +1,10 @@
 import { convertToCurrency } from '@/utils';
-import { AbbreviationUnitEnum, PrettyUnitEnum, UnitEnum } from '@/types/enums';
+import { UnitEnum } from '@/types/enums';
 
 interface CalculateProductValueProps {
   price: string;
+  unit?: UnitEnum;
   quantity: string;
-  unit?: UnitEnum | PrettyUnitEnum | AbbreviationUnitEnum;
 }
 
 export const calculateProductValue = ({ quantity, price, unit }: CalculateProductValueProps): string => {
@@ -13,7 +13,7 @@ export const calculateProductValue = ({ quantity, price, unit }: CalculateProduc
   const numericPrice = parseFloat(price);
   const numericQuantity = parseFloat(quantity);
 
-  if (unit === UnitEnum.grams || unit === PrettyUnitEnum.grams || unit === AbbreviationUnitEnum.grams) {
+  if (unit === UnitEnum.grams) {
     const quantityInKg = numericQuantity / 1000;
 
     return convertToCurrency(String(numericPrice * quantityInKg));

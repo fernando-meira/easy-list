@@ -1,16 +1,4 @@
 export enum UnitEnum {
-  kg = 'kg',
-  unit = 'unit',
-  grams = 'grams',
-}
-
-export enum PrettyUnitEnum {
-  kg = 'quilos',
-  unit = 'unidade',
-  grams = 'gramas',
-}
-
-export enum AbbreviationUnitEnum {
   kg = 'kg(s)',
   unit = 'uni.',
   grams = 'g.',
@@ -30,4 +18,9 @@ export enum PrettyStatusEnum {
 
 export enum LocalStorageEnum {
   products = 'products',
+}
+
+export enum AddOrEditProductTypeEnum {
+  add = 'add',
+  edit = 'edit',
 }

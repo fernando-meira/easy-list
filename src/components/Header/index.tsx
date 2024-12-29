@@ -2,12 +2,11 @@
 
 import Image from 'next/image';
 
-import { NewProductForm } from '@/components';
-import { Button } from '@/components/ui/button';
 import { useProducts } from '@/context/ProductContext';
+import { ConfirmCleanProductListDrawer, NewProductForm } from '@/components';
 
 export function Header() {
-  const { products, removeAllProducts } = useProducts();
+  const { products } = useProducts();
 
   return (
     <header className="flex items-center justify-between w-full p-4 space-x-4 border-b">
@@ -22,15 +21,11 @@ export function Header() {
 
       <div className="flex items-center gap-4">
         {!!products && products.length > 0 && (
-          <Button variant="destructive" onClick={removeAllProducts}>
-          Limpar lista
-          </Button>
+          <ConfirmCleanProductListDrawer/>
         )}
 
-        <NewProductForm />
-
+        <NewProductForm/>
       </div>
-
     </header>
   );
 }

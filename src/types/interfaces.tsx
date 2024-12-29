@@ -1,10 +1,10 @@
-import { AbbreviationUnitEnum, PrettyUnitEnum, UnitEnum } from './enums';
+import { UnitEnum } from './enums';
 
 export interface ProductProps {
   id: number;
   name: string;
   price?: string;
+  unit?: UnitEnum;
   quantity?: string;
   addToCart: boolean;
-  unit?: PrettyUnitEnum | UnitEnum | AbbreviationUnitEnum;
 }

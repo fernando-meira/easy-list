@@ -3,8 +3,12 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { ProductProps } from '@/types/interfaces';
-import { convertUnitToAbbreviationUnit } from '@/utils';
 import { LocalStorageEnum, StatusEnum } from '@/types/enums';
+
+export interface EditProductProps {
+  id: number;
+  product: ProductProps;
+}
 
 interface ProductsContextType {
   filter: StatusEnum;
@@ -16,7 +20,7 @@ interface ProductsContextType {
   removeProduct: (id: number) => void;
   allProductsInCartWithoutPrice?: boolean;
   setFilter: (filter: StatusEnum) => void;
-  addProduct: ({ id, name, price, quantity, addToCart }: ProductProps) => void;
+  managerProduct: ({ product }: { product: ProductProps }) => void;
 }
 
 interface ProductsProviderProps {
@@ -41,12 +45,25 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
   const allProductsInCartWithoutPrice = useMemo(() => products.filter((product) => product.addToCart).every((product) => !product.price || !product.quantity || !product.unit), [products]);
 
-  const addProduct = ({ id, price, name, addToCart, quantity, unit }: ProductProps) => {
-    const newProduct = {
-      id, price, name, addToCart, quantity, unit,
+  const managerProduct = ({ product }: { product: ProductProps }) => {
+    if (product.id) {
+      const updatedProducts = products.map((productInList) => {
+        if (productInList.id === product.id) {
+          return { ...productInList, ...product };
+        }
+
+        return productInList;
+      });
+
+      return setProducts(updatedProducts);
+    }
+
+    const addIdInProduct = {
+      ...product,
+      id: Date.now(),
     };
 
-    return setProducts((state) => [...state, convertUnitToAbbreviationUnit(newProduct)]);
+    setProducts([...products, addIdInProduct]);
   };
 
   const removeProduct = (id: number) => {
@@ -75,7 +92,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     const storedProducts = localStorage.getItem(LocalStorageEnum.products);
 
     if (storedProducts) {
-      setProducts(JSON.parse(storedProducts).map((product: ProductProps) => convertUnitToAbbreviationUnit(product)));
+      setProducts(JSON.parse(storedProducts));
     }
   }, []);
 
@@ -90,8 +107,8 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         products,
         setFilter,
         toggleCart,
-        addProduct,
         removeProduct,
+        managerProduct,
         filteredProducts,
         removeAllProducts,
         allProductsWithoutPrice,
