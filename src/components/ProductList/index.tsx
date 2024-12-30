@@ -7,7 +7,7 @@ import { calculateProductValue } from '@/utils';
 import { ProductProps } from '@/types/interfaces';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProducts } from '@/context/ProductContext';
-import { AddOrEditProductTypeEnum } from '@/types/enums';
+import { AddOrEditProductTypeEnum, UnitEnum } from '@/types/enums';
 import { LucideShoppingCart, Pencil, Trash2 } from 'lucide-react';
 import { ProductListHeader, ProductManagerSheet } from '@/components';
 
@@ -38,13 +38,15 @@ export function ProductList() {
       <div className="flex flex-col  mt-4">
         <ul>
           {(filteredProducts || products)?.map((product, index) => (
-            <li key={product.id} className={`flex items-center gap-2 p-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100' : ''}`}>
+            <li key={product._id} className={`flex items-center gap-2 p-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100' : ''}`}>
               <div className="flex flex-1 gap-2 items-center">
-                <Checkbox
-                  id={`cart-${product.id}`}
-                  checked={product.addToCart}
-                  onCheckedChange={() => toggleCart(product.id)}
-                />
+                {!!product?._id && (
+                  <Checkbox
+                    id={`cart-${product._id}`}
+                    checked={product.addToCart}
+                    onCheckedChange={() => toggleCart(product._id!)}
+                  />
+                )}
                 <strong>{product.name}</strong>
 
                 {product.addToCart && (
@@ -54,10 +56,10 @@ export function ProductList() {
 
               <div className="flex gap-2 align-center">
                 {product.quantity && product.unit && (
-                  <Badge variant="outline" className="self-center text-xs">{`${product.quantity} ${product.unit}`} { product.price && calculateProductValue({
-                    unit: product.unit,
-                    price: product.price,
-                    quantity: product.quantity,
+                  <Badge variant="outline" className="self-center text-xs">{`${String(product.quantity)} ${product.unit}`} { product.price && calculateProductValue({
+                    price: String(product.price),
+                    unit: product.unit as UnitEnum,
+                    quantity: String(product.quantity),
                   })}</Badge>
                 )}
               </div>
@@ -67,7 +69,7 @@ export function ProductList() {
                   <Pencil className="h-4 w-4 text-teal-400" />
                 </div>
 
-                <div onClick={() => removeProduct(product.id)} className="flex gap-2 bg-rose-100 p-2 rounded cursor-pointer">
+                <div onClick={() => removeProduct(product._id!)} className="flex gap-2 bg-rose-100 p-2 rounded cursor-pointer">
                   <Trash2 className="h-4 w-4 text-rose-500" />
                 </div>
               </div>
