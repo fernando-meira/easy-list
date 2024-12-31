@@ -2,14 +2,15 @@
 
 import Image from 'next/image';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { useProducts } from '@/context/ProductContext';
 import { ConfirmCleanProductListDrawer, NewProductForm } from '@/components';
 
 export function Header() {
-  const { products } = useProducts();
+  const { products, isLoading } = useProducts();
 
   return (
-    <header className="position: fixed top-0 flex items-center justify-between w-full p-4 space-x-4 border-b bg-white">
+    <header className="fixed top-0 flex items-center justify-between w-full p-4 space-x-4 border-b bg-white/80 backdrop-blur-sm max-w-3xl mx-auto shadow-sm">
       <Image
         priority
         width={24}
@@ -20,11 +21,21 @@ export function Header() {
       />
 
       <div className="flex items-center gap-4">
-        {!!products && products.length > 0 && (
-          <ConfirmCleanProductListDrawer/>
-        )}
+        {isLoading ? (
+          <div className="flex items-center gap-4 animate-pulse">
+            <Skeleton className="h-9 w-28" />
 
-        <NewProductForm/>
+            <Skeleton className="h-9 w-40" />
+          </div>
+        ) : (
+          <>
+            {!!products?.length && (
+              <ConfirmCleanProductListDrawer />
+            )}
+
+            <NewProductForm />
+          </>
+        )}
       </div>
     </header>
   );
