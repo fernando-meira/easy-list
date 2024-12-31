@@ -37,7 +37,7 @@ interface ProductManagerSheetProps {
 }
 
 export const ProductManagerSheet = ({ open, type, product, onOpenChange }: ProductManagerSheetProps) => {
-  const { managerProduct } = useProducts();
+  const { managerProduct, isLoading, isProductLoading } = useProducts();
 
   const methods = useForm<ProductProps>({
     defaultValues: product || {
@@ -149,7 +149,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
             </div>
 
             <SheetFooter>
-              <Button type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
+              <Button disabled={isLoading || isProductLoading.isLoading} type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
             </SheetFooter>
           </form>
         </FormProvider>

@@ -9,6 +9,11 @@ export interface EditProductProps {
   product: ProductProps;
 }
 
+export interface IsProductLoadingProps {
+  isLoading: boolean;
+  productId: string | null;
+}
+
 interface ProductsContextType {
   filter: StatusEnum;
   isLoading: boolean;
@@ -18,6 +23,7 @@ interface ProductsContextType {
   allProductsWithoutPrice?: boolean;
   removeAllProducts: () => Promise<void>;
   allProductsInCartWithoutPrice?: boolean;
+  isProductLoading: IsProductLoadingProps;
   setFilter: (filter: StatusEnum) => void;
   toggleCart: (id: string) => Promise<void>;
   removeProduct: (id: string) => Promise<void>;
@@ -31,10 +37,14 @@ interface ProductsProviderProps {
 export const ProductsContext = createContext({} as ProductsContextType);
 
 function ProductsContextProvider({ children }: ProductsProviderProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [filter, setFilter] = useState<StatusEnum>(StatusEnum.all);
+  const [isProductLoading, setIsProductLoading] = useState<IsProductLoadingProps>({
+    productId: null,
+    isLoading: false,
+  });
 
   const fetchProducts = async () => {
     try {
@@ -74,7 +84,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
   const managerProduct = async ({ product }: { product: ProductProps }) => {
     try {
-      setIsLoading(true);
+      setIsProductLoading({ productId: product._id || null, isLoading: true });
 
       if (product._id) {
         const response = await fetch(`/api/products/${product._id}`, {
@@ -104,13 +114,13 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      setIsLoading(false);
+      setIsProductLoading({ productId: null, isLoading: false });
     }
   };
 
   const removeProduct = async (id: string) => {
     try {
-      setIsLoading(true);
+      setIsProductLoading({ productId: id, isLoading: true });
 
       const response = await fetch(`/api/products/${id}`, {
         method: 'DELETE',
@@ -122,7 +132,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      setIsLoading(false);
+      setIsProductLoading({ productId: null, isLoading: false });
     }
   };
 
@@ -180,6 +190,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         removeProduct,
         managerProduct,
         filteredProducts,
+        isProductLoading,
         removeAllProducts,
         allProductsWithoutPrice,
         allProductsInCartWithoutPrice,
