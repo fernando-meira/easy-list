@@ -28,6 +28,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { MoneyInput } from '../MoneyInput';
+import { useWindowSize } from '@/hooks/useWindowSize';
 
 interface ProductManagerSheetProps {
   open?: boolean;
@@ -37,6 +38,7 @@ interface ProductManagerSheetProps {
 }
 
 export const ProductManagerSheet = ({ open, type, product, onOpenChange }: ProductManagerSheetProps) => {
+  const { isSmallSize } = useWindowSize();
   const { managerProduct, isLoading, isProductLoading } = useProducts();
 
   const methods = useForm<ProductProps>({
@@ -65,14 +67,14 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
   }, [product, type, methods.reset, methods]);
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={onOpenChange} key={type}>
       {type === AddOrEditProductTypeEnum.add && (
         <SheetTrigger asChild>
           <Button variant="outline">Adicionar produto</Button>
         </SheetTrigger>
       )}
 
-      <SheetContent className="sm:w-[540px]">
+      <SheetContent className="sm:w-[540px]" side={isSmallSize ? 'bottom' : 'right'}>
         <SheetHeader>
           <SheetTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar' : 'Adicionar'} produto</SheetTitle>
           <SheetDescription>
