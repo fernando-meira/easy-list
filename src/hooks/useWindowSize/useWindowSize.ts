@@ -12,6 +12,7 @@ export default function useWindowSize() {
   });
 
   const isDesktop = windowSize.width >= 768;
+  const isSmallSize = windowSize.width <= 640;
 
   useEffect(() => {
     function handleResize() {
@@ -28,5 +29,5 @@ export default function useWindowSize() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  return { ...windowSize, isDesktop };
+  return { ...windowSize, isDesktop, isSmallSize };
 }
