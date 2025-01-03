@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProducts } from '@/context/ProductContext';
-import { ConfirmCleanProductListDrawer, NewProductForm } from '@/components';
+import { ConfirmCleanProductListDrawer, NewCategoryDrawer, NewProductForm } from '@/components';
 
 export function Header() {
   const { products, isLoading } = useProducts();
@@ -20,20 +20,24 @@ export function Header() {
         className="dark:invert"
       />
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         {isLoading ? (
-          <div className="flex items-center gap-4 animate-pulse">
+          <div className="flex items-center gap-2 animate-pulse">
             <Skeleton className="h-9 w-28" />
 
-            <Skeleton className="h-9 w-40" />
+            <Skeleton className="h-9 w-9" />
+
+            <Skeleton className="h-9 w-9" />
           </div>
         ) : (
           <>
+            <NewProductForm />
+
+            <NewCategoryDrawer />
+
             {!!products?.length && (
               <ConfirmCleanProductListDrawer />
             )}
-
-            <NewProductForm />
           </>
         )}
       </div>

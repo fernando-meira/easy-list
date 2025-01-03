@@ -54,7 +54,7 @@ export function ProductList() {
             isProductLoading.productId === product._id && isProductLoading.isLoading ? (
               <Skeleton key={index} className="h-9 w-full" />
             ) :
-              <li key={product._id} className={`flex items-center gap-2 p-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100' : ''}`}>
+              <li key={product._id} className={`flex items-center gap-2 py-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100' : ''}`}>
                 {!!product?._id && (
                   <Checkbox
                     id={`cart-${product._id}`}

@@ -110,6 +110,8 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         const newProduct = await response.json();
 
         setProducts([...products, newProduct]);
+
+        setFilter(StatusEnum.all);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

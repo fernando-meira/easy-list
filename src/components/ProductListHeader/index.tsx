@@ -22,7 +22,7 @@ export function ProductListHeader() {
       ) : (
         <div className="flex items-center gap-4">
           <Select value={filter} onValueChange={(value: StatusEnum) => setFilter(value)}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Filtro de produtos" />
             </SelectTrigger>
 
@@ -36,8 +36,8 @@ export function ProductListHeader() {
           </Select>
 
           <Select onValueChange={(value) => {console.log(value);}}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Todas as categorias" />
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Categorias" />
             </SelectTrigger>
 
             <SelectContent>

@@ -22,8 +22,12 @@ export async function POST(request: Request) {
     await connectDB();
 
     const data = await request.json();
+    const { categoryId, ...rest } = data;
 
-    const product = await Product.create(data);
+    const product = await Product.create({
+      ...rest,
+      category: categoryId
+    });
     await product.populate('category', 'name');
 
     return NextResponse.json(product, { status: 201 });

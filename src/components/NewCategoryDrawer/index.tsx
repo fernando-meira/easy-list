@@ -4,23 +4,15 @@ import React from 'react';
 
 import { useCategories } from '@/context';
 import { CirclePlus } from 'lucide-react';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CategoryProps } from '@/types/interfaces';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 
-interface NewCategoryDrawerProps {
-  open: boolean;
-  onOpenChange?: (open: boolean) => void;
-}
-
-export function NewCategoryDrawer({
-  open,
-  onOpenChange,
-}: NewCategoryDrawerProps) {
+export function NewCategoryDrawer() {
   const { addCategory } = useCategories();
+  const [open, setOpen] = React.useState<boolean>(false);
 
   const methods = useForm<CategoryProps>({
     defaultValues: {
@@ -32,26 +24,30 @@ export function NewCategoryDrawer({
     addCategory(data);
 
     methods.reset();
-    onOpenChange?.(false);
+    setOpen?.(false);
   });
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <CirclePlus />
+        <div className="flex gap-2 bg-teal-200 p-2 rounded cursor-pointer" onClick={() => setOpen?.(true)}>
+          <CirclePlus className="h-4 w-4 text-teal-600" />
+        </div>
       </DrawerTrigger>
 
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Adicionar categoria</DrawerTitle>
+
+          <DrawerDescription>
+            Digite o nome da categoria no campo abaixo para criar uma nova categoria.
+          </DrawerDescription>
         </DrawerHeader>
 
         <DrawerFooter className="mb-8">
           <FormProvider {...methods}>
-            <form onSubmit={onSubmit} className="space-y-6 py-6">
-              <div className="col-span-2 space-y-2">
-                <Label htmlFor="name">Nome da categoria</Label>
-
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div>
                 <Input
                   required
                   id="name"

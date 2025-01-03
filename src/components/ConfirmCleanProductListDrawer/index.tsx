@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useProducts } from '@/context/ProductContext';
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Trash2 } from 'lucide-react';
 
 export function ConfirmCleanProductListDrawer() {
   const { removeAllProducts } = useProducts();
@@ -8,7 +9,9 @@ export function ConfirmCleanProductListDrawer() {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="destructive">Limpar a lista</Button>
+        <div className="flex gap-2 bg-rose-200 p-2 rounded cursor-pointer">
+          <Trash2 className="h-4 w-4 text-rose-600" />
+        </div>
       </DrawerTrigger>
 
       <DrawerContent>
