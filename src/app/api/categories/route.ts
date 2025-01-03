@@ -7,7 +7,14 @@ export async function GET() {
   try {
     await connectDB();
 
-    const categories = await Category.find({}).sort({ createdAt: -1 });
+    let categories = await Category.find({}).sort({ createdAt: -1 });
+
+    if (categories.length === 0) {
+      const defaultCategory = await Category.create({
+        name: 'Supermercado'
+      });
+      categories = [defaultCategory];
+    }
 
     return NextResponse.json(categories);
   } catch (error) {
