@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
+
 import './globals.css';
-import { ProductsContextProvider } from '@/context/ProductContext';
+
+import { CategoriesContextProvider, ProductsContextProvider } from '@/context';
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -21,9 +23,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={manrope.className}>
-        <ProductsContextProvider>
-          {children}
-        </ProductsContextProvider>
+        <CategoriesContextProvider>
+          <ProductsContextProvider>
+            {children}
+          </ProductsContextProvider>
+        </CategoriesContextProvider>
       </body>
     </html>
   );

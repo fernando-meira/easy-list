@@ -1,9 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { ProductProps } from '@/types/interfaces';
-import { StatusEnum } from '@/types/enums';
 
+import { StatusEnum } from '@/types/enums';
+import { ProductProps } from '@/types/interfaces';
 export interface EditProductProps {
   id: string;
   product: ProductProps;
