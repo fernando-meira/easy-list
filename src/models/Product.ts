@@ -18,6 +18,11 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: [true, 'Please provide a category for this product.'],
+  },
   addToCart: {
     type: Boolean,
     default: false,

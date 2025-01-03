@@ -19,7 +19,7 @@ export async function PUT(
     const product = await Product.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
-    });
+    }).populate('category', 'name');
 
     if (!product) {
       return NextResponse.json(
@@ -47,7 +47,7 @@ export async function DELETE(
     await connectDB();
     const { id } = await context.params;
 
-    const product = await Product.findByIdAndDelete(id);
+    const product = await Product.findByIdAndDelete(id).populate('category', 'name');
 
     if (!product) {
       return NextResponse.json(

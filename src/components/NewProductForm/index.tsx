@@ -2,15 +2,12 @@
 
 import React from 'react';
 
-import { useCategories } from '@/context';
-import { Button } from '@/components/ui/button';
-import { ProductManagerSheet } from '@/components';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
+import { NewCategoryDrawer, ProductManagerSheet } from '@/components';
 
 export function NewProductForm() {
-  const { addCategory } = useCategories();
-
   const [openNewProductSheet, setOpenNewProductSheet] = React.useState<boolean>(false);
+  const [openNewCategoryDrawer, setOpenNewCategoryDrawer] = React.useState<boolean>(false);
 
   return (
     <>
@@ -20,12 +17,7 @@ export function NewProductForm() {
         onOpenChange={setOpenNewProductSheet}
       />
 
-      <Button
-        className="w-full"
-        onClick={() => addCategory({ name: 'Nova categoria' })}
-      >
-        Criar categoria
-      </Button>
+      <NewCategoryDrawer open={openNewCategoryDrawer} onOpenChange={setOpenNewCategoryDrawer} />
     </>
   );
 }

@@ -1,5 +1,5 @@
 export interface CategoryProps {
-  _id?: string;
+  _id: string;
   name: string;
 }
 
@@ -9,5 +9,6 @@ export interface ProductProps {
   unit?: string;
   price?: string;
   quantity?: string;
+  category?: string;
   addToCart?: boolean;
 }

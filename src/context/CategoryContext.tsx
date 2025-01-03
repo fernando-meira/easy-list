@@ -19,9 +19,9 @@ interface CategoryProviderProps {
 export const CategoriesContext = createContext({} as CategoriesContextType);
 
 function CategoriesContextProvider({ children }: CategoryProviderProps) {
+  const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [errorCategories, setErrorCategories] = useState<string | null>(null);
   const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(false);
-  const [categories, setCategories] = useState<CategoryProps[]>([{  name: 'Supermercado' }, { name: 'Lazer' }]);
 
   const addCategory = async (category: CategoryProps) => {
     const response = await fetch('/api/categories', {

@@ -7,7 +7,7 @@ export async function GET() {
   try {
     await connectDB();
 
-    const products = await Product.find({});
+    const products = await Product.find({}).populate('category', 'name');
 
     return NextResponse.json(products);
   } catch (error) {
@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     const data = await request.json();
 
     const product = await Product.create(data);
+    await product.populate('category', 'name');
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
