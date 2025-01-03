@@ -48,7 +48,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
       name: '',
       price: '',
       quantity: '',
-      category: '',
+      categoryId: '',
       addToCart: false,
       unit: UnitEnum.unit,
     },
@@ -62,13 +62,20 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
   });
 
   const unit = methods.watch('unit');
-  const category = methods.watch('category');
+  const categoryId = methods.watch('categoryId');
 
   React.useEffect(() => {
     if (product && type === AddOrEditProductTypeEnum.edit) {
-      methods.reset(product);
+      methods.reset({
+        ...product,
+        categoryId: product.category?._id,
+      });
+    } else {
+      methods.reset({
+        categoryId: categories[0]?._id,
+      });
     }
-  }, [product, type, methods.reset, methods]);
+  }, [product, type, methods, categories]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange} key={type}>
@@ -144,8 +151,8 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                 </Select>
 
                 <Select
-                  value={category}
-                  onValueChange={(value: string) => methods.setValue('category', value)}
+                  value={categoryId}
+                  onValueChange={(value: string) => methods.setValue('categoryId', value)}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Categoria"/>

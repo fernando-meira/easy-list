@@ -9,6 +9,7 @@ export interface ProductProps {
   unit?: string;
   price?: string;
   quantity?: string;
-  category?: string;
+  categoryId?: string;
   addToCart?: boolean;
+  category?: CategoryProps;
 }
