@@ -3,12 +3,15 @@
 import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import { useCategories } from '@/context';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { capitalizeFirstLetter } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { ProductProps } from '@/types/interfaces';
 import { Checkbox } from '@/components/ui/checkbox';
+import { MoneyInput } from '@/components/MoneyInput';
+import { useWindowSize } from '@/hooks/useWindowSize';
 import { useProducts } from '@/context/ProductContext';
 import { AddOrEditProductTypeEnum, UnitEnum } from '@/types/enums';
 import {
@@ -27,8 +30,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { MoneyInput } from '../MoneyInput';
-import { useWindowSize } from '@/hooks/useWindowSize';
 
 interface ProductManagerSheetProps {
   open?: boolean;
@@ -38,6 +39,7 @@ interface ProductManagerSheetProps {
 }
 
 export const ProductManagerSheet = ({ open, type, product, onOpenChange }: ProductManagerSheetProps) => {
+  const { categories } = useCategories();
   const { isSmallSize } = useWindowSize();
   const { managerProduct, isLoading, isProductLoading } = useProducts();
 
@@ -46,6 +48,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
       name: '',
       price: '',
       quantity: '',
+      categoryId: '',
       addToCart: false,
       unit: UnitEnum.unit,
     },
@@ -59,12 +62,20 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
   });
 
   const unit = methods.watch('unit');
+  const categoryId = methods.watch('categoryId');
 
   React.useEffect(() => {
     if (product && type === AddOrEditProductTypeEnum.edit) {
-      methods.reset(product);
+      methods.reset({
+        ...product,
+        categoryId: product.category?._id,
+      });
+    } else {
+      methods.reset({
+        categoryId: categories[0]?._id,
+      });
     }
-  }, [product, type, methods.reset, methods]);
+  }, [product, type, methods, categories]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange} key={type}>
@@ -77,6 +88,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
       <SheetContent className="sm:w-[540px]" side={isSmallSize ? 'bottom' : 'right'}>
         <SheetHeader>
           <SheetTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar' : 'Adicionar'} produto</SheetTitle>
+
           <SheetDescription>
             {type === AddOrEditProductTypeEnum.edit
               ? 'Faça alterações no seu produto aqui. Clique em salvar quando terminar.'
@@ -117,16 +129,16 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                   id="quantity"
                   type="number"
                   className="flex-grow"
-                  placeholder={unit === UnitEnum.unit ? 'Quantidade' : 'Peso'}
+                  placeholder={unit === UnitEnum.unit || unit === undefined ? 'Quantidade' : 'Peso'}
                   {...methods.register('quantity')}
                 />
 
                 <Select
-                  value={unit}
+                  value={unit || UnitEnum.unit}
                   onValueChange={(value: UnitEnum) => methods.setValue('unit', value)}
                 >
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Unidade de medida"/>
+                    <SelectValue placeholder="Medida"/>
                   </SelectTrigger>
 
                   <SelectContent>
@@ -135,6 +147,21 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                     <SelectItem value={UnitEnum.kg}>{capitalizeFirstLetter(UnitEnum.kg)}</SelectItem>
 
                     <SelectItem value={UnitEnum.grams}>{capitalizeFirstLetter(UnitEnum.grams)}</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={categoryId}
+                  onValueChange={(value: string) => methods.setValue('categoryId', value)}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Categoria"/>
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category._id} value={category._id}>{category.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

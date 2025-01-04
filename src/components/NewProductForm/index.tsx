@@ -9,10 +9,12 @@ export function NewProductForm() {
   const [openNewProductSheet, setOpenNewProductSheet] = React.useState<boolean>(false);
 
   return (
-    <ProductManagerSheet
-      open={openNewProductSheet}
-      type={AddOrEditProductTypeEnum.add}
-      onOpenChange={setOpenNewProductSheet}
-    />
+    <>
+      <ProductManagerSheet
+        open={openNewProductSheet}
+        type={AddOrEditProductTypeEnum.add}
+        onOpenChange={setOpenNewProductSheet}
+      />
+    </>
   );
 }

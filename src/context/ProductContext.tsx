@@ -1,8 +1,10 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { ProductProps } from '@/types/interfaces';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+
 import { StatusEnum } from '@/types/enums';
+import { ProductProps } from '@/types/interfaces';
+import { useCategories } from '@/context/CategoryContext';
 
 export interface EditProductProps {
   id: string;
@@ -18,6 +20,7 @@ interface ProductsContextType {
   filter: StatusEnum;
   isLoading: boolean;
   error: string | null;
+  hasAnyProduct: boolean;
   products?: ProductProps[];
   filteredProducts?: ProductProps[];
   allProductsWithoutPrice?: boolean;
@@ -39,12 +42,25 @@ export const ProductsContext = createContext({} as ProductsContextType);
 function ProductsContextProvider({ children }: ProductsProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasAnyProduct, setHasAnyProduct] = useState(false);
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [filter, setFilter] = useState<StatusEnum>(StatusEnum.all);
   const [isProductLoading, setIsProductLoading] = useState<IsProductLoadingProps>({
     productId: null,
     isLoading: false,
   });
+
+  const { setCategories } = useCategories();
+
+  const fetchCategories = async () => {
+    const response = await fetch('/api/categories');
+
+    if (!response.ok) throw new Error('Failed to fetch categories');
+
+    const data = await response.json();
+
+    setCategories(data);
+  };
 
   const fetchProducts = async () => {
     try {
@@ -64,12 +80,12 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     }
   };
 
-  const filteredProducts = useMemo(() => products.filter((product) => {
-    if (filter === StatusEnum.all) return true;
-    if (filter === StatusEnum.inCart) return product.addToCart;
-    if (filter === StatusEnum.outOfCart) return !product.addToCart;
-    return true;
-  }), [products, filter]);
+  const filteredProducts = useMemo(() => {
+    if (filter === StatusEnum.all) return products;
+    if (filter === StatusEnum.inCart) return products.filter(product => product.addToCart);
+    if (filter === StatusEnum.outOfCart) return products.filter(product => !product.addToCart);
+    return products;
+  }, [products, filter]);
 
   const allProductsWithoutPrice = useMemo(() =>
     products.every((product) => !product.price || !product.quantity || !product.unit),
@@ -81,6 +97,10 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       .every((product) => !product.price || !product.quantity || !product.unit),
   [products]
   );
+
+  const verifyHasAnyProduct = useCallback(() => {
+    setHasAnyProduct(products.length > 0);
+  }, [products]);
 
   const managerProduct = async ({ product }: { product: ProductProps }) => {
     try {
@@ -97,7 +117,9 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
         const updatedProduct = await response.json();
 
-        setProducts(products.map(p => p._id === updatedProduct._id ? updatedProduct : p));
+        setProducts(products.map(product => product._id === updatedProduct._id ? updatedProduct : product));
+
+        await fetchCategories();
       } else {
         const response = await fetch('/api/products', {
           method: 'POST',
@@ -110,6 +132,10 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         const newProduct = await response.json();
 
         setProducts([...products, newProduct]);
+
+        await fetchCategories();
+
+        setFilter(StatusEnum.all);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -129,6 +155,8 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       if (!response.ok) throw new Error('Failed to delete product');
 
       setProducts(products.filter(product => product._id !== id));
+
+      await fetchCategories();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -145,6 +173,8 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       ));
 
       setProducts([]);
+
+      await fetchCategories();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -169,6 +199,8 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       const updatedProduct = await response.json();
 
       setProducts(products.map(p => p._id === id ? updatedProduct : p));
+
+      await fetchCategories();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
@@ -177,6 +209,10 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    verifyHasAnyProduct();
+  }, [products, verifyHasAnyProduct]);
 
   return (
     <ProductsContext.Provider
@@ -187,6 +223,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         isLoading,
         setFilter,
         toggleCart,
+        hasAnyProduct,
         removeProduct,
         managerProduct,
         filteredProducts,

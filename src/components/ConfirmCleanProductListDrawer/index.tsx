@@ -3,12 +3,16 @@ import { useProducts } from '@/context/ProductContext';
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 
 export function ConfirmCleanProductListDrawer() {
-  const { removeAllProducts } = useProducts();
+  const { removeAllProducts, hasAnyProduct } = useProducts();
 
-  return (
+  return hasAnyProduct && (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="destructive">Limpar a lista</Button>
+        <div className="flex rounded cursor-pointer mt-4">
+          <Button variant="destructive">
+            Limpar listas
+          </Button>
+        </div>
       </DrawerTrigger>
 
       <DrawerContent>

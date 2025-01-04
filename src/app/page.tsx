@@ -1,4 +1,4 @@
-import { Footer, Header, ProductList } from '@/components';
+import { CategoryList, Footer, Header } from '@/components';
 
 export default function Home() {
   return (
@@ -6,7 +6,7 @@ export default function Home() {
       <Header />
 
       <div id="main-content" className="p-4 flex flex-col gap-4 w-full mt-20 pb-20">
-        <ProductList />
+        <CategoryList />
       </div>
 
       <Footer />
