@@ -11,9 +11,11 @@ import { useProducts } from '@/context/ProductContext';
 import { LucideShoppingCart, Trash2 } from 'lucide-react';
 import { AddOrEditProductTypeEnum, UnitEnum } from '@/types/enums';
 import { ProductListHeader, ProductManagerSheet } from '@/components';
+import { useCategories } from '@/context';
 
 export function ProductList() {
   const { products, filteredProducts, removeProduct, toggleCart, isLoading, isProductLoading } = useProducts();
+  const { categories } = useCategories();
 
   const [openEditSheet, setOpenEditSheet] = React.useState<boolean>(false);
   const [selectedProducts, setSelectedProducts] = React.useState<ProductProps | undefined>(undefined);
@@ -49,6 +51,11 @@ export function ProductList() {
 
     return (
       <div className="flex flex-col mt-4">
+        <div>
+          {categories?.map((category) => (
+            <Badge key={category._id} variant="outline" className="self-center text-xs">{category.name}</Badge>
+          ))}
+        </div>
         <ul>
           {(filteredProducts || products)?.map((product, index) => (
             isProductLoading.productId === product._id && isProductLoading.isLoading ? (
@@ -93,7 +100,7 @@ export function ProductList() {
         </ul>
       </div>
     );
-  }, [products, removeProduct, filteredProducts, toggleCart, isLoading, isProductLoading]);
+  }, [products, categories, removeProduct, filteredProducts, toggleCart, isLoading, isProductLoading]);
 
   return (
     <div className="w-full">

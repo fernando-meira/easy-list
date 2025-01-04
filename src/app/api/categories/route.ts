@@ -2,21 +2,36 @@ import { NextResponse } from 'next/server';
 
 import connectDB from '@/lib/mongodb';
 import Category from '@/models/Category';
+import Product from '@/models/Product';
 
 export async function GET() {
   try {
     await connectDB();
 
-    let categories = await Category.find({}).sort({ createdAt: -1 });
+    const categories = await Category.find({}).sort({ createdAt: -1 });
 
-    if (categories.length === 0) {
+    // Fetch products for each category
+    let categoriesWithProducts = await Promise.all(
+      categories.map(async (category) => {
+        const products = await Product.find({ category: category._id });
+        return {
+          ...category.toObject(),
+          products,
+        };
+      })
+    );
+
+    if (categoriesWithProducts.length === 0) {
       const defaultCategory = await Category.create({
         name: 'Supermercado'
       });
-      categories = [defaultCategory];
+      categoriesWithProducts = [{
+        ...defaultCategory.toObject(),
+        products: []
+      }];
     }
 
-    return NextResponse.json(categories);
+    return NextResponse.json(categoriesWithProducts);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });

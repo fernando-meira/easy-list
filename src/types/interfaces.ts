@@ -1,6 +1,9 @@
 export interface CategoryProps {
   _id: string;
   name: string;
+  createdAt: string;
+  updatedAt: string;
+  products: Array<ProductProps>;
 }
 
 export interface ProductProps {
