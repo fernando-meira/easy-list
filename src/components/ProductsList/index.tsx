@@ -2,9 +2,9 @@ import { LucideShoppingCart, Trash2 } from 'lucide-react';
 
 import { Badge } from '../ui/badge';
 import { useProducts } from '@/context';
-import { UnitEnum } from '@/types/enums';
 import { Checkbox } from '../ui/checkbox';
 import { calculateProductValue } from '@/utils';
+import { StatusEnum, UnitEnum } from '@/types/enums';
 import { CategoryProps, ProductProps } from '@/types/interfaces';
 
 interface ProductsListProps {
@@ -14,9 +14,15 @@ interface ProductsListProps {
 }
 
 export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }: ProductsListProps) => {
-  const { removeProduct, toggleCart } = useProducts();
+  const { removeProduct, toggleCart, filter } = useProducts();
 
-  if (!category || !category.products || category.products.length === 0) {
+  const productsToShow = category.products?.filter(product => {
+    if (filter === StatusEnum.all) return true;
+    if (filter === StatusEnum.inCart) return product.addToCart;
+    return !product.addToCart;
+  });
+
+  if (!category || !productsToShow || productsToShow.length === 0) {
     return (
       <div className="flex items-center justify-center w-full p-2">
         <p>Não existe produtos cadastrados para essa categoria</p>
@@ -24,7 +30,7 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
   }
 
   return (
-    category.products?.map((product, index) => {
+    productsToShow?.map((product, index) => {
       return (
         <div key={`${product._id}-${index}-${category._id}-${Math.random()}`}>
           <div key={product._id} className="flex flex-col">

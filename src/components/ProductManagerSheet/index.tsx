@@ -129,7 +129,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                   id="quantity"
                   type="number"
                   className="flex-grow"
-                  placeholder={unit === UnitEnum.unit ? 'Quantidade' : 'Peso'}
+                  placeholder={unit === UnitEnum.unit || unit === undefined ? 'Quantidade' : 'Peso'}
                   {...methods.register('quantity')}
                 />
 

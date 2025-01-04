@@ -80,12 +80,12 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     }
   };
 
-  const filteredProducts = useMemo(() => products.filter((product) => {
-    if (filter === StatusEnum.all) return true;
-    if (filter === StatusEnum.inCart) return product.addToCart;
-    if (filter === StatusEnum.outOfCart) return !product.addToCart;
-    return true;
-  }), [products, filter]);
+  const filteredProducts = useMemo(() => {
+    if (filter === StatusEnum.all) return products;
+    if (filter === StatusEnum.inCart) return products.filter(product => product.addToCart);
+    if (filter === StatusEnum.outOfCart) return products.filter(product => !product.addToCart);
+    return products;
+  }, [products, filter]);
 
   const allProductsWithoutPrice = useMemo(() =>
     products.every((product) => !product.price || !product.quantity || !product.unit),
