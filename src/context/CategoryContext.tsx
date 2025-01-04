@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import { CategoryProps } from '@/types/interfaces';
 
@@ -35,9 +35,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
     if (!response.ok) throw new Error('Failed to create category');
 
-    const newCategory = await response.json();
-
-    setCategories([...categories, newCategory]);
+    await fetchCategories();
   };
 
   const fetchCategories = async () => {
@@ -58,7 +56,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
     }
   };
 
-  const filterCategory = (categoryId: string) => {
+  const filterCategory = useCallback((categoryId: string) => {
     if (!categoryId || categoryId === 'all') {
       setFilteredCategory(undefined);
 
@@ -68,7 +66,13 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
     const filteredCategory = categories.find(category => category?._id === categoryId);
 
     setFilteredCategory(filteredCategory);
-  };
+  }, [categories]);
+
+  useEffect(() => {
+    if (filteredCategory) {
+      filterCategory(filteredCategory._id);
+    }
+  }, [categories, filterCategory, filteredCategory]);
 
   useEffect(() => {
     fetchCategories();

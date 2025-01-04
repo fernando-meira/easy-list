@@ -117,7 +117,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
         const updatedProduct = await response.json();
 
-        setProducts(products.map(p => p._id === updatedProduct._id ? updatedProduct : p));
+        setProducts(products.map(product => product._id === updatedProduct._id ? updatedProduct : product));
 
         await fetchCategories();
       } else {

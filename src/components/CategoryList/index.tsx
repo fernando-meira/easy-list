@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useCategories } from '@/context';
 import { ChevronsUpDown } from 'lucide-react';
@@ -64,12 +65,16 @@ export function CategoryList() {
               key={category._id}
               open={openCollapsible.categoryId === category._id && openCollapsible.open}
               onOpenChange={openCollapsible.categoryId === category._id ? (open: boolean) => setOpenCollapsible({ ...openCollapsible, open }) : (open: boolean) => setOpenCollapsible({ categoryId: category._id, open })}
-              className="space-y-2 gap-2 [&:not(:first-child)]:mt-4 [&:not(:first-child)]:border-t [&:not(:first-child)]:pt-4"
+              className="space-y-2 gap-2 pb-4 border-b first:border-t [&(:first-child)]:pt-4"
             >
               <div className="flex items-center justify-between space-x-4">
-                <h4 className="text-md font-semibold">
-                  {category.name}
-                </h4>
+                <div className="flex flex-row gap-2 w-full justify-between">
+                  <h4 className="text-md font-semibold">
+                    {category.name}
+                  </h4>
+
+                  <Badge variant="secondary" className="text-xs">{category.products?.length === 1 ? `${category.products?.length} produto` : `${category.products?.length} produtos`}</Badge>
+                </div>
 
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm">
