@@ -62,6 +62,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
   });
 
   const unit = methods.watch('unit');
+  console.log('🥲  unit:', unit);
   const categoryId = methods.watch('categoryId');
 
   React.useEffect(() => {
@@ -134,11 +135,11 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                 />
 
                 <Select
-                  value={unit}
+                  value={unit || UnitEnum.unit}
                   onValueChange={(value: UnitEnum) => methods.setValue('unit', value)}
                 >
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Unidade de medida"/>
+                    <SelectValue placeholder="Medida"/>
                   </SelectTrigger>
 
                   <SelectContent>

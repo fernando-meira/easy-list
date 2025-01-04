@@ -11,7 +11,7 @@ export enum StatusEnum {
 }
 
 export enum PrettyStatusEnum {
-  all = 'Todos',
+  all = 'Todos(as)',
   inCart = 'No carrinho',
   outOfCart = 'Fora do carrinho',
 }

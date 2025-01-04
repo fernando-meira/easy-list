@@ -8,6 +8,8 @@ interface CategoriesContextType {
   categories: CategoryProps[];
   isLoadingCategories: boolean;
   errorCategories: string | null;
+  filteredCategory?: CategoryProps;
+  filterCategory: (categoryId: string) => void;
   setCategories: (categories: CategoryProps[]) => void;
   addCategory: (category: CategoryProps) => Promise<void>;
 }
@@ -20,6 +22,7 @@ export const CategoriesContext = createContext({} as CategoriesContextType);
 
 function CategoriesContextProvider({ children }: CategoryProviderProps) {
   const [categories, setCategories] = useState<CategoryProps[]>([]);
+  const [filteredCategory, setFilteredCategory] = useState<CategoryProps>();
   const [errorCategories, setErrorCategories] = useState<string | null>(null);
   const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(false);
 
@@ -55,6 +58,18 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
     }
   };
 
+  const filterCategory = (categoryId: string) => {
+    if (!categoryId || categoryId === 'all') {
+      setFilteredCategory(undefined);
+
+      return;
+    }
+
+    const filteredCategory = categories.find(category => category?._id === categoryId);
+
+    setFilteredCategory(filteredCategory);
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -65,7 +80,9 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         categories,
         addCategory,
         setCategories,
+        filterCategory,
         errorCategories,
+        filteredCategory,
         isLoadingCategories,
       }}
     >

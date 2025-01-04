@@ -1,16 +1,17 @@
 import { Button } from '@/components/ui/button';
 import { useProducts } from '@/context/ProductContext';
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
-import { Trash2 } from 'lucide-react';
 
 export function ConfirmCleanProductListDrawer() {
-  const { removeAllProducts } = useProducts();
+  const { removeAllProducts, hasAnyProduct } = useProducts();
 
-  return (
+  return hasAnyProduct && (
     <Drawer>
       <DrawerTrigger asChild>
-        <div className="flex gap-2 bg-rose-200 p-2 rounded cursor-pointer">
-          <Trash2 className="h-4 w-4 text-rose-600" />
+        <div className="flex rounded cursor-pointer mt-4">
+          <Button variant="destructive">
+            Limpar listas
+          </Button>
         </div>
       </DrawerTrigger>
 

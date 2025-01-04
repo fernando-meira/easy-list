@@ -4,10 +4,10 @@ import Image from 'next/image';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProducts } from '@/context/ProductContext';
-import { ConfirmCleanProductListDrawer, NewCategoryDrawer, NewProductForm } from '@/components';
+import {  NewCategoryDrawer, NewProductForm } from '@/components';
 
 export function Header() {
-  const { products, isLoading } = useProducts();
+  const { isLoading } = useProducts();
 
   return (
     <header className="fixed top-0 flex items-center justify-between w-full p-4 space-x-4 border-b bg-white/80 backdrop-blur-sm max-w-3xl mx-auto shadow-sm">
@@ -26,18 +26,12 @@ export function Header() {
             <Skeleton className="h-9 w-28" />
 
             <Skeleton className="h-9 w-9" />
-
-            <Skeleton className="h-9 w-9" />
           </div>
         ) : (
           <>
             <NewProductForm />
 
             <NewCategoryDrawer />
-
-            {!!products?.length && (
-              <ConfirmCleanProductListDrawer />
-            )}
           </>
         )}
       </div>

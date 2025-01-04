@@ -3,7 +3,14 @@ export interface CategoryProps {
   name: string;
   createdAt: string;
   updatedAt: string;
-  products: Array<ProductProps>;
+  products?: Array<{
+    _id?: string;
+    name: string;
+    unit?: string;
+    price?: string;
+    quantity?: string;
+    categoryId?: string;
+  }>;
 }
 
 export interface ProductProps {
