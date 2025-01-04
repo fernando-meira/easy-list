@@ -17,8 +17,8 @@ export function CategoryList() {
   const { categories, filteredCategory } = useCategories();
 
   const [openEditSheet, setOpenEditSheet] = React.useState<boolean>(false);
-  const [isOpenCollapsible, setOpenCollapsible] = React.useState<boolean>(false);
   const [selectedProducts, setSelectedProducts] = React.useState<ProductProps | undefined>(undefined);
+  const [openCollapsible, setOpenCollapsible] = React.useState<{categoryId: string; open: boolean}>({ categoryId: '', open: false });
 
   const renderCategoriesWithProducts = useMemo(() => {
     if (isLoading) {
@@ -49,7 +49,7 @@ export function CategoryList() {
       );
     }
 
-    if (!!filteredCategory && filteredCategory.products?.length > 0) {
+    if (!!filteredCategory && filteredCategory?.products && filteredCategory.products?.length > 0) {
       return (
         <div className="space-y-2 mt-4 rounded-md border font-mono text-sm shadow-sm">
           <ProductsList category={filteredCategory} setOpenEditSheet={setOpenEditSheet} setSelectedProducts={setSelectedProducts} />
@@ -59,11 +59,11 @@ export function CategoryList() {
     return (
       <div className="flex flex-col mt-4">
         <div>
-          {categories?.map((category) => category.products?.length > 0 && (
+          {categories?.map((category) => category?.products && category?.products?.length > 0 && (
             <Collapsible
               key={category._id}
-              open={isOpenCollapsible}
-              onOpenChange={setOpenCollapsible}
+              open={openCollapsible.categoryId === category._id && openCollapsible.open}
+              onOpenChange={openCollapsible.categoryId === category._id ? (open: boolean) => setOpenCollapsible({ ...openCollapsible, open }) : (open: boolean) => setOpenCollapsible({ categoryId: category._id, open })}
               className="space-y-2 gap-2 [&:not(:first-child)]:mt-4 [&:not(:first-child)]:border-t [&:not(:first-child)]:pt-4"
             >
               <div className="flex items-center justify-between space-x-4">
@@ -88,7 +88,7 @@ export function CategoryList() {
         </div>
       </div>
     );
-  }, [categories, isLoading, isOpenCollapsible, filteredCategory]);
+  }, [categories, isLoading, openCollapsible, filteredCategory]);
 
   return (
     <div className="w-full">

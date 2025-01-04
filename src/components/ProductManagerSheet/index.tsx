@@ -62,7 +62,6 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
   });
 
   const unit = methods.watch('unit');
-  console.log('🥲  unit:', unit);
   const categoryId = methods.watch('categoryId');
 
   React.useEffect(() => {
