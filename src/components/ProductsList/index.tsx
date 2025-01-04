@@ -4,8 +4,8 @@ import { Badge } from '../ui/badge';
 import { useProducts } from '@/context';
 import { UnitEnum } from '@/types/enums';
 import { Checkbox } from '../ui/checkbox';
-import { CategoryProps, ProductProps } from '@/types/interfaces';
 import { calculateProductValue } from '@/utils';
+import { CategoryProps, ProductProps } from '@/types/interfaces';
 
 interface ProductsListProps {
   category: CategoryProps;
@@ -29,7 +29,7 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
               {!!product?._id && (
                 <Checkbox
                   id={`cart-${product._id}`}
-                  checked={product.addToCart}
+                  checked={product?.addToCart}
                   onCheckedChange={() => toggleCart(product._id!)}
                 />
               )}

@@ -10,6 +10,7 @@ export interface CategoryProps {
     price?: string;
     quantity?: string;
     categoryId?: string;
+    addToCart?: boolean;
   }>;
 }
 
