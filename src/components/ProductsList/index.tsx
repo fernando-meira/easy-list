@@ -16,8 +16,11 @@ interface ProductsListProps {
 export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }: ProductsListProps) => {
   const { removeProduct, toggleCart } = useProducts();
 
-  if (!category) {
-    return null;
+  if (!category || !category.products || category.products.length === 0) {
+    return (
+      <div className="flex items-center justify-center w-full p-2">
+        <p>Não existe produtos cadastrados para essa categoria</p>
+      </div>);
   }
 
   return (

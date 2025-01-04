@@ -20,7 +20,7 @@ export function CategoryList() {
   const [selectedProducts, setSelectedProducts] = React.useState<ProductProps | undefined>(undefined);
   const [openCollapsible, setOpenCollapsible] = React.useState<{categoryId: string; open: boolean}>({ categoryId: '', open: false });
 
-  const renderCategoriesWithProducts = useMemo(() => {
+  const categoryList = useMemo(() => {
     if (isLoading) {
       return (
         <div className="flex items-center space-x-4 mt-4">
@@ -59,7 +59,7 @@ export function CategoryList() {
     return (
       <div className="flex flex-col mt-4">
         <div>
-          {categories?.map((category) => category?.products && category?.products?.length > 0 && (
+          {categories?.map((category) => (
             <Collapsible
               key={category._id}
               open={openCollapsible.categoryId === category._id && openCollapsible.open}
@@ -67,7 +67,7 @@ export function CategoryList() {
               className="space-y-2 gap-2 [&:not(:first-child)]:mt-4 [&:not(:first-child)]:border-t [&:not(:first-child)]:pt-4"
             >
               <div className="flex items-center justify-between space-x-4">
-                <h4 className="text-sm font-semibold">
+                <h4 className="text-md font-semibold">
                   {category.name}
                 </h4>
 
@@ -94,7 +94,7 @@ export function CategoryList() {
     <div className="w-full">
       <ProductListHeader />
 
-      {renderCategoriesWithProducts}
+      {categoryList}
 
       <ProductManagerSheet
         open={openEditSheet}
