@@ -16,10 +16,18 @@ export async function PUT(
     const { id } = await context.params;
     const data = await request.json();
 
-    const product = await Product.findByIdAndUpdate(id, data, {
-      new: true,
-      runValidators: true,
-    }).populate('category', 'name');
+    // Atualiza o produto com os novos dados, incluindo a categoria
+    const product = await Product.findByIdAndUpdate(
+      id,
+      {
+        ...data,
+        category: data.category || data.categoryId, // Aceita tanto category quanto categoryId
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).populate('category'); // Popula toda a categoria, não apenas name e _id
 
     if (!product) {
       return NextResponse.json(
@@ -35,6 +43,34 @@ export async function PUT(
     return NextResponse.json(
       { error: 'Error updating product' },
       { status: 500 },
+    );
+  }
+}
+
+export async function GET(
+  request: NextRequest,
+  context: RouteContext
+) {
+  try {
+    await connectDB();
+    const { id } = await context.params;
+
+    const product = await Product.findById(id).populate('category');
+
+    if (!product) {
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { error: 'Error getting product' },
+      { status: 500 }
     );
   }
 }
