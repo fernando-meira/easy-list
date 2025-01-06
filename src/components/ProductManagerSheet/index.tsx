@@ -30,6 +30,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { useCallback, useState } from 'react';
 
 interface ProductManagerSheetProps {
   open?: boolean;
@@ -44,38 +45,67 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
   const { managerProduct, isLoading, isProductLoading } = useProducts();
 
   const methods = useForm<ProductProps>({
-    defaultValues: product || {
+    defaultValues: {
       name: '',
       price: '',
       quantity: '',
-      categoryId: '',
       addToCart: false,
       unit: UnitEnum.unit,
+      ...product,
     },
   });
 
   const onSubmit = methods.handleSubmit((data: ProductProps) => {
-    managerProduct({ product: data });
+    const productData = {
+      ...data,
+      categoryId: data.category?._id || data.categoryId || '',
+    };
+
+    managerProduct({ product: productData });
 
     methods.reset();
     onOpenChange?.(false);
   });
 
-  const unit = methods.watch('unit');
-  const categoryId = methods.watch('categoryId');
+  const [isLoadingProduct, setIsLoadingProduct] = useState(false);
+
+  const fetchProduct = useCallback(async (productId: string) => {
+    try {
+      setIsLoadingProduct(true);
+      const response = await fetch(`/api/products/${productId}`);
+      if (!response.ok) throw new Error('Failed to fetch product');
+      const data = await response.json();
+      methods.reset({
+        ...data,
+        categoryId: data.category?._id,
+      });
+    } catch (error) {
+      console.error('Error fetching product:', error);
+    } finally {
+      setIsLoadingProduct(false);
+    }
+  }, [methods]);
 
   React.useEffect(() => {
-    if (product && type === AddOrEditProductTypeEnum.edit) {
-      methods.reset({
-        ...product,
-        categoryId: product.category?._id,
-      });
-    } else {
+    if (!open) return;
+
+    if (product?._id && type === AddOrEditProductTypeEnum.edit) {
+      fetchProduct(product._id);
+    } else if (type === AddOrEditProductTypeEnum.add && categories.length > 0) {
       methods.reset({
         categoryId: categories[0]?._id,
-      });
+        unit: UnitEnum.unit,
+        name: '',
+        price: '',
+        quantity: '',
+        addToCart: false,
+      }, { keepDefaultValues: true });
     }
-  }, [product, type, methods, categories]);
+  }, [open, product?._id, type, categories.length, fetchProduct, categories, methods]);
+
+  const [unit, categoryId] = methods.watch(['unit', 'categoryId']);
+
+  console.log('Watched categoryId:', categoryId);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange} key={type}>
@@ -134,6 +164,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                 />
 
                 <Select
+                  defaultValue={UnitEnum.unit}
                   value={unit || UnitEnum.unit}
                   onValueChange={(value: UnitEnum) => methods.setValue('unit', value)}
                 >
@@ -151,8 +182,12 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                 </Select>
 
                 <Select
+                  required
                   value={categoryId}
-                  onValueChange={(value: string) => methods.setValue('categoryId', value)}
+                  onValueChange={(value: string) => {
+                    console.log('Selecting category:', value);
+                    methods.setValue('categoryId', value);
+                  }}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Categoria"/>
@@ -160,7 +195,9 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
 
                   <SelectContent>
                     {categories.map((category) => (
-                      <SelectItem key={category._id} value={category._id}>{category.name}</SelectItem>
+                      <SelectItem key={category._id} value={category._id}>
+                        {category.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -178,7 +215,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
             </div>
 
             <SheetFooter>
-              <Button disabled={isLoading || isProductLoading.isLoading} type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
+              <Button disabled={isLoading || isProductLoading.isLoading || isLoadingProduct} type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
             </SheetFooter>
           </form>
         </FormProvider>

@@ -52,13 +52,25 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
                 </div>
 
                 <div className="flex gap-2 align-center">
-                  {product.quantity && product.unit && (
-                    <Badge variant="outline" className="self-center text-xs">{`${String(product.quantity)} ${product.unit}`} { product.price && calculateProductValue({
-                      price: String(product.price),
-                      unit: product.unit as UnitEnum,
-                      quantity: String(product.quantity),
-                    })}</Badge>
-                  )}
+                  {product.quantity || product.unit ? (
+                    <Badge variant="outline" className="self-center text-xs">
+                      {product.quantity && product.unit ? (
+                        <>
+                          {`${String(product.quantity)} ${product.unit}`}
+                          {product.price && calculateProductValue({
+                            price: String(product.price),
+                            unit: product.unit as UnitEnum,
+                            quantity: String(product.quantity),
+                          })}
+                        </>
+                      ) : (
+                        <>
+                          {product.quantity && `Qtd: ${product.quantity}`}
+                          {product.unit && `Un: ${product.unit}`}
+                        </>
+                      )}
+                    </Badge>
+                  ) : null}
                 </div>
               </div>
 
