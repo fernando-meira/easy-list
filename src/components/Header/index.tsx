@@ -33,9 +33,9 @@ export function Header() {
           </div>
         ) : (
           <>
-            <NewProductForm />
-
             <NewCategoryDrawer />
+
+            <NewProductForm />
           </>
         )}
       </div>

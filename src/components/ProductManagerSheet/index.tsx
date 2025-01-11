@@ -4,6 +4,7 @@ import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { useCategories } from '@/context';
+import { CirclePlus } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { capitalizeFirstLetter } from '@/utils';
@@ -111,7 +112,9 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
     <Sheet open={open} onOpenChange={onOpenChange} key={type}>
       {type === AddOrEditProductTypeEnum.add && (
         <SheetTrigger asChild>
-          <Button variant="outline">Adicionar produto</Button>
+          <div className="flex gap-2 bg-teal-200 p-2 rounded cursor-pointer">
+            <CirclePlus className="h-4 w-4 text-teal-600" />
+          </div>
         </SheetTrigger>
       )}
 
