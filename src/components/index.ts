@@ -1,7 +1,9 @@
 export { Footer } from './Footer';
 export { Header } from './Header';
+export { ThemeToggle } from './ThemeToggle';
 export { CategoryList } from './CategoryList';
 export { ProductsList } from './ProductsList';
+export { ThemeProvider } from './ThemeProvider';
 export { NewProductForm } from './NewProductForm';
 export { ProductListHeader } from './ProductListHeader';
 export { NewCategoryDrawer } from './NewCategoryDrawer';

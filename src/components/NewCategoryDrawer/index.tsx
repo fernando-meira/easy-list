@@ -30,9 +30,7 @@ export function NewCategoryDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <div className="flex gap-2 bg-teal-200 p-2 rounded cursor-pointer" onClick={() => setOpen?.(true)}>
-          <CirclePlus className="h-4 w-4 text-teal-600" />
-        </div>
+        <Button onClick={() => setOpen?.(true)} variant='secondary'><CirclePlus /> Categoria</Button>
       </DrawerTrigger>
 
       <DrawerContent>
