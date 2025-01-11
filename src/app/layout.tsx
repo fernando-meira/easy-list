@@ -3,6 +3,7 @@ import { Manrope } from 'next/font/google';
 
 import './globals.css';
 
+import { ThemeProvider } from '@/components';
 import { CategoriesContextProvider, ProductsContextProvider } from '@/context';
 
 const manrope = Manrope({
@@ -23,11 +24,13 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={manrope.className}>
-        <CategoriesContextProvider>
-          <ProductsContextProvider>
-            {children}
-          </ProductsContextProvider>
-        </CategoriesContextProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <CategoriesContextProvider>
+            <ProductsContextProvider>
+              {children}
+            </ProductsContextProvider>
+          </CategoriesContextProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
