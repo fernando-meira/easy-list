@@ -71,8 +71,8 @@ export function CategoryList() {
             >
               <div className="flex items-center justify-between space-x-2">
                 {categories?.length > 1 && (
-                  <div onClick={() => { setSelectedCategory(category); setOpenRemoveDrawer(true);}} className="flex gap-2 bg-rose-100 p-2 rounded cursor-pointer">
-                    <Trash2 className="h-4 w-4 text-rose-500" />
+                  <div onClick={() => {setSelectedCategory(category); setOpenRemoveDrawer(true);}} className="flex gap-2 bg-rose-100 dark:bg-background p-2 rounded cursor-pointer">
+                    <Trash2 className="h-4 w-4 text-rose-500 " />
                   </div>
                 )}
 
