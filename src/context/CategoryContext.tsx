@@ -2,6 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
+import { toast } from 'sonner';
 import { CategoryProps } from '@/types/interfaces';
 
 interface CategoriesContextType {
@@ -10,6 +11,7 @@ interface CategoriesContextType {
   errorCategories: string | null;
   filteredCategory?: CategoryProps;
   filterCategory: (categoryId: string) => void;
+  removeCategory: (id: string) => Promise<void>;
   setCategories: (categories: CategoryProps[]) => void;
   addCategory: (category: CategoryProps) => Promise<void>;
 }
@@ -34,6 +36,22 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
     });
 
     if (!response.ok) throw new Error('Failed to create category');
+
+    await fetchCategories();
+  };
+
+  const removeCategory = async (id: string) => {
+    const response = await fetch(`/api/categories?id=${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      toast('Erro ao remover categoria');
+
+      return;
+    }
+
+    toast('Categoria removida com sucesso');
 
     await fetchCategories();
   };
@@ -85,6 +103,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         addCategory,
         setCategories,
         filterCategory,
+        removeCategory,
         errorCategories,
         filteredCategory,
         isLoadingCategories,

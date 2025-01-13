@@ -5,12 +5,12 @@ import React, { useMemo } from 'react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useCategories } from '@/context';
-import { ChevronsUpDown } from 'lucide-react';
-import { ProductProps } from '@/types/interfaces';
+import { CategoryProps, ProductProps } from '@/types/interfaces';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProducts } from '@/context/ProductContext';
+import { ChevronsUpDown,  Trash2 } from 'lucide-react';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
-import { ConfirmCleanProductListDrawer, ProductListHeader, ProductManagerSheet, ProductsList } from '@/components';
+import { ConfirmCleanProductListDrawer, ConfirmRemoveItemDrawer, ProductListHeader, ProductManagerSheet, ProductsList } from '@/components';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
 
 export function CategoryList() {
@@ -18,6 +18,8 @@ export function CategoryList() {
   const { categories, filteredCategory } = useCategories();
 
   const [openEditSheet, setOpenEditSheet] = React.useState<boolean>(false);
+  const [openRemoveDrawer, setOpenRemoveDrawer] = React.useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = React.useState<CategoryProps>();
   const [selectedProducts, setSelectedProducts] = React.useState<ProductProps | undefined>(undefined);
   const [openCollapsible, setOpenCollapsible] = React.useState<{categoryId: string; open: boolean}>({ categoryId: '', open: false });
 
@@ -67,17 +69,24 @@ export function CategoryList() {
               onOpenChange={openCollapsible.categoryId === category._id ? (open: boolean) => setOpenCollapsible({ ...openCollapsible, open }) : (open: boolean) => setOpenCollapsible({ categoryId: category._id, open })}
               className="space-y-2 gap-2 pb-4 border-b first:border-t [&(:first-child)]:pt-4"
             >
-              <div className="flex items-center justify-between space-x-4">
+              <div className="flex items-center justify-between space-x-2">
+                {categories?.length > 1 && (
+                  <div onClick={() => { setSelectedCategory(category); setOpenRemoveDrawer(true);}} className="flex gap-2 bg-rose-100 p-2 rounded cursor-pointer">
+                    <Trash2 className="h-4 w-4 text-rose-500" />
+                  </div>
+                )}
+
                 <div className="flex flex-row gap-2 w-full justify-between">
                   <h4 className="text-md font-semibold">
                     {category.name}
                   </h4>
 
                   <Badge variant="secondary" className="text-xs">{category.products?.length === 1 ? `${category.products?.length} produto` : `${category.products?.length} produtos`}</Badge>
+
                 </div>
 
                 <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm">
+                  <Button className="flex gap-2 bg-secondary/80 p-2 rounded cursor-pointer" variant="ghost" size="sm">
                     <ChevronsUpDown className="h-4 w-4" />
 
                     <span className="sr-only">Toggle</span>
@@ -91,6 +100,7 @@ export function CategoryList() {
             </Collapsible>
           ))}
         </div>
+
       </div>
     );
   }, [categories, isLoading, openCollapsible, filteredCategory]);
@@ -109,6 +119,8 @@ export function CategoryList() {
       />
 
       <ConfirmCleanProductListDrawer />
+
+      <ConfirmRemoveItemDrawer item={selectedCategory} open={openRemoveDrawer} onOpenChange={setOpenRemoveDrawer} />
     </div>
   );
 }

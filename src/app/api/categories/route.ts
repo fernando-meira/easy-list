@@ -61,3 +61,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create category' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    await connectDB();
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    const category = await Category.findByIdAndDelete(id);
+
+    return NextResponse.json(category, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 });
+  }
+}

@@ -106,8 +106,6 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
 
   const [unit, categoryId] = methods.watch(['unit', 'categoryId']);
 
-  console.log('Watched categoryId:', categoryId);
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange} key={type}>
       {type === AddOrEditProductTypeEnum.add && (
@@ -188,7 +186,6 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                   required
                   value={categoryId}
                   onValueChange={(value: string) => {
-                    console.log('Selecting category:', value);
                     methods.setValue('categoryId', value);
                   }}
                 >

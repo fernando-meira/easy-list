@@ -8,4 +8,5 @@ export { NewProductForm } from './NewProductForm';
 export { ProductListHeader } from './ProductListHeader';
 export { NewCategoryDrawer } from './NewCategoryDrawer';
 export { ProductManagerSheet } from './ProductManagerSheet';
+export { ConfirmRemoveItemDrawer } from './ConfirmRemoveItemDrawer';
 export { ConfirmCleanProductListDrawer } from './ConfirmCleanProductListDrawer';
