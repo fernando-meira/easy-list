@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
 
+import { Toaster } from '@/components/ui/sonner';
+
 import './globals.css';
 
 import { ThemeProvider } from '@/components';
@@ -27,6 +29,8 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <CategoriesContextProvider>
             <ProductsContextProvider>
+              <Toaster />
+
               {children}
             </ProductsContextProvider>
           </CategoriesContextProvider>
