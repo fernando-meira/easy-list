@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import { StatusEnum } from '@/types/enums';
 import { ProductProps } from '@/types/interfaces';
@@ -113,11 +114,19 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
           body: JSON.stringify(product),
         });
 
-        if (!response.ok) throw new Error('Failed to update product');
+        if (!response.ok) {
+          toast('Erro ao atualizar o produto');
+
+          throw new Error('Failed to update product');
+        };
 
         const updatedProduct = await response.json();
 
-        setProducts(products.map(product => product._id === updatedProduct._id ? updatedProduct : product));
+        setProducts(prevProducts =>
+          prevProducts.map(p =>
+            p._id === updatedProduct._id ? updatedProduct : p
+          )
+        );
 
         await fetchCategories();
       } else {
@@ -127,7 +136,11 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
           body: JSON.stringify(product),
         });
 
-        if (!response.ok) throw new Error('Failed to create product');
+        if (!response.ok) {
+          toast('Erro ao criar o produto');
+
+          throw new Error('Failed to create product');
+        };
 
         const newProduct = await response.json();
 
