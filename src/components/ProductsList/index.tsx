@@ -34,7 +34,7 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
       return (
         <div key={`${product._id}-${index}-${category._id}-${Math.random()}`}>
           <div key={product._id} className="flex flex-col">
-            <div key={product._id} className={`flex items-center gap-2 p-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100' : ''}`}>
+            <div key={product._id} className={`flex items-center gap-2 p-2 hover:no-underline rounded ${index % 2 !== 0 ? 'bg-stone-100 dark:bg-muted/50' : ''}`}>
               {!!product?._id && (
                 <Checkbox
                   id={`cart-${product._id}`}
@@ -52,22 +52,18 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
                 </div>
 
                 <div className="flex gap-2 align-center">
-                  {product.quantity && product.unit && (
-                    <Badge variant="outline" className="self-center text-xs">
-                      {`${String(product.quantity)} ${product.unit}`}
-
-                      {product.price && calculateProductValue({
-                        price: String(product.price),
-                        unit: product.unit as UnitEnum,
-                        quantity: String(product.quantity),
-                      })}
-                    </Badge>
-                  )}
+                  <Badge variant="outline" className="self-center text-xs">
+                    {calculateProductValue({
+                      price: String(product.price),
+                      unit: product.unit as UnitEnum,
+                      quantity: String(product.quantity),
+                    })}
+                  </Badge>
                 </div>
               </div>
 
               <div>
-                <div onClick={() => removeProduct(product._id!)} className="flex gap-2 bg-rose-100 p-2 rounded cursor-pointer">
+                <div onClick={() => removeProduct(product._id!)} className="flex gap-2 bg-rose-100 dark:bg-transparent p-2 rounded cursor-pointer">
                   <Trash2 className="h-4 w-4 text-rose-500" />
                 </div>
               </div>
