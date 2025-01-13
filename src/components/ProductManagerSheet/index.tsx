@@ -53,13 +53,14 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
       addToCart: false,
       unit: UnitEnum.unit,
       ...product,
+      categoryId: product?.category?._id || product?.categoryId || categories[0]?._id || '',
     },
   });
 
   const onSubmit = methods.handleSubmit((data: ProductProps) => {
     const productData = {
       ...data,
-      categoryId: data.category?._id || data.categoryId || '',
+      categoryId: data.categoryId,
     };
 
     managerProduct({ product: productData });
@@ -186,7 +187,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                   required
                   value={categoryId}
                   onValueChange={(value: string) => {
-                    methods.setValue('categoryId', value);
+                    methods.setValue('categoryId', value, { shouldValidate: true });
                   }}
                 >
                   <SelectTrigger className="w-[180px]">

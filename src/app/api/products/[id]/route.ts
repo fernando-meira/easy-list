@@ -21,13 +21,13 @@ export async function PUT(
       id,
       {
         ...data,
-        category: data.category || data.categoryId, // Aceita tanto category quanto categoryId
+        category: data.categoryId, // Usar categoryId como referência para a categoria
       },
       {
         new: true,
         runValidators: true,
       }
-    ).populate('category'); // Popula toda a categoria, não apenas name e _id
+    ).populate('category'); // Popular a categoria completa
 
     if (!product) {
       return NextResponse.json(
