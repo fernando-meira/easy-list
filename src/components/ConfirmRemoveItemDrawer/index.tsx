@@ -33,7 +33,7 @@ export function ConfirmRemoveItemDrawer({ item, open, onOpenChange }: ConfirmRem
           <DrawerTitle>{item.name}</DrawerTitle>
 
           <DrawerDescription>
-                Tem certeza que deseja remover {item.name} da lista?
+            Tem certeza que deseja remover a categoria {item.name}?
           </DrawerDescription>
         </DrawerHeader>
 
