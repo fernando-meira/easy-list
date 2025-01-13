@@ -25,6 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head />
       <body className={manrope.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <CategoriesContextProvider>
