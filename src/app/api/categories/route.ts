@@ -76,6 +76,10 @@ export async function DELETE(request: Request) {
       );
     }
 
+    // Primeiro, excluímos todos os produtos vinculados à categoria
+    await Product.deleteMany({ category: id });
+
+    // Depois, excluímos a categoria
     const category = await Category.findByIdAndDelete(id);
 
     return NextResponse.json(category, { status: 200 });
