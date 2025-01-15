@@ -10,7 +10,7 @@ export function Header() {
   const { isLoading } = useProducts();
 
   return (
-    <header className="fixed top-0 flex items-center z-10 justify-between w-full p-4 space-x-4 border-b bg-white/80 dark:bg-background/50 backdrop-blur-sm max-w-3xl mx-auto shadow-sm">
+    <header className="fixed top-0 flex items-center z-10 justify-between w-full p-4 space-x-4 border-b bg-white/80 dark:bg-background max-w-3xl mx-auto shadow-sm">
       <div className='flex items-center gap-2'>
         <Image
           priority

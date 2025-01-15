@@ -5,13 +5,13 @@ import React, { useMemo } from 'react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useCategories } from '@/context';
-import { CategoryProps, ProductProps } from '@/types/interfaces';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProducts } from '@/context/ProductContext';
 import { ChevronsUpDown,  Trash2 } from 'lucide-react';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
-import { ConfirmCleanProductListDrawer, ConfirmRemoveItemDrawer, ProductListHeader, ProductManagerSheet, ProductsList } from '@/components';
+import { CategoryProps, ProductProps } from '@/types/interfaces';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
+import { ConfirmCleanProductListDrawer, ConfirmRemoveItemDrawer, ProductListHeader, ProductManagerSheet, ProductsList } from '@/components';
 
 export function CategoryList() {
   const { isLoading } = useProducts();
@@ -54,7 +54,7 @@ export function CategoryList() {
 
     if (!!filteredCategory && filteredCategory?.products && filteredCategory.products?.length > 0) {
       return (
-        <div className="space-y-2 mt-4 rounded-md border font-mono text-sm shadow-sm">
+        <div className="mt-4 rounded-md border font-mono text-sm shadow-sm">
           <ProductsList category={filteredCategory} setOpenEditSheet={setOpenEditSheet} setSelectedProducts={setSelectedProducts} />
         </div>
       );}
@@ -94,7 +94,7 @@ export function CategoryList() {
                 </CollapsibleTrigger>
               </div>
 
-              <CollapsibleContent className="space-y-2 rounded-md border font-mono text-sm shadow-sm">
+              <CollapsibleContent className="rounded-md border font-mono text-sm shadow-sm">
                 <ProductsList category={category} setOpenEditSheet={setOpenEditSheet} setSelectedProducts={setSelectedProducts} />
               </CollapsibleContent>
             </Collapsible>
