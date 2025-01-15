@@ -196,6 +196,10 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
   };
 
   const toggleCart = async (id: string) => {
+    if (!id) return;
+
+    setIsProductLoading({ productId: id, isLoading: true });
+
     try {
       const product = products.find(p => p._id === id);
 
@@ -207,20 +211,38 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         body: JSON.stringify({ ...product, addToCart: !product.addToCart }),
       });
 
-      if (!response.ok) throw new Error('Failed to update product');
+      if (!response.ok) {
+        toast.error('Erro ao atualizar produto no carrinho');
+        throw new Error('Failed to update product');
+      }
 
       const updatedProduct = await response.json();
-
       setProducts(products.map(p => p._id === id ? updatedProduct : p));
 
       await fetchCategories();
-    } catch (err) {
+    }
+    catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+    }
+    finally {
+      setIsProductLoading({ productId: null, isLoading: false });
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    const loadInitialData = async () => {
+      try {
+        await Promise.all([
+          fetchProducts(),
+          fetchCategories()
+        ]);
+      } catch (err) {
+        console.error('Error loading initial data:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred loading initial data');
+      }
+    };
+
+    loadInitialData();
   }, []);
 
   useEffect(() => {

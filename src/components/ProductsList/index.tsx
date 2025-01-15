@@ -4,6 +4,7 @@ import { Badge } from '../ui/badge';
 import { useProducts } from '@/context';
 import { Checkbox } from '../ui/checkbox';
 import { calculateProductValue } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { StatusEnum, UnitEnum } from '@/types/enums';
 import { CategoryProps, ProductProps } from '@/types/interfaces';
 
@@ -14,7 +15,7 @@ interface ProductsListProps {
 }
 
 export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }: ProductsListProps) => {
-  const { removeProduct, toggleCart, filter } = useProducts();
+  const { removeProduct, toggleCart, filter, isProductLoading } = useProducts();
 
   const productsToShow = category.products?.filter(product => {
     if (filter === StatusEnum.all) return true;
@@ -31,6 +32,12 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
 
   return (
     productsToShow?.map((product, index) => {
+      if (isProductLoading.productId === product._id) {
+        return (
+          <Skeleton key={`${product._id}-${index}-${category._id}-${Math.random()}`} className="h-12" />
+        );
+      }
+
       return (
         <div key={`${product._id}-${index}-${category._id}-${Math.random()}`}>
           <div key={product._id} className="flex flex-col">
@@ -45,10 +52,11 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
 
               <div onClick={() => {setSelectedProducts(product); setOpenEditSheet(true);}} className="flex flex-1 gap-2 items-center cursor-pointer">
                 <div className="flex flex-1 gap-2 items-center">
-                  <strong>{product.name}</strong>
                   {product.addToCart && (
                     <LucideShoppingCart className="h-4 w-4 text-teal-400" />
                   )}
+
+                  <strong>{product.name}</strong>
                 </div>
 
                 <div className="flex gap-2 align-center">
