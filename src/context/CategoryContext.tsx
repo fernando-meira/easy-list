@@ -23,12 +23,11 @@ interface CategoryProviderProps {
 export const CategoriesContext = createContext({} as CategoriesContextType);
 
 function CategoriesContextProvider({ children }: CategoryProviderProps) {
+
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [filteredCategory, setFilteredCategory] = useState<CategoryProps>();
   const [errorCategories, setErrorCategories] = useState<string | null>(null);
-  const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(false);
-
-  // console.log({ categories, filteredCategory, errorCategories, isLoadingCategories });
+  const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true);
 
   const addCategory = async (category: CategoryProps) => {
     const response = await fetch('/api/categories', {
@@ -62,8 +61,6 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
     }
 
     const status = response.status;
-
-    console.log(status);
 
     if (status === 204) {
       setCategories(categories.filter(category => category._id !== id));

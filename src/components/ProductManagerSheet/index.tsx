@@ -41,9 +41,9 @@ interface ProductManagerSheetProps {
 }
 
 export const ProductManagerSheet = ({ open, type, product, onOpenChange }: ProductManagerSheetProps) => {
-  const { categories } = useCategories();
   const { isSmallSize } = useWindowSize();
-  const { managerProduct, isLoading, isProductLoading } = useProducts();
+  const { managerProduct, isProductLoading } = useProducts();
+  const { categories, isLoadingCategories } = useCategories();
 
   const methods = useForm<ProductProps>({
     defaultValues: {
@@ -216,7 +216,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
             </div>
 
             <SheetFooter>
-              <Button disabled={isLoading || isProductLoading.isLoading || isLoadingProduct} type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
+              <Button disabled={isLoadingCategories || isProductLoading.isLoading || isLoadingProduct} type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
             </SheetFooter>
           </form>
         </FormProvider>

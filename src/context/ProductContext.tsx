@@ -19,7 +19,6 @@ export interface IsProductLoadingProps {
 
 interface ProductsContextType {
   filter: StatusEnum;
-  isLoading: boolean;
   error: string | null;
   hasAnyProduct: boolean;
   products?: ProductProps[];
@@ -41,67 +40,38 @@ interface ProductsProviderProps {
 export const ProductsContext = createContext({} as ProductsContextType);
 
 function ProductsContextProvider({ children }: ProductsProviderProps) {
-  const [isLoading, setIsLoading] = useState(true);
+  const { categories, setCategories } = useCategories();
+
   const [error, setError] = useState<string | null>(null);
   const [hasAnyProduct, setHasAnyProduct] = useState(false);
-  const [products, setProducts] = useState<ProductProps[]>([]);
   const [filter, setFilter] = useState<StatusEnum>(StatusEnum.all);
   const [isProductLoading, setIsProductLoading] = useState<IsProductLoadingProps>({
     productId: null,
     isLoading: false,
   });
 
-  const { setCategories } = useCategories();
-
-  const fetchCategories = async () => {
-    const response = await fetch('/api/categories');
-
-    if (!response.ok) throw new Error('Failed to fetch categories');
-
-    const data = await response.json();
-
-    setCategories(data);
-  };
-
-  const fetchProducts = async () => {
-    try {
-      setIsLoading(true);
-
-      const response = await fetch('/api/products');
-
-      if (!response.ok) throw new Error('Failed to fetch products');
-
-      const data = await response.json();
-
-      setProducts(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const allProducts = useMemo(() => categories.flatMap((category) => category.products || []), [categories]);
 
   const filteredProducts = useMemo(() => {
-    if (filter === StatusEnum.all) return products;
-    if (filter === StatusEnum.inCart) return products.filter(product => product.addToCart);
-    if (filter === StatusEnum.outOfCart) return products.filter(product => !product.addToCart);
-    return products;
-  }, [products, filter]);
+    if (filter === StatusEnum.all) return allProducts;
+    if (filter === StatusEnum.inCart) return allProducts.filter(product => product.addToCart);
+    if (filter === StatusEnum.outOfCart) return allProducts.filter(product => !product.addToCart);
+    return allProducts;
+  }, [allProducts, filter]);
 
-  const allProductsWithoutPrice = useMemo(() =>
-    products.every((product) => !product.price || !product.quantity || !product.unit),
-  [products]
-  );
+  const allProductsWithoutPrice = useMemo(() => {
+    return allProducts.every((product) => !product.price || !product.quantity || !product.unit);
+  }, [allProducts]);
 
   const allProductsInCartWithoutPrice = useMemo(() =>
-    products.filter((product) => product.addToCart)
+    allProducts.filter((product) => product.addToCart)
       .every((product) => !product.price || !product.quantity || !product.unit),
-  [products]
+  [allProducts]
   );
 
   const verifyHasAnyProduct = useCallback(() => {
-    setHasAnyProduct(products.length > 0);
-  }, [products]);
+    setHasAnyProduct(allProducts.length > 0);
+  }, [allProducts]);
 
   const managerProduct = async ({ product }: { product: ProductProps }) => {
     try {
@@ -110,8 +80,8 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       if (product._id) {
         const response = await fetch(`/api/products/${product._id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(product),
+          headers: { 'Content-Type': 'application/json' },
         });
 
         if (!response.ok) {
@@ -122,13 +92,12 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
         const updatedProduct = await response.json();
 
-        setProducts(prevProducts =>
-          prevProducts.map(p =>
-            p._id === updatedProduct._id ? updatedProduct : p
-          )
-        );
+        setCategories(categories.map(category => ({
+          ...category,
+          products: category?.products?.map(product => product?._id === updatedProduct?._id ? updatedProduct : product)
+        })));
 
-        await fetchCategories();
+        toast.success('Produto atualizado');
       } else {
         const response = await fetch('/api/products', {
           method: 'POST',
@@ -143,10 +112,14 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         };
 
         const newProduct = await response.json();
+        const category = categories.find(category => category._id === newProduct.category._id);
 
-        setProducts([...products, newProduct]);
+        setCategories(categories.map(category => ({
+          ...category,
+          products: [...category.products || [], newProduct]
+        })));
 
-        await fetchCategories();
+        toast.success(`Produto adicionado a lista ${category?.name}`);
 
         setFilter(StatusEnum.all);
       }
@@ -165,11 +138,23 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         method: 'DELETE',
       });
 
-      if (!response.ok) throw new Error('Failed to delete product');
+      if (!response.ok) {
+        const productName = categories.flatMap(category => category.products || []).find(product => product._id === id)?.name;
 
-      setProducts(products.filter(product => product._id !== id));
+        toast(`Erro ao remover o produto ${productName}`);
 
-      await fetchCategories();
+        throw new Error('Failed to delete product');
+      }
+
+      const category = categories.find(category => category.products?.some(product => product._id === id));
+
+      setCategories(categories.map(category => ({
+        ...category,
+        products: category.products?.filter(product => product._id !== id)
+      })));
+
+      toast.success(`Produto removido da lista ${category?.name}`);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -179,19 +164,17 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
   const removeAllProducts = async () => {
     try {
-      setIsLoading(true);
-
-      await Promise.all(products.map(product =>
+      await Promise.all(categories.flatMap(category => category.products || []).map(product =>
         fetch(`/api/products/${product._id}`, { method: 'DELETE' })
       ));
 
-      setProducts([]);
+      setCategories(categories.map(category => ({
+        ...category,
+        products: []
+      })));
 
-      await fetchCategories();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -201,7 +184,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     setIsProductLoading({ productId: id, isLoading: true });
 
     try {
-      const product = products.find(p => p._id === id);
+      const product = categories.flatMap(category => category.products || []).find(product => product._id === id);
 
       if (!product) return;
 
@@ -213,13 +196,22 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
       if (!response.ok) {
         toast.error('Erro ao atualizar produto no carrinho');
+
         throw new Error('Failed to update product');
       }
 
       const updatedProduct = await response.json();
-      setProducts(products.map(p => p._id === id ? updatedProduct : p));
 
-      await fetchCategories();
+      setCategories(categories.map(category => ({
+        ...category,
+        products: category.products?.map(product => product._id === id ? updatedProduct : product)
+      })));
+
+      if (product.addToCart) {
+        toast.success('Produto removido do carrinho');
+      } else {
+        toast.success('Produto adicionado ao carrinho');
+      }
     }
     catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -230,32 +222,14 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
   };
 
   useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        await Promise.all([
-          fetchProducts(),
-          fetchCategories()
-        ]);
-      } catch (err) {
-        console.error('Error loading initial data:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred loading initial data');
-      }
-    };
-
-    loadInitialData();
-  }, []);
-
-  useEffect(() => {
     verifyHasAnyProduct();
-  }, [products, verifyHasAnyProduct]);
+  }, [allProducts, verifyHasAnyProduct]);
 
   return (
     <ProductsContext.Provider
       value={{
         error,
         filter,
-        products,
-        isLoading,
         setFilter,
         toggleCart,
         hasAnyProduct,
@@ -264,6 +238,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         filteredProducts,
         isProductLoading,
         removeAllProducts,
+        products: allProducts,
         allProductsWithoutPrice,
         allProductsInCartWithoutPrice,
       }}

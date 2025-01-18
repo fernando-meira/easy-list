@@ -13,12 +13,12 @@ import {
 import { Label } from '../ui/label';
 
 export function ProductListHeader() {
-  const { filter, setFilter, isLoading } = useProducts();
-  const { categories, filterCategory, filteredCategory } = useCategories();
+  const { filter, setFilter } = useProducts();
+  const { categories, filterCategory, filteredCategory, isLoadingCategories } = useCategories();
 
   return (
     <header className="flex items-center justify-between gap-4 w-full">
-      {isLoading ? (
+      {isLoadingCategories ? (
         <Skeleton className="h-9 w-44" />
       ) : (
         <div className="flex items-center gap-4">
