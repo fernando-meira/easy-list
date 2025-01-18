@@ -28,6 +28,8 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   const [errorCategories, setErrorCategories] = useState<string | null>(null);
   const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(false);
 
+  // console.log({ categories, filteredCategory, errorCategories, isLoadingCategories });
+
   const addCategory = async (category: CategoryProps) => {
     const response = await fetch('/api/categories', {
       method: 'POST',
@@ -35,9 +37,17 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    if (!response.ok) throw new Error('Failed to create category');
+    if (!response.ok) {
+      toast('Erro ao criar categoria');
 
-    await fetchCategories();
+      throw new Error('Failed to create category');
+    }
+
+    const { data } = await response.json();
+
+    toast('Categoria criada com sucesso');
+
+    setCategories([...categories, data]);
   };
 
   const removeCategory = async (id: string) => {

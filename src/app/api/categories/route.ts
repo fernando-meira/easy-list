@@ -4,6 +4,10 @@ import connectDB from '@/lib/mongodb';
 import Category from '@/models/Category';
 import Product from '@/models/Product';
 
+interface CategoryData {
+  name: string;
+}
+
 export async function GET() {
   try {
     await connectDB();
@@ -42,7 +46,7 @@ export async function POST(request: Request) {
   try {
     await connectDB();
 
-    const data = await request.json();
+    const data: CategoryData = await request.json();
 
     if (!data.name) {
       return NextResponse.json(
@@ -55,10 +59,13 @@ export async function POST(request: Request) {
       name: data.name,
     });
 
-    return NextResponse.json(category, { status: 201 });
+    return NextResponse.json({ data: category }, { status: 201 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Failed to create category' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create category' },
+      { status: 500 }
+    );
   }
 }
 
