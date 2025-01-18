@@ -18,6 +18,7 @@ export async function GET() {
     let categoriesWithProducts = await Promise.all(
       categories.map(async (category) => {
         const products = await Product.find({ category: category._id });
+
         return {
           ...category.toObject(),
           products,
@@ -29,15 +30,17 @@ export async function GET() {
       const defaultCategory = await Category.create({
         name: 'Supermercado'
       });
+
       categoriesWithProducts = [{
         ...defaultCategory.toObject(),
         products: []
       }];
     }
 
-    return NextResponse.json(categoriesWithProducts);
+    return NextResponse.json(categoriesWithProducts, { status: 200 });
   } catch (error) {
     console.error(error);
+
     return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
   }
 }
@@ -62,6 +65,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ data: category }, { status: 201 });
   } catch (error) {
     console.error(error);
+
     return NextResponse.json(
       { error: 'Failed to create category' },
       { status: 500 }
@@ -83,10 +87,10 @@ export async function DELETE(request: Request) {
       );
     }
 
-    // Primeiro, excluímos todos os produtos vinculados à categoria
+    // First, delete all products associated with the category
     await Product.deleteMany({ category: id });
 
-    // Depois, excluímos a categoria
+    // Then, delete the category
     await Category.findByIdAndDelete(id);
 
     return new NextResponse(null, { status: 204 });;
