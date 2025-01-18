@@ -61,9 +61,15 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
       return;
     }
 
-    toast('Categoria removida com sucesso');
+    const status = response.status;
 
-    await fetchCategories();
+    console.log(status);
+
+    if (status === 204) {
+      setCategories(categories.filter(category => category._id !== id));
+
+      toast('Categoria removida com sucesso');
+    }
   };
 
   const fetchCategories = async () => {

@@ -87,11 +87,12 @@ export async function DELETE(request: Request) {
     await Product.deleteMany({ category: id });
 
     // Depois, excluímos a categoria
-    const category = await Category.findByIdAndDelete(id);
+    await Category.findByIdAndDelete(id);
 
-    return NextResponse.json(category, { status: 200 });
+    return new NextResponse(null, { status: 204 });;
   } catch (error) {
     console.error(error);
+
     return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 });
   }
 }
