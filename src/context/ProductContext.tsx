@@ -112,14 +112,14 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         };
 
         const newProduct = await response.json();
-        const category = categories.find(category => category._id === newProduct.category._id);
+        const productCategory = categories.find(category => category._id === newProduct.category._id);
 
         setCategories(categories.map(category => ({
           ...category,
-          products: [...category.products || [], newProduct]
+          products: category?._id === newProduct.category?._id ? [...category.products || [], newProduct] : category.products
         })));
 
-        toast.success(`Produto adicionado a lista ${category?.name}`);
+        toast.success(`Produto adicionado a lista ${productCategory?.name}`);
 
         setFilter(StatusEnum.all);
       }
