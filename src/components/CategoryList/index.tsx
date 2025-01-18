@@ -6,7 +6,6 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useCategories } from '@/context';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useProducts } from '@/context/ProductContext';
 import { ChevronsUpDown,  Trash2 } from 'lucide-react';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
 import { CategoryProps, ProductProps } from '@/types/interfaces';
@@ -14,8 +13,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/colla
 import { ConfirmCleanProductListDrawer, ConfirmRemoveItemDrawer, ProductListHeader, ProductManagerSheet, ProductsList } from '@/components';
 
 export function CategoryList() {
-  const { isLoading } = useProducts();
-  const { categories, filteredCategory } = useCategories();
+  const { categories, filteredCategory, isLoadingCategories } = useCategories();
 
   const [openEditSheet, setOpenEditSheet] = React.useState<boolean>(false);
   const [openRemoveDrawer, setOpenRemoveDrawer] = React.useState<boolean>(false);
@@ -24,7 +22,7 @@ export function CategoryList() {
   const [openCollapsible, setOpenCollapsible] = React.useState<{categoryId: string; open: boolean}>({ categoryId: '', open: false });
 
   const categoryList = useMemo(() => {
-    if (isLoading) {
+    if (isLoadingCategories) {
       return (
         <div className="flex items-center space-x-4 mt-4">
           <div className="space-y-2 w-full">
@@ -105,7 +103,7 @@ export function CategoryList() {
 
       </div>
     );
-  }, [categories, isLoading, openCollapsible, filteredCategory]);
+  }, [categories, isLoadingCategories, openCollapsible, filteredCategory]);
 
   return (
     <div className="w-full">

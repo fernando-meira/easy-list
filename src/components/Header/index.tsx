@@ -3,11 +3,11 @@
 import Image from 'next/image';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { useProducts } from '@/context/ProductContext';
-import {  NewCategoryDrawer, NewProductForm, ThemeToggle } from '@/components';
+import { useCategories } from '@/context/CategoryContext';
+import { NewCategoryDrawer, NewProductForm, ThemeToggle } from '@/components';
 
 export function Header() {
-  const { isLoading } = useProducts();
+  const { isLoadingCategories } = useCategories();
 
   return (
     <header className="fixed top-0 flex items-center z-10 justify-between w-full p-4 space-x-4 border-b bg-white/80 dark:bg-background max-w-3xl mx-auto shadow-sm">
@@ -25,7 +25,7 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-2">
-        {isLoading ? (
+        {isLoadingCategories ? (
           <div className="flex items-center gap-2 animate-pulse">
             <Skeleton className="h-9 w-28" />
 
