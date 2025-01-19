@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useAuth } from '@/hooks/useAuth';
+import { Header } from '@/components/header';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -61,7 +62,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
+      <Header />
+
+      <div className="w-full max-w-md p-4 space-y-4 bg-card">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Bem-vindo ao Easy List</h1>
 
