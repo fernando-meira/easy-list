@@ -84,7 +84,7 @@ export function CategoryList() {
                     {category.name}
                   </h4>
 
-                  {category?.products && (
+                  {category?.products && category?.products?.length > 0 && (
                     <Badge variant="secondary" className="text-xs">{category?.products?.length === 1 ? `${category.products?.length} produto` : `${category.products?.length} produtos`}</Badge>
                   )}
 

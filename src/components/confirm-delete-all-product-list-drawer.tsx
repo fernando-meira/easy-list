@@ -8,11 +8,9 @@ export function ConfirmDeleteAllProductListDrawer() {
   return hasAnyProduct && (
     <Drawer>
       <DrawerTrigger asChild>
-        <div className="flex rounded cursor-pointer mt-4">
-          <Button variant="destructive">
+        <Button variant="destructive" className="mt-4">
             Limpar listas
-          </Button>
-        </div>
+        </Button>
       </DrawerTrigger>
 
       <DrawerContent className='max-w-3xl my-0 mx-auto'>

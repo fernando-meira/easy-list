@@ -59,15 +59,18 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
                   <strong>{product.name}</strong>
                 </div>
 
-                <div className="flex gap-2 align-center">
-                  <Badge variant="outline" className="self-center text-xs">
-                    {calculateProductValue({
-                      price: String(product.price),
-                      unit: product.unit as UnitEnum,
-                      quantity: String(product.quantity),
-                    })}
-                  </Badge>
-                </div>
+                {(product.price || product.quantity) &&
+                  <div className="flex gap-2 align-center">
+                    <Badge variant="outline" className="self-center text-xs">
+                      {calculateProductValue({
+                        price: String(product.price),
+                        unit: product.unit as UnitEnum,
+                        quantity: String(product.quantity),
+                      })}
+                    </Badge>
+                  </div>
+                }
+
               </div>
 
               <div>
