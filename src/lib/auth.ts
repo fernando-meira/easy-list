@@ -14,15 +14,15 @@ export const authOptions: AuthOptions = {
       async sendVerificationRequest({ identifier, url }) {
         try {
           const result = await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'Easy Shop <onboarding@resend.dev>',
+            from: process.env.EMAIL_FROM || 'Easy List <onboarding@resend.dev>',
             to: identifier,
-            subject: 'Link de acesso - Easy Shop',
+            subject: 'Link de acesso - Easy List',
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h1 style="color: #333;">Bem-vindo ao Easy Shop!</h1>
+                <h1 style="color: #333;">Bem-vindo ao Easy List!</h1>
                 <p>Clique no link abaixo para acessar sua conta:</p>
                 <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #0d9488; color: white; text-decoration: none; border-radius: 5px; margin: 16px 0;">
-                  Acessar Easy Shop
+                  Acessar Easy List
                 </a>
                 <p style="color: #666; font-size: 14px;">Se você não solicitou este link, por favor ignore este email.</p>
               </div>
