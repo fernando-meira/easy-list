@@ -15,7 +15,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: 'Easy Shop',
+  title: 'Easy List',
   description: 'Sua lista de compras inteligente',
 };
 
