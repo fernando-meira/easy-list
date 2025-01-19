@@ -1,6 +1,17 @@
-import { CategoryList, Footer, Header } from '@/components';
+'use client';
+
+import { useAuth } from '@/hooks/useAuth';
+import { CategoryList, Footer, Header, HomeLoading } from '@/components';
 
 export default function Home() {
+  const { status } = useAuth(true);
+
+  if (status === 'loading') {
+    return (
+      <HomeLoading />
+    );
+  }
+
   return (
     <main className="flex flex-col m-auto row-start-2 items-center sm:items-start h-screen max-w-3xl">
       <Header />

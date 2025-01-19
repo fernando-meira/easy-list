@@ -1,5 +1,6 @@
 export { Footer } from './Footer';
 export { Header } from './Header';
+export { HomeLoading } from './HomeLoading';
 export { ThemeToggle } from './ThemeToggle';
 export { CategoryList } from './CategoryList';
 export { ProductsList } from './ProductsList';
