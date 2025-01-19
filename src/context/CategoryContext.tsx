@@ -4,6 +4,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 import { toast } from 'sonner';
 import { CategoryProps } from '@/types/interfaces';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CategoriesContextType {
   categories: CategoryProps[];
@@ -23,6 +24,7 @@ interface CategoryProviderProps {
 export const CategoriesContext = createContext({} as CategoriesContextType);
 
 function CategoriesContextProvider({ children }: CategoryProviderProps) {
+  const { session } = useAuth(false);
 
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [filteredCategory, setFilteredCategory] = useState<CategoryProps>();
@@ -106,8 +108,10 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   }, [categories, filterCategory, filteredCategory]);
 
   useEffect(() => {
+    if (!session) return;
+
     fetchCategories();
-  }, []);
+  }, [session]);
 
   return (
     <CategoriesContext.Provider

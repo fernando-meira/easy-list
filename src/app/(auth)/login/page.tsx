@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+import { MailCheck } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useAuth } from '@/hooks/useAuth';
@@ -14,6 +15,7 @@ import { Header } from '@/components/header';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -38,6 +40,7 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setIsLoading(true);
+
       const result = await signIn('email', {
         email: data.email,
         redirect: false,
@@ -90,7 +93,7 @@ export default function LoginPage() {
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Enviando...' : 'Enviar link de acesso'}
+            {isLoading ? <>Enviando <LoadingSpinner /></> : <>Enviar link <MailCheck /></>}
           </Button>
         </form>
       </div>
