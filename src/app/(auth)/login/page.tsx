@@ -62,7 +62,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <Header />
+      <Header isSimple />
 
       <div className="w-full max-w-md p-4 space-y-4 bg-card">
         <div className="space-y-2 text-center">

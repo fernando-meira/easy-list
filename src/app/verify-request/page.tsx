@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
 import { useAuth } from '@/hooks/useAuth';
+import { Header } from '@/components/header';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function VerifyRequestPage() {
   useAuth(false);
@@ -19,22 +21,29 @@ export default function VerifyRequestPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg text-center">
+      <Header isSimple />
+
+      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg text-center">
         <h1 className="text-3xl font-bold">Verifique seu email</h1>
 
         <p className="text-muted-foreground">
-          Enviamos um link de acesso para seu email. Por favor, verifique sua caixa
-          de entrada e clique no link para acessar sua conta.
+          Um link de confirmação foi enviado para o seu email. Verifique a <strong>caixa de entrada</strong> ou <strong>spam</strong> e clique no link para acessar sua conta.
         </p>
 
-        <div className="mt-4">
-          <p className="text-sm text-muted-foreground">
-            {status === 'loading' ? (
-              'Verificando autenticação...'
-            ) : (
-              'Aguardando confirmação do email...'
-            )}
-          </p>
+        <div className="text-sm text-muted-foreground">
+          {status === 'loading' ? (
+            <div className="flex items-center flex-col gap-2">
+              Verificando autenticação
+
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <div className="flex items-center flex-col gap-2">
+              Aguardando confirmação
+
+              <LoadingSpinner />
+            </div>
+          )}
         </div>
       </div>
     </div>
