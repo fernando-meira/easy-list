@@ -15,7 +15,7 @@ export function ConfirmCleanProductListDrawer() {
         </div>
       </DrawerTrigger>
 
-      <DrawerContent>
+      <DrawerContent className='max-w-3xl my-0 mx-auto'>
         <DrawerHeader>
           <DrawerTitle>Limpar lista</DrawerTitle>
 

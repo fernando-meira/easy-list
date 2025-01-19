@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { NextRequest, NextResponse } from 'next/server';
 
 import connectDB from '@/lib/mongodb';
 import Category from '@/models/Category';
@@ -8,11 +9,20 @@ interface CategoryData {
   name: string;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await connectDB();
 
-    const categories = await Category.find({}).sort({ createdAt: -1 });
+    const token = await getToken({ req: request });
+
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Não autorizado' },
+        { status: 401 }
+      );
+    }
+
+    const categories = await Category.find({ userId: token.sub }).sort({ createdAt: -1 });
 
     // Fetch products for each category
     let categoriesWithProducts = await Promise.all(
@@ -28,7 +38,8 @@ export async function GET() {
 
     if (categoriesWithProducts.length === 0) {
       const defaultCategory = await Category.create({
-        name: 'Supermercado'
+        name: 'Supermercado',
+        userId: token.sub,
       });
 
       categoriesWithProducts = [{
@@ -41,25 +52,35 @@ export async function GET() {
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro ao buscar categorias' }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     await connectDB();
+
+    const token = await getToken({ req: request });
+
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Não autorizado' },
+        { status: 401 }
+      );
+    }
 
     const data: CategoryData = await request.json();
 
     if (!data.name) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Nome da categoria é obrigatório' },
         { status: 400 }
       );
     }
 
     const category = await Category.create({
       name: data.name,
+      userId: token.sub,
     });
 
     return NextResponse.json({ data: category }, { status: 201 });
@@ -67,36 +88,55 @@ export async function POST(request: Request) {
     console.error(error);
 
     return NextResponse.json(
-      { error: 'Failed to create category' },
+      { error: 'Erro ao criar categoria' },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   try {
     await connectDB();
+
+    const token = await getToken({ req: request });
+
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Não autorizado' },
+        { status: 401 }
+      );
+    }
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     if (!id) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'ID da categoria é obrigatório' },
         { status: 400 }
       );
     }
 
-    // First, delete all products associated with the category
+    // Verifica se a categoria pertence ao usuário
+    const category = await Category.findOne({ _id: id, userId: token.sub });
+
+    if (!category) {
+      return NextResponse.json(
+        { error: 'Categoria não encontrada' },
+        { status: 404 }
+      );
+    }
+
+    // Primeiro, deleta todos os produtos associados à categoria
     await Product.deleteMany({ category: id });
 
-    // Then, delete the category
+    // Depois, deleta a categoria
     await Category.findByIdAndDelete(id);
 
-    return new NextResponse(null, { status: 204 });;
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro ao deletar categoria' }, { status: 500 });
   }
 }
