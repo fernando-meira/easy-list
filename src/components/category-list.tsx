@@ -1,16 +1,21 @@
 'use client';
 
 import React, { useMemo } from 'react';
-
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { useCategories } from '@/context';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronsUpDown,  Trash2 } from 'lucide-react';
+
+import { useCategories } from '@/context';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
 import { CategoryProps, ProductProps } from '@/types/interfaces';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
-import { ConfirmCleanProductListDrawer, ConfirmRemoveItemDrawer, ProductListHeader, ProductManagerSheet, ProductsList } from '@/components';
+
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Skeleton } from './ui/skeleton';
+import { ProductsList } from './product-list';
+import { ProductListHeader } from './product-list-header';
+import { ProductManagerSheet } from './product-manager-sheet';
+import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
+import { ConfirmDeleteAllProductListDrawer } from './confirm-delete-all-product-list-drawer';
 
 export function CategoryList() {
   const { categories, filteredCategory, isLoadingCategories } = useCategories();
@@ -118,9 +123,9 @@ export function CategoryList() {
         type={AddOrEditProductTypeEnum.edit}
       />
 
-      <ConfirmCleanProductListDrawer />
+      <ConfirmDeleteAllProductListDrawer />
 
-      <ConfirmRemoveItemDrawer item={selectedCategory} open={openRemoveDrawer} onOpenChange={setOpenRemoveDrawer} />
+      <ConfirmRemoveCategoryDrawer item={selectedCategory} open={openRemoveDrawer} onOpenChange={setOpenRemoveDrawer} />
     </div>
   );
 }

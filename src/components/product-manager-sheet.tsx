@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { ProductProps } from '@/types/interfaces';
 import useWindowSize from '@/hooks/useWindowSize';
 import { Checkbox } from '@/components/ui/checkbox';
-import { MoneyInput } from '@/components/MoneyInput';
+import { MoneyInput } from '@/components/money-input';
 import { useProducts } from '@/context/ProductContext';
 import { AddOrEditProductTypeEnum, UnitEnum } from '@/types/enums';
 import {

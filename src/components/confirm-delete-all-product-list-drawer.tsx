@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useProducts } from '@/context/ProductContext';
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 
-export function ConfirmCleanProductListDrawer() {
+export function ConfirmDeleteAllProductListDrawer() {
   const { removeAllProducts, hasAnyProduct } = useProducts();
 
   return hasAnyProduct && (

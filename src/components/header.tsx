@@ -3,11 +3,13 @@
 import { LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
-import { Button } from '@/components/ui/button';
-
-import { Skeleton } from '@/components/ui/skeleton';
 import { useCategories } from '@/context/CategoryContext';
-import { NewCategoryDrawer, NewProductForm, ThemeToggle } from '@/components';
+
+import { Button } from './ui/button';
+import { Skeleton } from './ui/skeleton';
+import { ThemeToggle } from './theme-toggle';
+import { NewProductForm } from './new-product-form';
+import { NewCategoryDrawer } from './new-category-drawer';
 
 export function Header() {
   const { isLoadingCategories } = useCategories();

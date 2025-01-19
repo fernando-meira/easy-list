@@ -5,8 +5,8 @@ import { Toaster } from '@/components/ui/sonner';
 
 import './globals.css';
 
-import { ThemeProvider } from '@/components';
 import { AuthProvider } from '@/providers/session';
+import { ThemeProvider } from '@/components/theme-provider';
 import { CategoriesContextProvider, ProductsContextProvider } from '@/context';
 
 const manrope = Manrope({
