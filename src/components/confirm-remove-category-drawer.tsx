@@ -28,7 +28,7 @@ export function ConfirmRemoveCategoryDrawer({ item, open, onOpenChange }: Confir
 
   return item && (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent className='max-w-3xl my-0 mx-auto'>
         <DrawerHeader>
           <DrawerTitle>{item.name}</DrawerTitle>
 

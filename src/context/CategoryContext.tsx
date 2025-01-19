@@ -46,9 +46,12 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
     const { data } = await response.json();
 
+    const orderCategories = categories.sort((categoryA, categoryB) => new Date(categoryA.createdAt).getTime() - new Date(categoryB.createdAt).getTime());
+
+    setCategories([...orderCategories, data]);
+
     toast('Categoria criada com sucesso');
 
-    setCategories([...categories, data]);
   };
 
   const removeCategory = async (id: string) => {
@@ -79,9 +82,11 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
       if (!response.ok) throw new Error('Failed to fetch products');
 
-      const data = await response.json();
+      const data: CategoryProps[] = await response.json();
 
-      setCategories(data);
+      const orderCategories: CategoryProps[] = data.sort((categoryA, categoryB) => new Date(categoryA.createdAt).getTime() - new Date(categoryB.createdAt).getTime());
+
+      setCategories(orderCategories);
     } catch (err) {
       setErrorCategories(err instanceof Error ? err.message : 'An error occurred');
     } finally {
