@@ -1,8 +1,8 @@
 import { LucideShoppingCart, Trash2 } from 'lucide-react';
 
-import { Badge } from '../ui/badge';
+import { Badge } from './ui/badge';
 import { useProducts } from '@/context';
-import { Checkbox } from '../ui/checkbox';
+import { Checkbox } from './ui/checkbox';
 import { calculateProductValue } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StatusEnum, UnitEnum } from '@/types/enums';

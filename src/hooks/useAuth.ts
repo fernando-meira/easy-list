@@ -1,10 +1,10 @@
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export function useAuth(requireAuth = true) {
-  const { data: session, status } = useSession();
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     if (status === 'loading') return;

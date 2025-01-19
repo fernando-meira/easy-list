@@ -1,7 +1,10 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { CategoryList, Footer, Header, HomeLoading } from '@/components';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
+import { HomeLoading } from '@/components/home-loading';
+import { CategoryList } from '@/components/category-list';
 
 export default function Home() {
   const { status } = useAuth(true);

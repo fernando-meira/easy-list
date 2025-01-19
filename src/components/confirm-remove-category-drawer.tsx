@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { CategoryProps } from '@/types/interfaces';
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 
-interface ConfirmRemoveItemDrawerProps {
+interface ConfirmRemoveCategoryDrawerProps {
   open: boolean;
   item?: CategoryProps;
   onOpenChange: (open: boolean) => void;
 }
 
-export function ConfirmRemoveItemDrawer({ item, open, onOpenChange }: ConfirmRemoveItemDrawerProps) {
+export function ConfirmRemoveCategoryDrawer({ item, open, onOpenChange }: ConfirmRemoveCategoryDrawerProps) {
   const { removeCategory } = useCategories();
 
   const handleRemoveCategory = async () => {

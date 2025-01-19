@@ -2,8 +2,9 @@
 
 import React from 'react';
 
-import { ProductManagerSheet } from '@/components';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
+
+import { ProductManagerSheet } from './product-manager-sheet';
 
 export function NewProductForm() {
   const [openNewProductSheet, setOpenNewProductSheet] = React.useState<boolean>(false);
