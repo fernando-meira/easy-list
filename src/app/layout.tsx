@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 import { ThemeProvider } from '@/components';
+import { AuthProvider } from '@/providers/session';
 import { CategoriesContextProvider, ProductsContextProvider } from '@/context';
 
 const manrope = Manrope({
@@ -28,13 +29,15 @@ export default function RootLayout({
       <head />
       <body className={manrope.className} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <CategoriesContextProvider>
-            <ProductsContextProvider>
-              <Toaster />
+          <AuthProvider>
+            <CategoriesContextProvider>
+              <ProductsContextProvider>
+                <Toaster />
 
-              {children}
-            </ProductsContextProvider>
-          </CategoriesContextProvider>
+                {children}
+              </ProductsContextProvider>
+            </CategoriesContextProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
