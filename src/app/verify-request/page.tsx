@@ -23,7 +23,7 @@ export default function VerifyRequestPage() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Header isSimple />
 
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg text-center">
+      <div className="w-full max-w-md p-4 space-y-4 text-center">
         <h1 className="text-3xl font-bold">Verifique seu email</h1>
 
         <p className="text-muted-foreground">
@@ -39,7 +39,7 @@ export default function VerifyRequestPage() {
             </div>
           ) : (
             <div className="flex items-center flex-col gap-2">
-              Aguardando confirmação
+              Aguardando confirmação.
 
               <LoadingSpinner />
             </div>
