@@ -9,7 +9,7 @@ export default function Home() {
 
   if (status === 'loading') {
     return (
-      <div className="flex flex-col p-4 max-w-3xl">
+      <div className="flex flex-col m-auto p-4 max-w-3xl">
         <div className="flex items-center gap-2 animate-pulse">
           <Skeleton className="h-9 w-28" />
 

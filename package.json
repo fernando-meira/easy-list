@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "lint": "next lint",
     "build": "next build",
     "start": "next start",
+    "lint": "next lint",
     "lint:fix": "next lint --ext .ts --fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "migrate": "tsx src/scripts/run-migration.ts"
   },
   "dependencies": {
     "@auth/core": "^0.37.4",
