@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 const handler = NextAuth({
   ...authOptions,
   pages: {
-    resendVerificationRequest: '/api/auth/verify-request',
+    verifyRequest: '/api/auth/verify-request',
   },
 });
 
