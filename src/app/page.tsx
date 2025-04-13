@@ -22,8 +22,6 @@ export default function Home() {
       <div id="main-content" className="p-4 flex flex-col gap-4 w-full mt-20 pb-20">
         <CategoryCard />
       </div>
-
-      <Footer />
     </main>
   );
 }

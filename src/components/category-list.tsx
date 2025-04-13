@@ -11,7 +11,7 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Skeleton } from './ui/skeleton';
 import { ProductsList } from './product-list';
-// import { ProductListHeader } from './product-list-header';
+import { ProductListHeader } from './product-list-header';
 import { ProductManagerSheet } from './product-manager-sheet';
 import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
@@ -112,7 +112,7 @@ export function CategoryList() {
 
   return (
     <div className="w-full">
-      {/* <ProductListHeader /> */}
+      <ProductListHeader />
 
       {categoryList}
 

@@ -1,7 +1,8 @@
 'use client';
 
-import { LogOut } from 'lucide-react';
 import { useMemo } from 'react';
+import { HomeIcon, LogOut } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { useCategories } from '@/context/CategoryContext';
 
@@ -18,10 +19,14 @@ interface HeaderProps {
 
 export function Header({ isSimple }: HeaderProps) {
   const { isLoadingCategories } = useCategories();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const isHomePage = pathname === '/';
 
   const headerContent = useMemo(() => {
     const commonHeaderClass =
-      'fixed top-0 flex items-center z-10 justify-between w-full p-4 border-b bg-white/80 dark:bg-background max-w-3xl mx-auto';
+      'fixed top-0 flex items-center z-10 justify-between w-full p-4 border-b bg-white dark:bg-background max-w-3xl mx-auto';
 
     if (isSimple) {
       return (
@@ -35,7 +40,19 @@ export function Header({ isSimple }: HeaderProps) {
 
     return (
       <header className={commonHeaderClass}>
+
         <div className="flex items-center gap-2">
+          {!isHomePage && (
+            <Button
+              size="icon"
+              title="Home"
+              variant="ghost"
+              onClick={() => router.push('/')}
+            >
+              <HomeIcon className="h-5 w-5" />
+            </Button>
+          )}
+
           <Button
             size="icon"
             title="Sair"
@@ -56,14 +73,16 @@ export function Header({ isSimple }: HeaderProps) {
             </div>
           ) : (
             <>
-              <NewCategoryDrawer />
+              {isHomePage && (
+                <NewCategoryDrawer />
+              )}
               <NewProductForm />
             </>
           )}
         </div>
       </header>
     );
-  }, [isLoadingCategories, isSimple]);
+  }, [isLoadingCategories, isSimple, router, isHomePage]);
 
   return headerContent;
 }

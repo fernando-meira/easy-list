@@ -8,12 +8,14 @@ import { useAuth } from '@/hooks/useAuth';
 
 interface CategoriesContextType {
   categories: CategoryProps[];
+  selectedCategoryId?: string;
   isLoadingCategories: boolean;
   errorCategories: string | null;
   filteredCategory?: CategoryProps;
   filterCategory: (categoryId: string) => void;
   removeCategory: (id: string) => Promise<void>;
   setCategories: (categories: CategoryProps[]) => void;
+  setSelectedCategoryId: (categoryId: string) => void;
   addCategory: (category: CategoryProps) => Promise<void>;
 }
 
@@ -30,6 +32,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   const [filteredCategory, setFilteredCategory] = useState<CategoryProps>();
   const [errorCategories, setErrorCategories] = useState<string | null>(null);
   const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
 
   const addCategory = async (category: CategoryProps) => {
     const response = await fetch('/api/categories', {
@@ -128,7 +131,9 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         removeCategory,
         errorCategories,
         filteredCategory,
+        selectedCategoryId,
         isLoadingCategories,
+        setSelectedCategoryId,
       }}
     >
       {children}
