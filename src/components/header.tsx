@@ -21,7 +21,7 @@ export function Header({ isSimple }: HeaderProps) {
 
   const headerContent = useMemo(() => {
     const commonHeaderClass =
-      'fixed top-0 flex items-center z-10 justify-between w-full p-4 border-b bg-white/80 dark:bg-background max-w-3xl mx-auto shadow-sm';
+      'fixed top-0 flex items-center z-10 justify-between w-full p-4 border-b bg-white/80 dark:bg-background max-w-3xl mx-auto';
 
     if (isSimple) {
       return (
