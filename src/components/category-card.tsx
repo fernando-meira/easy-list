@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
-import { format } from 'date-fns';
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+import { Badge } from './ui/badge';
 import { Skeleton } from './ui/skeleton';
 import { useCategories } from '@/context';
 import { CategoryProps } from '@/types/interfaces';
 import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function CategoryCard() {
   const router = useRouter();
@@ -36,19 +36,21 @@ export function CategoryCard() {
         >
           <CardHeader>
             <div className="flex flex-row justify-between items-center">
-              <div className="flex flex-col">
-                <CardTitle>{category.name}</CardTitle>
+              <CardTitle>{category.name}</CardTitle>
 
-                <CardDescription>Criado em: {format(new Date(category.createdAt), 'dd/MM/yyyy')}</CardDescription>
+              <div className='flex gap-2'>
+                {category.products?.length ? <Badge variant="secondary" className="text-xs">{category.products?.length} produtos</Badge> : null}
+
+                <div onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedCategory(category);
+                  setOpenRemoveDrawer(true);
+                }} className="flex gap-2 bg-rose-100 dark:bg-background p-2 rounded cursor-pointer">
+                  <Trash2 className="h-4 w-4 text-rose-500" />
+                </div>
+
               </div>
 
-              <div onClick={(e) => {
-                e.stopPropagation();
-                setSelectedCategory(category);
-                setOpenRemoveDrawer(true);
-              }} className="cursor-pointer">
-                <Trash2 className="h-4 w-4 text-rose-500" />
-              </div>
             </div>
           </CardHeader>
 
