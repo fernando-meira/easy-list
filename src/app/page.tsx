@@ -2,7 +2,6 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
 import { HomeLoading } from '@/components/home-loading';
 import { CategoryCard } from '@/components/category-card';
 
