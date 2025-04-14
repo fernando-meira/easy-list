@@ -10,6 +10,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 function CategorySkeleton() {
   return (
     <div className="w-full space-y-2 mt-20 p-4">
+      <Skeleton className="h-9 w-28" />
+
       {Array.from({ length: 3 }).map((_, index) => (
         <Skeleton key={index} className="h-16 w-full" />
       ))}
