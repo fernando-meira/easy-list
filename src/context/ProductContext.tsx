@@ -40,7 +40,7 @@ interface ProductsProviderProps {
 export const ProductsContext = createContext({} as ProductsContextType);
 
 function ProductsContextProvider({ children }: ProductsProviderProps) {
-  const { categories, setCategories } = useCategories();
+  const { categories, setCategories, selectedCategoryId } = useCategories();
 
   const [error, setError] = useState<string | null>(null);
   const [hasAnyProduct, setHasAnyProduct] = useState(false);
@@ -50,28 +50,29 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     isLoading: false,
   });
 
-  const allProducts = useMemo(() => categories.flatMap((category) => category.products || []), [categories]);
+  const allProductsCategory = useMemo(() => categories.flatMap((category) => category._id === selectedCategoryId ? category.products || [] : []), [categories, selectedCategoryId]);
 
   const filteredProducts = useMemo(() => {
-    if (filter === StatusEnum.all) return allProducts;
-    if (filter === StatusEnum.inCart) return allProducts.filter(product => product.addToCart);
-    if (filter === StatusEnum.outOfCart) return allProducts.filter(product => !product.addToCart);
-    return allProducts;
-  }, [allProducts, filter]);
+    if (filter === StatusEnum.all) return allProductsCategory;
+    if (filter === StatusEnum.inCart) return allProductsCategory.filter(product => product.addToCart);
+    if (filter === StatusEnum.outOfCart) return allProductsCategory.filter(product => !product.addToCart);
+
+    return allProductsCategory;
+  }, [allProductsCategory, filter]);
 
   const allProductsWithoutPrice = useMemo(() => {
-    return allProducts.every((product) => !product.price || !product.quantity || !product.unit);
-  }, [allProducts]);
+    return allProductsCategory.every((product) => !product.price || !product.quantity || !product.unit);
+  }, [allProductsCategory]);
 
   const allProductsInCartWithoutPrice = useMemo(() =>
-    allProducts.filter((product) => product.addToCart)
+    allProductsCategory.filter((product) => product.addToCart)
       .every((product) => !product.price || !product.quantity || !product.unit),
-  [allProducts]
+  [allProductsCategory]
   );
 
   const verifyHasAnyProduct = useCallback(() => {
-    setHasAnyProduct(allProducts.length > 0);
-  }, [allProducts]);
+    setHasAnyProduct(allProductsCategory.length > 0);
+  }, [allProductsCategory]);
 
   const managerProduct = async ({ product }: { product: ProductProps }) => {
     try {
@@ -223,7 +224,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
   useEffect(() => {
     verifyHasAnyProduct();
-  }, [allProducts, verifyHasAnyProduct]);
+  }, [allProductsCategory, verifyHasAnyProduct]);
 
   return (
     <ProductsContext.Provider
@@ -238,8 +239,8 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         filteredProducts,
         isProductLoading,
         removeAllProducts,
-        products: allProducts,
         allProductsWithoutPrice,
+        products: allProductsCategory,
         allProductsInCartWithoutPrice,
       }}
     >
