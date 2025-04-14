@@ -1,4 +1,4 @@
-import { LucideShoppingCart, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 import { Badge } from './ui/badge';
 import { useProducts } from '@/context';
@@ -52,9 +52,6 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
 
               <div onClick={() => {setSelectedProducts(product); setOpenEditSheet(true);}} className="flex flex-1 gap-2 items-center cursor-pointer">
                 <div className="flex flex-1 gap-2 items-center">
-                  {product.addToCart && (
-                    <LucideShoppingCart className="h-4 w-4 text-teal-400" />
-                  )}
 
                   <strong>{product.name}</strong>
                 </div>
