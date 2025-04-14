@@ -43,7 +43,7 @@ interface ProductManagerSheetProps {
 export const ProductManagerSheet = ({ open, type, product, onOpenChange }: ProductManagerSheetProps) => {
   const { isSmallSize } = useWindowSize();
   const { managerProduct, isProductLoading } = useProducts();
-  const { categories, isLoadingCategories } = useCategories();
+  const { categories, selectedCategoryId, isLoadingCategories } = useCategories();
 
   const methods = useForm<ProductProps>({
     defaultValues: {
@@ -53,14 +53,14 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
       addToCart: false,
       unit: UnitEnum.unit,
       ...product,
-      categoryId: product?.category?._id || product?.categoryId || categories[0]?._id || '',
+      categoryId: selectedCategoryId || product?.category?._id || product?.categoryId || categories[0]?._id || '',
     },
   });
 
   const onSubmit = methods.handleSubmit((data: ProductProps) => {
     const productData = {
       ...data,
-      categoryId: data.categoryId,
+      categoryId: selectedCategoryId || data.categoryId,
     };
 
     managerProduct({ product: productData });
@@ -79,14 +79,14 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
       const data = await response.json();
       methods.reset({
         ...data,
-        categoryId: data.category?._id,
+        categoryId: selectedCategoryId || data.category?._id,
       });
     } catch (error) {
       console.error('Error fetching product:', error);
     } finally {
       setIsLoadingProduct(false);
     }
-  }, [methods]);
+  }, [methods, selectedCategoryId]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -95,7 +95,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
       fetchProduct(product._id);
     } else if (type === AddOrEditProductTypeEnum.add && categories.length > 0) {
       methods.reset({
-        categoryId: categories[0]?._id,
+        categoryId: selectedCategoryId,
         unit: UnitEnum.unit,
         name: '',
         price: '',
@@ -103,7 +103,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
         addToCart: false,
       }, { keepDefaultValues: true });
     }
-  }, [open, product?._id, type, categories.length, fetchProduct, categories, methods]);
+  }, [open, product?._id, type, categories.length, fetchProduct, categories, methods, selectedCategoryId]);
 
   const [unit, categoryId] = methods.watch(['unit', 'categoryId']);
 

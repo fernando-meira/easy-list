@@ -42,17 +42,6 @@ export function Header({ isSimple }: HeaderProps) {
       <header className={commonHeaderClass}>
 
         <div className="flex items-center gap-2">
-          {!isHomePage && (
-            <Button
-              size="icon"
-              title="Home"
-              variant="ghost"
-              onClick={() => router.push('/')}
-            >
-              <HomeIcon className="h-5 w-5" />
-            </Button>
-          )}
-
           <Button
             size="icon"
             title="Sair"
@@ -73,10 +62,20 @@ export function Header({ isSimple }: HeaderProps) {
             </div>
           ) : (
             <>
-              {isHomePage && (
-                <NewCategoryDrawer />
-              )}
-              <NewProductForm />
+              {!isHomePage ? (
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="icon"
+                    title="Home"
+                    variant="ghost"
+                    onClick={() => router.push('/')}
+                  >
+                    <HomeIcon className="h-4 w-4" />
+                  </Button>
+
+                  <NewProductForm />
+                </div>
+              ): <NewCategoryDrawer />}
             </>
           )}
         </div>
