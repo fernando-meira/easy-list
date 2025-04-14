@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Trash2 } from 'lucide-react';
 
 import { Badge } from './ui/badge';
@@ -17,11 +18,21 @@ interface ProductsListProps {
 export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }: ProductsListProps) => {
   const { removeProduct, toggleCart, filter, isProductLoading } = useProducts();
 
-  const productsToShow = category.products?.filter(product => {
-    if (filter === StatusEnum.all) return true;
-    if (filter === StatusEnum.inCart) return product.addToCart;
-    return !product.addToCart;
-  });
+  const productsToShow = useMemo(() => {
+    // Filtrar produtos com base no filtro
+    const filtered = category.products?.filter(product => {
+      if (filter === StatusEnum.all) return true;
+      if (filter === StatusEnum.inCart) return product.addToCart;
+      return !product.addToCart;
+    }) || [];
+
+    // Ordenar produtos por nome em ordem alfabética
+    return [...filtered].sort((a, b) => {
+      const nameA = (a.name || '').toLowerCase();
+      const nameB = (b.name || '').toLowerCase();
+      return nameA.localeCompare(nameB, 'pt-BR');
+    });
+  }, [category.products, filter]);
 
   if (!category || !productsToShow || productsToShow.length === 0) {
     return (

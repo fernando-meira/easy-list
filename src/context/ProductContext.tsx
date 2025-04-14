@@ -50,14 +50,32 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     isLoading: false,
   });
 
-  const allProductsCategory = useMemo(() => categories.flatMap((category) => category._id === selectedCategoryId ? category.products || [] : []), [categories, selectedCategoryId]);
+  const allProductsCategory = useMemo(() => {
+    // Obter todos os produtos da categoria selecionada
+    const products = categories.flatMap((category) =>
+      category._id === selectedCategoryId ? category.products || [] : []
+    );
+    // Ordenar produtos por nome em ordem alfabética (case insensitive)
+    // Criamos uma cópia do array para não modificar o original
+    return [...products].sort((a, b) => {
+      const nameA = (a.name || '').toLowerCase();
+      const nameB = (b.name || '').toLowerCase();
+      return nameA.localeCompare(nameB, 'pt-BR');
+    });
+  }, [categories, selectedCategoryId]);
 
   const filteredProducts = useMemo(() => {
-    if (filter === StatusEnum.all) return allProductsCategory;
-    if (filter === StatusEnum.inCart) return allProductsCategory.filter(product => product.addToCart);
-    if (filter === StatusEnum.outOfCart) return allProductsCategory.filter(product => !product.addToCart);
-
-    return allProductsCategory;
+    // Filtrar produtos com base no filtro selecionado
+    let result;
+    if (filter === StatusEnum.inCart) {
+      result = allProductsCategory.filter(product => product.addToCart);
+    } else if (filter === StatusEnum.outOfCart) {
+      result = allProductsCategory.filter(product => !product.addToCart);
+    } else {
+      result = allProductsCategory;
+    }
+    // Retornar os produtos filtrados (já ordenados)
+    return result;
   }, [allProductsCategory, filter]);
 
   const allProductsWithoutPrice = useMemo(() => {
