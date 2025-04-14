@@ -62,10 +62,10 @@ export function CategoryClient() {
     }
 
     return category ? (
-      <div className="w-full mt-20 p-4">
-        <h1 className="text-2xl font-bold mb-4">{category.name}</h1>
+      <div className="w-full mt-20 pb-14">
+        <h1 className="text-2xl font-bold p-2">{category.name}</h1>
 
-        <div className="mt-6">
+        <div className="mt-2">
           {category.products && category.products.length > 0 ? (
             <ProductsList
               category={category}
