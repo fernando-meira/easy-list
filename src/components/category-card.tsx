@@ -20,8 +20,8 @@ export function CategoryCard() {
   const renderContent = useMemo(() => {
     if (isLoadingCategories) {
       return Array.from({ length: 4 }).map((_, index) => (
-        <div className='flex flex-col gap-2 mb-4' key={index}>
-          <Skeleton className="h-24 w-full" />
+        <div className='flex flex-col gap-2 mt-4' key={index}>
+          <Skeleton className="h-16 w-full" />
         </div>
       ));
     }
@@ -30,12 +30,12 @@ export function CategoryCard() {
       return categories.map(category => {
         return <Card
           key={category._id}
-          className="w-full cursor-pointer mb-3 mt-4"
+          className="w-full cursor-pointer mb-2 mt-2"
           onClick={() => {
             router.push(`/category?id=${category._id}`);
           }}
         >
-          <CardHeader className='p-3'>
+          <CardHeader className='p-4'>
             <div className="flex flex-row justify-between items-center">
               <CardTitle>{category.name}</CardTitle>
 

@@ -42,7 +42,7 @@ export const ThemeToggle = () => {
   if (!mounted) {
     return (
       <ThemeButton toggleTheme={() => ({})}>
-        <SunIcon className="size-5" />
+        <SunIcon />
       </ThemeButton>
     );
   }
@@ -50,9 +50,9 @@ export const ThemeToggle = () => {
   return (
     <ThemeButton toggleTheme={toggleTheme}>
       {theme === 'light' ? (
-        <MoonIcon className="size-5" />
+        <MoonIcon />
       ) : (
-        <SunIcon className="size-5" />
+        <SunIcon />
       )}
     </ThemeButton>
   );
