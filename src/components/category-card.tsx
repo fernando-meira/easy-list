@@ -30,12 +30,12 @@ export function CategoryCard() {
       return categories.map(category => {
         return <Card
           key={category._id}
-          className="w-full cursor-pointer mb-3 mt-4"
+          className="w-full cursor-pointer mb-2 mt-2"
           onClick={() => {
             router.push(`/category?id=${category._id}`);
           }}
         >
-          <CardHeader className='p-3'>
+          <CardHeader className='p-4'>
             <div className="flex flex-row justify-between items-center">
               <CardTitle>{category.name}</CardTitle>
 

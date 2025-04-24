@@ -48,33 +48,32 @@ export function Header({ isSimple }: HeaderProps) {
             variant="ghost"
             onClick={useSignOut}
           >
-            <LogOut className="h-5 w-5" />
+            <LogOut />
           </Button>
 
           <ThemeToggle />
+
+          {!isHomePage && (
+            <Button
+              size="icon"
+              title="Home"
+              variant="ghost"
+              onClick={() => router.push('/')}
+            >
+              <HomeIcon />
+            </Button>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
           {isLoadingCategories ? (
             <div className="flex items-center gap-2 animate-pulse">
               <Skeleton className="h-9 w-28" />
-              <Skeleton className="h-9 w-9" />
             </div>
           ) : (
             <>
               {!isHomePage ? (
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="icon"
-                    title="Home"
-                    variant="ghost"
-                    onClick={() => router.push('/')}
-                  >
-                    <HomeIcon className="h-4 w-4" />
-                  </Button>
-
-                  <NewProductForm />
-                </div>
+                <NewProductForm />
               ): <NewCategoryDrawer />}
             </>
           )}
