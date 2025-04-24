@@ -44,9 +44,8 @@ export function Header({ isSimple }: HeaderProps) {
       <header className={commonHeaderClass}>
 
         <div className="flex items-center gap-2">
-          <Avatar>
-            <AvatarImage src={session?.user?.image ?? ''} />
-
+          <Avatar title={session?.user?.email?.slice(0, 2).toUpperCase()}>
+            <AvatarImage src='https://avatar.iran.liara.run/public' />
             <AvatarFallback>{session?.user?.email?.slice(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
 

@@ -20,8 +20,8 @@ export function CategoryCard() {
   const renderContent = useMemo(() => {
     if (isLoadingCategories) {
       return Array.from({ length: 4 }).map((_, index) => (
-        <div className='flex flex-col gap-2 mb-4' key={index}>
-          <Skeleton className="h-24 w-full" />
+        <div className='flex flex-col gap-2 mt-4' key={index}>
+          <Skeleton className="h-16 w-full" />
         </div>
       ));
     }

@@ -1,16 +1,23 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useCategories } from '@/context';
-import PageTitle from '@/components/page-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductsList } from '@/components/product-list';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
 import { CategorySelect } from '@/components/category-select';
 import { CategoryProps, ProductProps } from '@/types/interfaces';
 import { ProductManagerSheet } from '@/components/product-manager-sheet';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 
 export function CategoryClient() {
   const router = useRouter();
@@ -66,7 +73,19 @@ export function CategoryClient() {
     return category ? (
       <div>
         <div className="flex items-center gap-2 justify-between">
-          <PageTitle title="Categoria" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              </BreadcrumbItem>
+
+              <BreadcrumbSeparator />
+
+              <BreadcrumbItem>
+                <BreadcrumbPage>{category.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
           <CategorySelect />
         </div>
