@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useCategories } from '@/context';
+import PageTitle from '@/components/page-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductsList } from '@/components/product-list';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
@@ -62,8 +63,8 @@ export function CategoryClient() {
     }
 
     return category ? (
-      <div className="w-full mt-20 pb-14">
-        <h1 className="text-2xl font-bold p-2">{category.name}</h1>
+      <div>
+        <PageTitle title={category.name} />
 
         <div className="mt-2">
           {category.products && category.products.length > 0 ? (
