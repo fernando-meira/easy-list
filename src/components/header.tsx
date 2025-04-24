@@ -60,7 +60,7 @@ export function Header({ isSimple }: HeaderProps) {
               </TooltipTrigger>
 
               <TooltipContent>
-                <p>{session?.user?.email || session?.user?.email?.slice(0, 2).toUpperCase() || 'Usuário'}</p>
+                <p>{session?.user?.email?.slice(0, 2).toUpperCase() || 'Usuário'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
