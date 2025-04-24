@@ -4,6 +4,12 @@ import { useMemo } from 'react';
 import { LogOut } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import { useCategories } from '@/context/CategoryContext';
 
@@ -44,10 +50,20 @@ export function Header({ isSimple }: HeaderProps) {
       <header className={commonHeaderClass}>
 
         <div className="flex items-center gap-2">
-          <Avatar title={session?.user?.email?.slice(0, 2).toUpperCase()}>
-            <AvatarImage src='https://avatar.iran.liara.run/public' />
-            <AvatarFallback>{session?.user?.email?.slice(0, 2).toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Avatar className="cursor-pointer">
+                  <AvatarImage src='https://avatar.iran.liara.run/public' />
+                  <AvatarFallback>{session?.user?.email?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+
+              <TooltipContent>
+                <p>{session?.user?.email || session?.user?.email?.slice(0, 2).toUpperCase() || 'Usuário'}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           <div className="flex items-center gap-2">
             {isLoadingCategories ? (

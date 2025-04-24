@@ -90,7 +90,7 @@ export function CategoryClient() {
           <CategorySelect />
         </div>
 
-        <div className="mt-2">
+        <div className="mt-4">
           {category.products && category.products.length > 0 ? (
             <ProductsList
               category={category}
