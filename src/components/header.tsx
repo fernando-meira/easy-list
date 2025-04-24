@@ -1,14 +1,16 @@
 'use client';
 
 import { useMemo } from 'react';
-import { HomeIcon, LogOut } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { LogOut } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import { useCategories } from '@/context/CategoryContext';
 
 import { Button } from './ui/button';
 import { Skeleton } from './ui/skeleton';
 import { ThemeToggle } from './theme-toggle';
+import { useSession } from 'next-auth/react';
 import { useSignOut } from '@/hooks/useSignOut';
 import { NewProductForm } from './new-product-form';
 import { NewCategoryDrawer } from './new-category-drawer';
@@ -18,9 +20,9 @@ interface HeaderProps {
 }
 
 export function Header({ isSimple }: HeaderProps) {
-  const { isLoadingCategories } = useCategories();
-  const router = useRouter();
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const { isLoadingCategories } = useCategories();
 
   const isHomePage = pathname === '/';
 
@@ -42,6 +44,30 @@ export function Header({ isSimple }: HeaderProps) {
       <header className={commonHeaderClass}>
 
         <div className="flex items-center gap-2">
+          <Avatar>
+            <AvatarImage src={session?.user?.image ?? ''} />
+
+            <AvatarFallback>{session?.user?.email?.slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+
+          <div className="flex items-center gap-2">
+            {isLoadingCategories ? (
+              <div className="flex items-center gap-2 animate-pulse">
+                <Skeleton className="h-9 w-28" />
+              </div>
+            ) : (
+              <>
+                {!isHomePage ? (
+                  <NewProductForm />
+                ): <NewCategoryDrawer />}
+              </>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <ThemeToggle />
+
           <Button
             size="icon"
             title="Sair"
@@ -50,37 +76,10 @@ export function Header({ isSimple }: HeaderProps) {
           >
             <LogOut />
           </Button>
-
-          <ThemeToggle />
-
-          {!isHomePage && (
-            <Button
-              size="icon"
-              title="Home"
-              variant="ghost"
-              onClick={() => router.push('/')}
-            >
-              <HomeIcon />
-            </Button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {isLoadingCategories ? (
-            <div className="flex items-center gap-2 animate-pulse">
-              <Skeleton className="h-9 w-28" />
-            </div>
-          ) : (
-            <>
-              {!isHomePage ? (
-                <NewProductForm />
-              ): <NewCategoryDrawer />}
-            </>
-          )}
         </div>
       </header>
     );
-  }, [isLoadingCategories, isSimple, router, isHomePage]);
+  }, [isLoadingCategories, isSimple, isHomePage, session]);
 
   return headerContent;
 }
