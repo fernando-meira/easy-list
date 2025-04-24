@@ -8,6 +8,7 @@ import PageTitle from '@/components/page-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductsList } from '@/components/product-list';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
+import { CategorySelect } from '@/components/category-select';
 import { CategoryProps, ProductProps } from '@/types/interfaces';
 import { ProductManagerSheet } from '@/components/product-manager-sheet';
 
@@ -64,7 +65,11 @@ export function CategoryClient() {
 
     return category ? (
       <div>
-        <PageTitle title={category.name} />
+        <div className="flex items-center gap-2 justify-between">
+          <PageTitle title="Categoria" />
+
+          <CategorySelect />
+        </div>
 
         <div className="mt-2">
           {category.products && category.products.length > 0 ? (

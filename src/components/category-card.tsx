@@ -30,7 +30,7 @@ export function CategoryCard() {
       return categories.map(category => {
         return <Card
           key={category._id}
-          className="w-full cursor-pointer mb-3"
+          className="w-full cursor-pointer mb-3 mt-4"
           onClick={() => {
             router.push(`/category?id=${category._id}`);
           }}
