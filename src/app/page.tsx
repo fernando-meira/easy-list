@@ -1,8 +1,10 @@
 'use client';
 
+import { Main } from '@/components/main';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/header';
 import { HomeLoading } from '@/components/home-loading';
+import { MainContent } from '@/components/main-content';
 import { CategoryCard } from '@/components/category-card';
 
 export default function Home() {
@@ -15,12 +17,12 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col m-auto row-start-2 items-center sm:items-start h-screen max-w-3xl">
+    <Main>
       <Header />
 
-      <div id="main-content" className="p-4 flex flex-col gap-4 w-full mt-20 pb-20">
+      <MainContent>
         <CategoryCard />
-      </div>
-    </main>
+      </MainContent>
+    </Main>
   );
 }

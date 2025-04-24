@@ -2,10 +2,12 @@
 
 import { Suspense } from 'react';
 
+import { Main } from '@/components/main';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { CategoryClient } from './category-client';
 import { Skeleton } from '@/components/ui/skeleton';
+import { MainContent } from '@/components/main-content';
 
 function CategorySkeleton() {
   return (
@@ -21,14 +23,16 @@ function CategorySkeleton() {
 
 export default function Category() {
   return (
-    <main className="flex flex-col m-auto row-start-2 items-center sm:items-start h-screen max-w-3xl pb-14">
+    <Main>
       <Header />
 
       <Suspense fallback={<CategorySkeleton />}>
-        <CategoryClient />
+        <MainContent>
+          <CategoryClient />
+        </MainContent>
       </Suspense>
 
       <Footer />
-    </main>
+    </Main>
   );
 }

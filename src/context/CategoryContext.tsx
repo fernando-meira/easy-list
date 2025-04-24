@@ -3,8 +3,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import { toast } from 'sonner';
-import { CategoryProps } from '@/types/interfaces';
 import { useAuth } from '@/hooks/useAuth';
+import { CategoryProps } from '@/types/interfaces';
 
 interface CategoriesContextType {
   categories: CategoryProps[];
@@ -43,18 +43,17 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
     if (!response.ok) {
       toast('Erro ao criar categoria');
-
       throw new Error('Failed to create category');
     }
 
     const { data } = await response.json();
 
-    const orderCategories = categories.sort((categoryA, categoryB) => new Date(categoryA.createdAt).getTime() - new Date(categoryB.createdAt).getTime());
+    const updatedCategories = [...categories, data].sort((categoryA, categoryB) =>
+      categoryA.name.localeCompare(categoryB.name, 'pt-BR', { sensitivity: 'base' })
+    );
 
-    setCategories([...orderCategories, data]);
-
+    setCategories(updatedCategories);
     toast('Categoria criada com sucesso');
-
   };
 
   const removeCategory = async (id: string) => {
@@ -64,7 +63,6 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
     if (!response.ok) {
       toast('Erro ao remover categoria');
-
       return;
     }
 
@@ -72,7 +70,6 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
     if (status === 204) {
       setCategories(categories.filter(category => category._id !== id));
-
       toast('Categoria removida com sucesso');
     }
   };
@@ -80,14 +77,15 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   const fetchCategories = async () => {
     try {
       setIsLoadingCategories(true);
-
       const response = await fetch('/api/categories');
 
       if (!response.ok) throw new Error('Failed to fetch products');
 
       const data: CategoryProps[] = await response.json();
 
-      const orderCategories: CategoryProps[] = data.sort((categoryA, categoryB) => new Date(categoryA.createdAt).getTime() - new Date(categoryB.createdAt).getTime());
+      const orderCategories: CategoryProps[] = data.sort((categoryA, categoryB) =>
+        categoryA.name.localeCompare(categoryB.name, 'pt-BR', { sensitivity: 'base' })
+      );
 
       setCategories(orderCategories);
     } catch (err) {
@@ -100,7 +98,6 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   const filterCategory = useCallback((categoryId: string) => {
     if (!categoryId || categoryId === 'all') {
       setFilteredCategory(undefined);
-
       return;
     }
 
@@ -117,7 +114,6 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
   useEffect(() => {
     if (!session) return;
-
     fetchCategories();
   }, [session]);
 

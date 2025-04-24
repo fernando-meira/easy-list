@@ -3,11 +3,12 @@ import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { Badge } from './ui/badge';
+import PageTitle from './page-title';
 import { Skeleton } from './ui/skeleton';
 import { useCategories } from '@/context';
 import { CategoryProps } from '@/types/interfaces';
-import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
 
 export function CategoryCard() {
   const router = useRouter();
@@ -29,12 +30,12 @@ export function CategoryCard() {
       return categories.map(category => {
         return <Card
           key={category._id}
-          className="w-full cursor-pointer mb-4"
+          className="w-full cursor-pointer mb-3 mt-4"
           onClick={() => {
             router.push(`/category?id=${category._id}`);
           }}
         >
-          <CardHeader>
+          <CardHeader className='p-3'>
             <div className="flex flex-row justify-between items-center">
               <CardTitle>{category.name}</CardTitle>
 
@@ -64,7 +65,7 @@ export function CategoryCard() {
 
   return (
     <main>
-      <h1 className="text-2xl font-bold mb-4">Categorias</h1>
+      <PageTitle title="Categorias" />
 
       {renderContent}
     </main>
