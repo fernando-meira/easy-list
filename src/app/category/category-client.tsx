@@ -22,7 +22,7 @@ import {
 export function CategoryClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setSelectedCategoryId, filteredCategory } = useCategories();
+  const { setSelectedCategoryId, filteredCategory, selectedCategoryId, notFoundFilteredCategory } = useCategories();
 
   const categoryId = searchParams.get('id');
 
@@ -48,31 +48,42 @@ export function CategoryClient() {
       );
     }
 
-    return filteredCategory ? (
-      <div>
-        <div className="mt-4">
-          {filteredCategory.products && filteredCategory.products.length > 0 ? (
-            <ProductsList
-              category={filteredCategory}
-              setOpenEditSheet={setOpenEditSheet}
-              setSelectedProducts={setSelectedProducts}
-            />
-          ) : (
-            <p>Nenhum produto cadastrado nesta categoria.</p>
-          )}
+    if (!filteredCategory && notFoundFilteredCategory) {
+      return (
+        <div className="w-full space-y-2 mt-4">
+          <p>Categoria não encontrada.</p>
         </div>
+      );
+    }
 
-        <ProductManagerSheet
-          open={openEditSheet}
-          product={selectedProducts}
-          onOpenChange={setOpenEditSheet}
-          type={AddOrEditProductTypeEnum.edit}
-        />
-      </div>
-    ) : (
-      <p>Categoria não encontrada.</p>
-    );
-  }, [filteredCategory, isLoading, openEditSheet, selectedProducts]);
+    if (filteredCategory) {
+
+      return (
+        <div>
+          <div className="mt-4">
+            {filteredCategory.products && filteredCategory.products.length > 0 ? (
+              <ProductsList
+                category={filteredCategory}
+                setOpenEditSheet={setOpenEditSheet}
+                setSelectedProducts={setSelectedProducts}
+              />
+            ) : (
+              <p>Nenhum produto cadastrado nesta categoria.</p>
+            )}
+          </div>
+
+          <ProductManagerSheet
+            open={openEditSheet}
+            product={selectedProducts}
+            onOpenChange={setOpenEditSheet}
+            type={AddOrEditProductTypeEnum.edit}
+          />
+        </div>
+      );
+    }
+
+    return null;
+  }, [isLoading, filteredCategory, openEditSheet, selectedProducts, selectedCategoryId]);
 
   return (
     <main>

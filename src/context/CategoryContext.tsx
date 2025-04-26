@@ -11,6 +11,7 @@ interface CategoriesContextType {
   isLoadingCategories: boolean;
   errorCategories: string | null;
   filteredCategory?: CategoryProps;
+  notFoundFilteredCategory: boolean;
   fetchCategories: () => Promise<void>;
   removeCategory: (id: string) => Promise<void>;
   setSelectedCategoryId: (categoryId: string) => void;
@@ -26,10 +27,11 @@ export const CategoriesContext = createContext({} as CategoriesContextType);
 
 function CategoriesContextProvider({ children }: CategoryProviderProps) {
   const [categories, setCategories] = useState<CategoryProps[]>([]);
-  const [filteredCategory, setFilteredCategory] = useState<CategoryProps>();
   const [errorCategories, setErrorCategories] = useState<string | null>(null);
   const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
+  const [notFoundFilteredCategory, setNotFoundFilteredCategory] = useState<boolean>(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
+  const [filteredCategory, setFilteredCategory] = useState<CategoryProps | undefined>(undefined);
 
   const addCategory = async (category: CategoryProps) => {
     const response = await fetch('/api/categories', {
@@ -125,6 +127,8 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
       }
 
       setFilteredCategory(category);
+    } else {
+      setNotFoundFilteredCategory(true);
     }
   }, [selectedCategoryId, categories, fetchCategories, filterCategory]);
 
@@ -141,6 +145,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         selectedCategoryId,
         isLoadingCategories,
         setSelectedCategoryId,
+        notFoundFilteredCategory
       }}
     >
       {children}
