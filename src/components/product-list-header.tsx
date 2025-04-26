@@ -11,10 +11,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from './ui/label';
+import { CategorySelect } from './category-select';
 
 export function ProductListHeader() {
   const { filter, setFilter } = useProducts();
-  const { categories, filterCategory, filteredCategory, isLoadingCategories } = useCategories();
+  const { isLoadingCategories } = useCategories();
 
   return (
     <header className="flex items-center justify-between gap-4 w-full">
@@ -44,19 +45,7 @@ export function ProductListHeader() {
           <div className="flex flex-col gap-1" >
             <Label className="font-bold text-sm">Filtro de Categorias</Label>
 
-            <Select value={filteredCategory?._id || StatusEnum.all} onValueChange={(value) => {filterCategory(value);}}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Categorias" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value={StatusEnum.all}>{PrettyStatusEnum.all}</SelectItem>
-
-                {categories.map((category) => (
-                  <SelectItem key={category._id} value={category._id}>{category.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <CategorySelect />
           </div>
         </div>
       )}

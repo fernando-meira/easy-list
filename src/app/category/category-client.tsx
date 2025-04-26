@@ -1,7 +1,7 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useCategories } from '@/context';
 import { ProductProps } from '@/types/interfaces';
@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/breadcrumb';
 
 export function CategoryClient() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { setSelectedCategoryId, filteredCategory } = useCategories();
 
@@ -79,7 +80,7 @@ export function CategoryClient() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              <BreadcrumbLink onClick={() => router.push('/')} className="cursor-pointer">Home</BreadcrumbLink>
             </BreadcrumbItem>
 
             {filteredCategory?.name &&

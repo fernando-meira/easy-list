@@ -1,5 +1,17 @@
+export enum AuthStatusEnum {
+  loading = 'loading',
+  authenticated = 'authenticated',
+  unauthenticated = 'unauthenticated',
+}
+
+export enum PagesEnum {
+  home = '/',
+  login = '/login',
+  verifyRequest = 'verify-request'
+}
+
 export enum UnitEnum {
-  kg = 'kg(s)',
+  kg = 'kg',
   unit = 'uni.',
   grams = 'g.',
 }
