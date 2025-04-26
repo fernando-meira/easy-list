@@ -7,38 +7,38 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, D
 
 interface ConfirmRemoveCategoryDrawerProps {
   open: boolean;
-  item?: CategoryProps;
+  category?: CategoryProps;
   onOpenChange: (open: boolean) => void;
 }
 
-export function ConfirmRemoveCategoryDrawer({ item, open, onOpenChange }: ConfirmRemoveCategoryDrawerProps) {
+export function ConfirmRemoveCategoryDrawer({ category, open, onOpenChange }: ConfirmRemoveCategoryDrawerProps) {
   const { removeCategory } = useCategories();
 
   const handleRemoveCategory = async () => {
-    if (!item) {
-      toast('Categoria não encontrada');
+    if (!category) {
+      toast('Categoria não encontrada');
 
       return;
     }
 
-    removeCategory(item._id);
+    removeCategory(category._id);
 
     onOpenChange(false);
   };
 
-  return item && (
+  return category && (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className='max-w-3xl my-0 mx-auto'>
         <DrawerHeader>
-          <DrawerTitle>{item.name}</DrawerTitle>
+          <DrawerTitle>{category.name}</DrawerTitle>
 
           <DrawerDescription>
-            Tem certeza que deseja remover a categoria {item.name}?
+            Tem certeza que deseja remover a categoria {category.name}?
           </DrawerDescription>
         </DrawerHeader>
 
         <DrawerFooter className="mb-8">
-          <Button variant="destructive" onClick={handleRemoveCategory}>Remover {item.name}</Button>
+          <Button variant="destructive" onClick={handleRemoveCategory}>Remover {category.name}</Button>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
