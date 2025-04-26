@@ -22,7 +22,7 @@ import {
 export function CategoryClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setSelectedCategoryId, filteredCategory, selectedCategoryId, notFoundFilteredCategory } = useCategories();
+  const { setSelectedCategoryId, filteredCategory, notFoundFilteredCategory } = useCategories();
 
   const categoryId = searchParams.get('id');
 
@@ -83,7 +83,7 @@ export function CategoryClient() {
     }
 
     return null;
-  }, [isLoading, filteredCategory, openEditSheet, selectedProducts, selectedCategoryId]);
+  }, [isLoading, notFoundFilteredCategory, filteredCategory, openEditSheet, selectedProducts]);
 
   return (
     <main>

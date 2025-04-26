@@ -53,7 +53,7 @@ export function CategoryCard() {
 
           <Button
             onClick={() => handleRemoveClick(category)}
-            className="w-full bg-rose-100 dark:bg-primary-foreground hover:bg-rose-100 dark:hover:bg-primary-foreground flex items-center justify-center gap-2"
+            className="w-full bg-secondary dark:bg-primary-foreground hover:bg-secondary dark:hover:bg-primary-foreground flex items-center justify-center gap-2"
           >
             <Trash2 className="h-4 w-4 text-rose-500 dark:text-white" />
           </Button>
