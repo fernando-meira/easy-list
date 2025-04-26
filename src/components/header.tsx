@@ -54,13 +54,14 @@ export function Header({ isSimple }: HeaderProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Avatar className="cursor-pointer">
-                  <AvatarImage src='https://avatar.iran.liara.run/public' />
+                  <AvatarImage src='' />
+
                   <AvatarFallback>{session?.user?.email?.slice(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
               </TooltipTrigger>
 
               <TooltipContent>
-                <p>{session?.user?.email?.slice(0, 2).toUpperCase() || 'Usuário'}</p>
+                <p>{session?.user?.email || 'Usuário'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

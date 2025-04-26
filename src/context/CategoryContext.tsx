@@ -3,7 +3,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import { toast } from 'sonner';
-import { useAuth } from '@/hooks/useAuth';
 import { CategoryProps } from '@/types/interfaces';
 
 interface CategoriesContextType {
@@ -12,10 +11,10 @@ interface CategoriesContextType {
   isLoadingCategories: boolean;
   errorCategories: string | null;
   filteredCategory?: CategoryProps;
-  filterCategory: (categoryId: string) => void;
+  fetchCategories: () => Promise<void>;
   removeCategory: (id: string) => Promise<void>;
-  setCategories: (categories: CategoryProps[]) => void;
   setSelectedCategoryId: (categoryId: string) => void;
+  setCategories: (categories: CategoryProps[]) => void;
   addCategory: (category: CategoryProps) => Promise<void>;
 }
 
@@ -26,8 +25,6 @@ interface CategoryProviderProps {
 export const CategoriesContext = createContext({} as CategoriesContextType);
 
 function CategoriesContextProvider({ children }: CategoryProviderProps) {
-  const { session } = useAuth(false);
-
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [filteredCategory, setFilteredCategory] = useState<CategoryProps>();
   const [errorCategories, setErrorCategories] = useState<string | null>(null);
@@ -72,11 +69,12 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
       setCategories(categories.filter(category => category._id !== id));
       toast('Categoria removida com sucesso');
     }
-  };
+  } ;
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       setIsLoadingCategories(true);
+
       const response = await fetch('/api/categories');
 
       if (!response.ok) throw new Error('Failed to fetch products');
@@ -93,7 +91,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
     } finally {
       setIsLoadingCategories(false);
     }
-  };
+  }, []);
 
   const filterCategory = useCallback((categoryId: string) => {
     if (!categoryId || categoryId === 'all') {
@@ -113,9 +111,22 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   }, [categories, filterCategory, filteredCategory]);
 
   useEffect(() => {
-    if (!session) return;
-    fetchCategories();
-  }, [session]);
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+
+    if (selectedCategoryId && categories.length > 0) {
+      const category = categories.find(category => category._id === selectedCategoryId);
+
+      if (!category) {
+        toast('Categoria não encontrada');
+
+        return;
+      }
+
+      setFilteredCategory(category);
+    }
+  }, [selectedCategoryId, categories, fetchCategories, filterCategory]);
 
   return (
     <CategoriesContext.Provider
@@ -123,8 +134,8 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         categories,
         addCategory,
         setCategories,
-        filterCategory,
         removeCategory,
+        fetchCategories,
         errorCategories,
         filteredCategory,
         selectedCategoryId,

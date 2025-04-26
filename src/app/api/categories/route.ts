@@ -22,9 +22,34 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const url = new URL(request.url);
+    const categoryId = url.searchParams.get('id');
+
+    if (categoryId) {
+      const category = await Category.findOne({
+        _id: categoryId,
+        userId: token.sub
+      });
+
+      if (!category) {
+        return NextResponse.json(
+          { error: 'Categoria não encontrada' },
+          { status: 404 }
+        );
+      }
+
+      const products = await Product.find({ category: category._id });
+
+      const categoryWithProducts = {
+        ...category.toObject(),
+        products,
+      };
+
+      return NextResponse.json(categoryWithProducts, { status: 200 });
+    }
+
     const categories = await Category.find({ userId: token.sub }).sort({ createdAt: -1 });
 
-    // Fetch products for each category
     let categoriesWithProducts = await Promise.all(
       categories.map(async (category) => {
         const products = await Product.find({ category: category._id });
