@@ -6,7 +6,6 @@ import { Badge } from './ui/badge';
 import PageTitle from './page-title';
 import { Skeleton } from './ui/skeleton';
 import { useCategories } from '@/context';
-import { CategoryProps } from '@/types/interfaces';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
 
@@ -15,7 +14,6 @@ export function CategoryCard() {
   const { categories, isLoadingCategories } = useCategories();
 
   const [openRemoveDrawer, setOpenRemoveDrawer] = React.useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = React.useState<CategoryProps>();
 
   const renderContent = useMemo(() => {
     if (isLoadingCategories) {
@@ -44,7 +42,6 @@ export function CategoryCard() {
 
                 <div onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedCategory(category);
                   setOpenRemoveDrawer(true);
                 }} className="flex gap-2 bg-rose-100 dark:bg-background p-2 rounded cursor-pointer">
                   <Trash2 className="h-4 w-4 text-rose-500" />
@@ -55,13 +52,13 @@ export function CategoryCard() {
             </div>
           </CardHeader>
 
-          <ConfirmRemoveCategoryDrawer item={selectedCategory} open={openRemoveDrawer} onOpenChange={setOpenRemoveDrawer} />
+          <ConfirmRemoveCategoryDrawer open={openRemoveDrawer} onOpenChange={setOpenRemoveDrawer} />
         </Card>;
       });
     }
 
-    return [];
-  }, [categories, isLoadingCategories, openRemoveDrawer, router, selectedCategory]);
+    return null;
+  }, [categories, isLoadingCategories, openRemoveDrawer, router]);
 
   return (
     <main>

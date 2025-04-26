@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { AuthStatusEnum, PagesEnum } from '@/types/enums';
 
 export function useAuth(requireAuth = true) {
   const router = useRouter();
@@ -9,22 +10,22 @@ export function useAuth(requireAuth = true) {
   const isRedirectingRef = useRef(false);
 
   useEffect(() => {
-    if (status === 'loading' || isRedirectingRef.current) return;
+    if (status === AuthStatusEnum.loading || isRedirectingRef.current) return;
 
-    if (status === 'authenticated' && requireAuth) return;
+    if (status === AuthStatusEnum.authenticated && requireAuth) return;
 
-    if (status === 'unauthenticated' && requireAuth && !isRedirectingRef.current) {
+    if (status === AuthStatusEnum.unauthenticated && requireAuth && !isRedirectingRef.current) {
       isRedirectingRef.current = true;
 
-      router.push('/login');
+      router.push(PagesEnum.login);
 
       return;
     }
 
-    if (status === 'authenticated' && !requireAuth && !isRedirectingRef.current) {
+    if (status === AuthStatusEnum.authenticated && !requireAuth && !isRedirectingRef.current) {
       isRedirectingRef.current = true;
 
-      router.push('/');
+      router.push(PagesEnum.home);
 
       return;
     }
