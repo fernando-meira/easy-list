@@ -15,21 +15,34 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { ProductProps } from '@/types/interfaces';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onEditProduct?: (product: ProductProps) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  onEditProduct,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const handleCellClick = (cell: { column: { id: string } }, row: { original: unknown }) => {
+    if (!onEditProduct) return;
+
+    const columnId = cell.column.id;
+
+    if (columnId === 'select' || columnId === 'actions') return;
+
+    onEditProduct(row.original as ProductProps);
+  };
 
   return (
     <div className="rounded-md border">
@@ -61,12 +74,15 @@ export function DataTable<TData, TValue>({
                 className={index % 2 !== 0 ? 'bg-stone-100 dark:bg-muted/50' : ''}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    onClick={() => handleCellClick(cell, row)}
+                    className={cell.column.id !== 'select' && cell.column.id !== 'actions' ? 'cursor-pointer' : ''}
+                  >
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext()
-                    )
-                    }
+                    )}
                   </TableCell>
                 ))}
               </TableRow>

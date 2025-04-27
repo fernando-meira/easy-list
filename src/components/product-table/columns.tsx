@@ -21,12 +21,10 @@ export type ProductColumn = {
 export const columns = ({
   toggleCart,
   removeProduct,
-  onEditProduct,
   isProductLoading,
 }: {
   toggleCart: (id: string) => void;
   removeProduct: (id: string) => void;
-  onEditProduct: (product: ProductProps) => void;
   isProductLoading: { productId: string | null; isLoading: boolean };
 }): ColumnDef<ProductProps>[] => [
   {
@@ -61,10 +59,7 @@ export const columns = ({
     cell: ({ row }) => {
       const product = row.original;
       return (
-        <div
-          className="cursor-pointer"
-          onClick={() => onEditProduct(product)}
-        >
+        <div>
           <strong>{product.name}</strong>
         </div>
       );
