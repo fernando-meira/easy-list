@@ -111,10 +111,37 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
         const updatedProduct = await response.json();
 
-        setCategories(categories.map(category => ({
-          ...category,
-          products: category?.products?.map(product => product?._id === updatedProduct?._id ? updatedProduct : product)
-        })));
+        const oldCategory = categories.find(category =>
+          category.products?.some(product => product._id === updatedProduct._id)
+        );
+
+        if (oldCategory && oldCategory._id !== updatedProduct.category._id) {
+          setCategories(categories.map(category => {
+
+            if (category._id === oldCategory._id) {
+              return {
+                ...category,
+                products: (category.products || []).filter(p => p._id !== updatedProduct._id)
+              };
+            }
+
+            if (category._id === updatedProduct.category._id) {
+              return {
+                ...category,
+                products: [...(category.products || []), updatedProduct]
+              };
+            }
+
+            return category;
+          }));
+        } else {
+          setCategories(categories.map(category => ({
+            ...category,
+            products: category?.products?.map(product =>
+              product?._id === updatedProduct?._id ? updatedProduct : product
+            )
+          })));
+        }
 
         toast.success('Produto atualizado');
       } else {

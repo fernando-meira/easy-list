@@ -60,7 +60,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
   const onSubmit = methods.handleSubmit((data: ProductProps) => {
     const productData = {
       ...data,
-      categoryId: selectedCategoryId || data.categoryId,
+      categoryId: data.categoryId,
     };
 
     managerProduct({ product: productData });
@@ -185,6 +185,8 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                   required
                   value={categoryId}
                   onValueChange={(value: string) => {
+                    console.log({ value });
+
                     methods.setValue('categoryId', value, { shouldValidate: true });
                   }}
                 >
