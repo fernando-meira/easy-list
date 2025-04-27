@@ -3,12 +3,11 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
 
-import { Badge } from '../ui/badge';
-import { Checkbox } from '../ui/checkbox';
-import { calculateProductValue } from '@/utils';
 import { UnitEnum } from '@/types/enums';
-import { ProductProps } from '@/types/interfaces';
+import { Checkbox } from '../ui/checkbox';
 import { Skeleton } from '../ui/skeleton';
+import { calculateProductValue } from '@/utils';
+import { ProductProps } from '@/types/interfaces';
 
 export type ProductColumn = {
   id: string;
@@ -78,13 +77,13 @@ export const columns = ({
       const product = row.original;
       if (!product.price && !product.quantity) return null;
       return (
-        <Badge variant="outline" className="self-center text-xs">
+        <div className="text-xs">
           {calculateProductValue({
             price: String(product.price),
             unit: product.unit as UnitEnum,
             quantity: String(product.quantity),
           })}
-        </Badge>
+        </div>
       );
     },
   },
