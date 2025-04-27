@@ -46,9 +46,8 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
   const productColumns = columns({
     toggleCart,
     removeProduct,
-    onEditProduct: handleEditProduct,
     isProductLoading,
   });
 
-  return <DataTable columns={productColumns} data={productsToShow} />;
+  return <DataTable columns={productColumns} data={productsToShow} onEditProduct={handleEditProduct} />;
 };
