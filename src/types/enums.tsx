@@ -7,7 +7,7 @@ export enum AuthStatusEnum {
 export enum PagesEnum {
   home = '/',
   login = '/login',
-  verifyRequest = 'verify-request'
+  verifyRequest = '/verify-request'
 }
 
 export enum UnitEnum {

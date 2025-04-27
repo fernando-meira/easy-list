@@ -7,7 +7,7 @@ import './globals.css';
 
 import { AuthProvider } from '@/providers/session';
 import { ThemeProvider } from '@/components/theme-provider';
-import { CategoriesContextProvider, ProductsContextProvider } from '@/context';
+import { CategoriesContextProvider, ProductsContextProvider, UserContextProvider } from '@/context';
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -30,13 +30,15 @@ export default function RootLayout({
       <body className={manrope.className} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
-            <CategoriesContextProvider>
-              <ProductsContextProvider>
-                <Toaster />
+            <UserContextProvider>
+              <CategoriesContextProvider>
+                <ProductsContextProvider>
+                  <Toaster />
 
-                {children}
-              </ProductsContextProvider>
-            </CategoriesContextProvider>
+                  {children}
+                </ProductsContextProvider>
+              </CategoriesContextProvider>
+            </UserContextProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

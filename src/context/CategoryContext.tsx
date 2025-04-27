@@ -4,6 +4,8 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 import { toast } from 'sonner';
 import { CategoryProps } from '@/types/interfaces';
+import { useSession } from 'next-auth/react';
+import { AuthStatusEnum } from '@/types/enums';
 
 interface CategoriesContextType {
   categories: CategoryProps[];
@@ -11,7 +13,6 @@ interface CategoriesContextType {
   isLoadingCategories: boolean;
   errorCategories: string | null;
   filteredCategory?: CategoryProps;
-  notFoundFilteredCategory: boolean;
   fetchCategories: () => Promise<void>;
   removeCategory: (id: string) => Promise<void>;
   setSelectedCategoryId: (categoryId: string) => void;
@@ -26,10 +27,11 @@ interface CategoryProviderProps {
 export const CategoriesContext = createContext({} as CategoriesContextType);
 
 function CategoriesContextProvider({ children }: CategoryProviderProps) {
+  const { status: sessionStatus } = useSession();
+
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [errorCategories, setErrorCategories] = useState<string | null>(null);
   const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true);
-  const [notFoundFilteredCategory, setNotFoundFilteredCategory] = useState<boolean>(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
   const [filteredCategory, setFilteredCategory] = useState<CategoryProps | undefined>(undefined);
 
@@ -69,6 +71,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
     if (status === 204) {
       setCategories(categories.filter(category => category._id !== id));
+
       toast('Categoria removida com sucesso');
     }
   } ;
@@ -113,6 +116,10 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   }, [categories, filterCategory, filteredCategory]);
 
   useEffect(() => {
+    if (sessionStatus === AuthStatusEnum.loading || sessionStatus === AuthStatusEnum.unauthenticated) {
+      return;
+    }
+
     if (categories.length === 0) {
       fetchCategories();
     }
@@ -127,10 +134,8 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
       }
 
       setFilteredCategory(category);
-    } else {
-      setNotFoundFilteredCategory(true);
     }
-  }, [selectedCategoryId, categories, fetchCategories, filterCategory]);
+  }, [selectedCategoryId, categories, fetchCategories, filterCategory, sessionStatus]);
 
   return (
     <CategoriesContext.Provider
@@ -145,7 +150,6 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         selectedCategoryId,
         isLoadingCategories,
         setSelectedCategoryId,
-        notFoundFilteredCategory
       }}
     >
       {children}
