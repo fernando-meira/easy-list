@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { LogOut } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { ArrowLeft, LogOut } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Tooltip,
@@ -15,6 +15,7 @@ import { useCategories } from '@/context/CategoryContext';
 
 import { Button } from './ui/button';
 import { Skeleton } from './ui/skeleton';
+import { PagesEnum } from '@/types/enums';
 import { ThemeToggle } from './theme-toggle';
 import { useSession } from 'next-auth/react';
 import { useSignOut } from '@/hooks/useSignOut';
@@ -26,11 +27,13 @@ interface HeaderProps {
 }
 
 export function Header({ isSimple }: HeaderProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
   const { isLoadingCategories } = useCategories();
 
-  const isHomePage = pathname === '/';
+  const isHomePage = pathname === PagesEnum.home;
+  const isVerifyRequestPage = pathname === PagesEnum.verifyRequest;
 
   const headerContent = useMemo(() => {
     const commonHeaderClass =
@@ -39,8 +42,10 @@ export function Header({ isSimple }: HeaderProps) {
     if (isSimple) {
       return (
         <header className={commonHeaderClass}>
-          <div className="flex items-center gap-2 w-full justify-end">
-            <ThemeToggle />
+          <div className="flex items-center gap-2 w-full justify-between">
+            {isVerifyRequestPage && <ArrowLeft className="cursor-pointer" onClick={() => router.push(PagesEnum.login)} />}
+
+            <ThemeToggle/>
           </div>
         </header>
       );
@@ -95,7 +100,7 @@ export function Header({ isSimple }: HeaderProps) {
         </div>
       </header>
     );
-  }, [isLoadingCategories, isSimple, isHomePage, session]);
+  }, [isLoadingCategories, isSimple, isHomePage, session, isVerifyRequestPage, router]);
 
   return headerContent;
 }

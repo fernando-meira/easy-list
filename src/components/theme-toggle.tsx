@@ -20,7 +20,7 @@ const ThemeButton = ({
       variant="ghost"
       onClick={toggleTheme}
       aria-label="Toggle theme"
-      className="p-2 text-muted-foreground"
+      className="p-2 text-muted-foreground ml-auto"
     >
       {children}
     </Button>

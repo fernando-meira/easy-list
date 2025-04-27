@@ -10,7 +10,9 @@ import { useRouter } from 'next/navigation';
 import { MailCheck } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { useUser } from '@/context';
 import { useAuth } from '@/hooks/useAuth';
+import { PagesEnum } from '@/types/enums';
 import { Header } from '@/components/header';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -25,6 +27,8 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setInitialEmail } = useUser();
+
   const [isLoading, setIsLoading] = useState(false);
 
   useAuth(false);
@@ -38,6 +42,8 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    setInitialEmail(data.email);
+
     try {
       setIsLoading(true);
 
@@ -50,7 +56,7 @@ export default function LoginPage() {
         throw new Error(result.error);
       }
 
-      router.push('/verify-request');
+      router.push(PagesEnum.verifyRequest);
     } catch (error) {
       toast.error('Erro ao enviar o link de acesso. Tente novamente.');
 
@@ -83,7 +89,7 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="seu@email.com"
+              placeholder="email@email.com"
               {...register('email')}
             />
 

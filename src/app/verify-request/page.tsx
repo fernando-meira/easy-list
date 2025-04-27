@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
+import { useUser } from '@/context';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/header';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -11,6 +12,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 export default function VerifyRequestPage() {
   useAuth(false);
   const router = useRouter();
+  const { initialEmail } = useUser();
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function VerifyRequestPage() {
         <h1 className="text-3xl font-bold">Verifique seu email</h1>
 
         <p className="text-muted-foreground">
-          Um link de confirmação foi enviado para o seu email. Verifique a <strong>caixa de entrada</strong> ou <strong>spam</strong> e clique no link para acessar sua conta.
+          Um link de confirmação foi enviado para o email <b className="font-bold text-primary">{initialEmail}</b>. Verifique a <b className="font-bold text-primary">caixa de entrada</b> ou <b className="font-bold text-primary">spam</b> e clique no link para acessar sua conta.
         </p>
 
         <div className="text-sm text-muted-foreground">
