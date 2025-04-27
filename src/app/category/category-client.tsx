@@ -22,7 +22,7 @@ import {
 export function CategoryClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setSelectedCategoryId, filteredCategory, notFoundFilteredCategory } = useCategories();
+  const { setSelectedCategoryId, filteredCategory } = useCategories();
 
   const categoryId = searchParams.get('id');
 
@@ -48,7 +48,7 @@ export function CategoryClient() {
       );
     }
 
-    if (!filteredCategory && notFoundFilteredCategory) {
+    if (!filteredCategory) {
       return (
         <div className="w-full space-y-2 mt-4">
           <p>Categoria não encontrada.</p>
@@ -83,7 +83,7 @@ export function CategoryClient() {
     }
 
     return null;
-  }, [isLoading, notFoundFilteredCategory, filteredCategory, openEditSheet, selectedProducts]);
+  }, [isLoading, filteredCategory, openEditSheet, selectedProducts]);
 
   return (
     <main>
