@@ -14,13 +14,10 @@ import {
 import { useCategories } from '@/context/CategoryContext';
 
 import { Button } from './ui/button';
-import { Skeleton } from './ui/skeleton';
 import { PagesEnum } from '@/types/enums';
 import { ThemeToggle } from './theme-toggle';
 import { useSession } from 'next-auth/react';
 import { useSignOut } from '@/hooks/useSignOut';
-import { NewProductForm } from './new-product-form';
-import { NewCategoryDrawer } from './new-category-drawer';
 
 interface HeaderProps {
   isSimple?: boolean;
@@ -70,20 +67,6 @@ export function Header({ isSimple }: HeaderProps) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-
-          <div className="flex items-center gap-2">
-            {isLoadingCategories ? (
-              <div className="flex items-center gap-2 animate-pulse">
-                <Skeleton className="h-9 w-28" />
-              </div>
-            ) : (
-              <>
-                {!isHomePage ? (
-                  <NewProductForm />
-                ): <NewCategoryDrawer />}
-              </>
-            )}
-          </div>
         </div>
 
         <div>

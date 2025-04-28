@@ -111,7 +111,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
     <Sheet open={open} onOpenChange={onOpenChange} key={type}>
       {type === AddOrEditProductTypeEnum.add && (
         <SheetTrigger asChild>
-          <Button variant='secondary'><CirclePlus />Novo Produto</Button>
+          <Button className='w-full rounded-none p-6 rounded-t-sm bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-300 font-bold'><CirclePlus />Novo produto</Button>
         </SheetTrigger>
       )}
 
