@@ -38,7 +38,8 @@ export function CategoryCard() {
           key={category._id}
           className="w-full cursor-pointer mb-2 mt-2"
         >
-          <CardHeader className='p-4' onClick={() => {
+          <CardHeader className='p-4' onClick={(e) => {
+            e.preventDefault();
             router.push(`/category?id=${category._id}`);
           }}>
             <div className="flex flex-row justify-between items-center">

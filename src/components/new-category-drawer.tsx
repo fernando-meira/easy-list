@@ -3,8 +3,8 @@
 import React from 'react';
 
 import { useCategories } from '@/context';
-import { CirclePlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { ActionButton } from './action-button';
 import { Button } from '@/components/ui/button';
 import { CategoryProps } from '@/types/interfaces';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -30,7 +30,7 @@ export function NewCategoryDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button onClick={() => setOpen?.(true)} className='w-full rounded-none p-6 rounded-t-sm bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-300 font-bold'><CirclePlus />Nova categoria</Button>
+        <ActionButton text="Nova categoria" onClick={() => setOpen?.(true)} />
       </DrawerTrigger>
 
       <DrawerContent className='max-w-3xl my-0 mx-auto'>

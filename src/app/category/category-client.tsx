@@ -90,7 +90,11 @@ export function CategoryClient() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => router.push('/')} className="cursor-pointer">Home</BreadcrumbLink>
+              <BreadcrumbLink onClick={(e) => {
+                e.preventDefault();
+                router.push('/');
+              }}
+              className="cursor-pointer">Home</BreadcrumbLink>
             </BreadcrumbItem>
 
             {filteredCategory?.name &&

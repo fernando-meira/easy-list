@@ -88,7 +88,10 @@ export const columns = ({
       const product = row.original;
       return (
         <div
-          onClick={() => removeProduct(product._id!)}
+          onClick={(e) => {
+            e.preventDefault();
+            removeProduct(product._id!);
+          }}
           className="min-w-8 min-h-8 w-full h-full flex justify-center items-center gap-2 bg-rose-100 dark:bg-transparent p-2 rounded cursor-pointer"
         >
           <Trash2 className="h-4 w-4 text-rose-500" />

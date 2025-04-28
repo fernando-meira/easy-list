@@ -34,13 +34,11 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const handleCellClick = (cell: { column: { id: string } }, row: { original: unknown }) => {
+  const handleCellClick = (e: React.MouseEvent, cell: { column: { id: string } }, row: { original: unknown }) => {
+    e.preventDefault();
     if (!onEditProduct) return;
-
     const columnId = cell.column.id;
-
     if (columnId === 'select' || columnId === 'actions') return;
-
     onEditProduct(row.original as ProductProps);
   };
 
@@ -76,7 +74,7 @@ export function DataTable<TData, TValue>({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    onClick={() => handleCellClick(cell, row)}
+                    onClick={(e) => handleCellClick(e, cell, row)}
                     className={cell.column.id !== 'select' && cell.column.id !== 'actions' ? 'cursor-pointer' : ''}
                   >
                     {flexRender(

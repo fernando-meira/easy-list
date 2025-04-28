@@ -4,7 +4,6 @@ import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { useCategories } from '@/context';
-import { CirclePlus } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { capitalizeFirstLetter } from '@/utils';
@@ -32,6 +31,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useCallback, useState } from 'react';
+import { ActionButton } from './action-button';
 
 interface ProductManagerSheetProps {
   open?: boolean;
@@ -111,7 +111,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
     <Sheet open={open} onOpenChange={onOpenChange} key={type}>
       {type === AddOrEditProductTypeEnum.add && (
         <SheetTrigger asChild>
-          <Button className='w-full rounded-none p-6 rounded-t-sm bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-300 font-bold'><CirclePlus />Novo produto</Button>
+          <ActionButton text="Novo produto" />
         </SheetTrigger>
       )}
 
