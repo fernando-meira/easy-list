@@ -30,7 +30,7 @@ export function NewCategoryDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button onClick={() => setOpen?.(true)} variant='secondary'><CirclePlus />Nova Categoria</Button>
+        <Button onClick={() => setOpen?.(true)} className='w-full rounded-none p-6 rounded-t-sm bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-300 font-bold'><CirclePlus />Nova categoria</Button>
       </DrawerTrigger>
 
       <DrawerContent className='max-w-3xl my-0 mx-auto'>
