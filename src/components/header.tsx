@@ -11,8 +11,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import { useCategories } from '@/context/CategoryContext';
-
 import { Button } from './ui/button';
 import { PagesEnum } from '@/types/enums';
 import { ThemeToggle } from './theme-toggle';
@@ -27,9 +25,7 @@ export function Header({ isSimple }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { isLoadingCategories } = useCategories();
 
-  const isHomePage = pathname === PagesEnum.home;
   const isVerifyRequestPage = pathname === PagesEnum.verifyRequest;
 
   const headerContent = useMemo(() => {
@@ -83,7 +79,7 @@ export function Header({ isSimple }: HeaderProps) {
         </div>
       </header>
     );
-  }, [isLoadingCategories, isSimple, isHomePage, session, isVerifyRequestPage, router]);
+  }, [isSimple, session, isVerifyRequestPage, router]);
 
   return headerContent;
 }
