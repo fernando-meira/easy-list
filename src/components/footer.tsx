@@ -18,7 +18,7 @@ export function Footer() {
   const isHomePage = pathname === PagesEnum.home;
 
   return (
-    <footer className="position: fixed bottom-0 w-full m-auto border-t max-w-3xl bg-white dark:bg-background">
+    <footer className="position: fixed bottom-0 w-full m-auto border-t rounded-t-sm max-w-3xl bg-white dark:bg-background">
       {!!products && !isHomePage && (!allProductsWithoutPrice || !allProductsInCartWithoutPrice) && (<div className="p-4 flex justify-between gap-4 mx-auto">
         {!allProductsWithoutPrice && (
           <p className="font-semibold">Total: {convertToCurrency(calculateTotalValue(products).totalProductsValue)}</p>
