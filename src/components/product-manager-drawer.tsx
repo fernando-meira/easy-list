@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ActionButton } from './action-button';
 import { capitalizeFirstLetter } from '@/utils';
-import { Button } from '@/components/ui/button';
 import { CurrencyInput } from './currency-input';
 import { ProductProps } from '@/types/interfaces';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -124,118 +123,122 @@ export const ProductManagerDrawer = ({ open, type, product, onOpenChange }: Prod
       {isLoading ? (
         <></>
       ) : (
-        <DrawerContent className="sm:w-[540px]">
-          <DrawerHeader className="space-y-2">
-            <DrawerTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar' : 'Adicionar'} produto</DrawerTitle>
+        <DrawerContent>
+          <div className="mx-auto w-full max-w-lg">
+            <DrawerHeader className="space-y-2">
+              <DrawerTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar' : 'Adicionar'} produto</DrawerTitle>
 
-            <DrawerDescription>
-              {type === AddOrEditProductTypeEnum.edit
-                ? 'Faça alterações no seu produto aqui. Clique em salvar quando terminar.'
-                : 'Adicione um novo produto aqui. Clique em salvar quando terminar.'}
-            </DrawerDescription>
-          </DrawerHeader>
+              <DrawerDescription>
+                {type === AddOrEditProductTypeEnum.edit
+                  ? 'Faça alterações no seu produto aqui. Clique em salvar quando terminar.'
+                  : 'Adicione um novo produto aqui. Clique em salvar quando terminar.'}
+              </DrawerDescription>
+            </DrawerHeader>
 
-          <FormProvider {...methods}>
-            <form onSubmit={onSubmit} className="space-y-4 px-4">
-              <div className='flex gap-2'>
-                <div>
-                  <Label htmlFor="name">Produto</Label>
+            <FormProvider {...methods}>
+              <form onSubmit={onSubmit} className="space-y-8">
+                <div className='px-4 space-y-4'>
+                  <div className='flex gap-2'>
+                    <div>
+                      <Label htmlFor="name">Produto</Label>
 
-                  <Input
-                    required
-                    id="name"
-                    type="text"
-                    placeholder="Nome do produto"
-                    {...methods.register('name')}
-                  />
+                      <Input
+                        required
+                        id="name"
+                        type="text"
+                        placeholder="Nome do produto"
+                        {...methods.register('name')}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="categoryId">Categoria</Label>
+
+                      <Select
+                        required
+                        value={categoryId}
+                        onValueChange={(value: string) => {
+                          methods.setValue('categoryId', value, { shouldValidate: true });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Categoria"/>
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {categories.map((category) => (
+                            <SelectItem key={category._id} value={category._id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <div>
+                      <CurrencyInput
+                        label="Preço"
+                        placeholder="Preço"
+                        value={methods.watch('price')}
+                        onValueChange={(value) => methods.setValue('price', value)}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="quantity">Qtd/Peso</Label>
+
+                      <Input
+                        min={0}
+                        step={0.1}
+                        id="quantity"
+                        type="number"
+                        placeholder={unit === UnitEnum.unit || unit === undefined ? 'Qtd.' : 'Peso'}
+                        {...methods.register('quantity')}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="unit">Medida</Label>
+
+                      <Select
+                        defaultValue={UnitEnum.unit}
+                        value={unit || UnitEnum.unit}
+                        onValueChange={(value: UnitEnum) => methods.setValue('unit', value)}
+                      >
+                        <SelectTrigger >
+                          <SelectValue placeholder="Medida"/>
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          <SelectItem value={UnitEnum.unit}>{capitalizeFirstLetter(UnitEnum.unit)}</SelectItem>
+
+                          <SelectItem value={UnitEnum.kg}>{capitalizeFirstLetter(UnitEnum.kg)}</SelectItem>
+
+                          <SelectItem value={UnitEnum.grams}>{capitalizeFirstLetter(UnitEnum.grams)}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="add-to-cart"
+                      checked={methods.watch('addToCart')}
+                      onCheckedChange={(checked) => methods.setValue('addToCart', checked as boolean)}
+                    />
+
+                    <Label htmlFor="add-to-cart">Adicionar ao carrinho</Label>
+                  </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="categoryId">Categoria</Label>
-
-                  <Select
-                    required
-                    value={categoryId}
-                    onValueChange={(value: string) => {
-                      methods.setValue('categoryId', value, { shouldValidate: true });
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Categoria"/>
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category._id} value={category._id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <div>
-                  <CurrencyInput
-                    label="Preço"
-                    placeholder="Preço"
-                    value={methods.watch('price')}
-                    onValueChange={(value) => methods.setValue('price', value)}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="quantity">Qtd/Peso</Label>
-
-                  <Input
-                    min={0}
-                    step={0.1}
-                    id="quantity"
-                    type="number"
-                    placeholder={unit === UnitEnum.unit || unit === undefined ? 'Qtd.' : 'Peso'}
-                    {...methods.register('quantity')}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="unit">Medida</Label>
-
-                  <Select
-                    defaultValue={UnitEnum.unit}
-                    value={unit || UnitEnum.unit}
-                    onValueChange={(value: UnitEnum) => methods.setValue('unit', value)}
-                  >
-                    <SelectTrigger >
-                      <SelectValue placeholder="Medida"/>
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      <SelectItem value={UnitEnum.unit}>{capitalizeFirstLetter(UnitEnum.unit)}</SelectItem>
-
-                      <SelectItem value={UnitEnum.kg}>{capitalizeFirstLetter(UnitEnum.kg)}</SelectItem>
-
-                      <SelectItem value={UnitEnum.grams}>{capitalizeFirstLetter(UnitEnum.grams)}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="add-to-cart"
-                  checked={methods.watch('addToCart')}
-                  onCheckedChange={(checked) => methods.setValue('addToCart', checked as boolean)}
-                />
-
-                <Label htmlFor="add-to-cart">Adicionar ao carrinho</Label>
-              </div>
-
-              <DrawerFooter>
-                <Button disabled={isLoadingCategories || isProductLoading.isLoading || isLoadingProduct} type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
-              </DrawerFooter>
-            </form>
-          </FormProvider>
+                <DrawerFooter className="mt-4">
+                  <ActionButton variant={type === AddOrEditProductTypeEnum.edit ? 'default' : 'destructive'} text={type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'} disabled={isLoadingCategories || isProductLoading.isLoading || isLoadingProduct} type="submit"/>
+                </DrawerFooter>
+              </form>
+            </FormProvider>
+          </div>
         </DrawerContent>
       )}
 
