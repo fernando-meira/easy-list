@@ -185,8 +185,6 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
                   required
                   value={categoryId}
                   onValueChange={(value: string) => {
-                    console.log({ value });
-
                     methods.setValue('categoryId', value, { shouldValidate: true });
                   }}
                 >

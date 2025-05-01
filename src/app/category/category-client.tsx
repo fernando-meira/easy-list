@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ProductsList } from '@/components/product-list';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
 import { CategorySelect } from '@/components/category-select';
-import { ProductManagerSheet } from '@/components/product-manager-sheet';
+import { ProductManagerDrawer } from '@/components/product-manager-drawer';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -71,7 +71,7 @@ export function CategoryClient() {
             )}
           </div>
 
-          <ProductManagerSheet
+          <ProductManagerDrawer
             open={openEditSheet}
             product={selectedProducts}
             onOpenChange={setOpenEditSheet}

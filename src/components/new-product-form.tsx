@@ -4,14 +4,14 @@ import React from 'react';
 
 import { AddOrEditProductTypeEnum } from '@/types/enums';
 
-import { ProductManagerSheet } from './product-manager-sheet';
+import { ProductManagerDrawer } from './product-manager-drawer';
 
 export function NewProductForm() {
   const [openNewProductSheet, setOpenNewProductSheet] = React.useState<boolean>(false);
 
   return (
     <>
-      <ProductManagerSheet
+      <ProductManagerDrawer
         open={openNewProductSheet}
         type={AddOrEditProductTypeEnum.add}
         onOpenChange={setOpenNewProductSheet}
