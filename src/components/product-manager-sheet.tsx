@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { ProductProps } from '@/types/interfaces';
 import useWindowSize from '@/hooks/useWindowSize';
 import { Checkbox } from '@/components/ui/checkbox';
-import { MoneyInput } from '@/components/money-input';
 import { useProducts } from '@/context/ProductContext';
 import { AddOrEditProductTypeEnum, UnitEnum } from '@/types/enums';
 import {
@@ -32,6 +31,7 @@ import {
 } from '@/components/ui/sheet';
 import { useCallback, useState } from 'react';
 import { ActionButton } from './action-button';
+import { CurrencyInput } from './currency-input';
 
 interface ProductManagerSheetProps {
   open?: boolean;
@@ -141,11 +141,11 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
             </div>
 
             <div className="space-y-2">
-              <MoneyInput
+              <CurrencyInput
                 label="Preço"
-                form={methods}
                 placeholder="Preço"
-                {...methods.register('price')}
+                value={methods.watch('price')}
+                onValueChange={(value) => methods.setValue('price', value)}
               />
             </div>
 
