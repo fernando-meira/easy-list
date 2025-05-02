@@ -138,8 +138,8 @@ export const ProductManagerDrawer = ({ open, type, product, onOpenChange }: Prod
             <FormProvider {...methods}>
               <form onSubmit={onSubmit} className="space-y-8">
                 <div className='px-4 space-y-4'>
-                  <div className='flex gap-2'>
-                    <div>
+                  <div className='flex gap-2 w-full'>
+                    <div className='w-full'>
                       <Label htmlFor="name">Produto</Label>
 
                       <Input
