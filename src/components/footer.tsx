@@ -13,10 +13,11 @@ export function Footer() {
   const { products, allProductsWithoutPrice, allProductsInCartWithoutPrice } = useProducts();
 
   const isHomePage = pathname === PagesEnum.home;
+  const shouldRenderPrice = !!products && !isHomePage && (!allProductsWithoutPrice || !allProductsInCartWithoutPrice);
 
   return (
-    <footer className="fixed bottom-0 w-full m-auto border-t rounded-t-sm max-w-3xl bg-white dark:bg-background">
-      {!!products && !isHomePage && (!allProductsWithoutPrice || !allProductsInCartWithoutPrice) && (<div className="p-4 flex justify-between gap-4 mx-auto">
+    <footer className={'fixed bottom-0 w-full m-auto rounded-t-sm max-w-3xl bg-white dark:bg-background'}>
+      {shouldRenderPrice && (<div className="p-4 flex justify-between gap-4 mx-auto">
         {!allProductsWithoutPrice && (
           <p className="font-semibold">Total: {convertToCurrency(calculateTotalValue(products).totalProductsValue)}</p>
         )}

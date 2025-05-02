@@ -8,6 +8,6 @@ interface ButtonActionProps extends ButtonProps {
 
 export function ActionButton({ text, ...rest }: ButtonActionProps) {
   return (
-    <Button {...rest} className='w-full p-6 text-primary rounded-none rounded-t-sm hover:bg-transparent font-bold border border-input bg-transparent'><CirclePlus />{text}</Button>
+    <Button {...rest} className='w-full p-6 text-primary rounded-none rounded-t-sm hover:bg-transparent font-bold border border-input border-b-0 bg-transparent'><CirclePlus />{text}</Button>
   );
 }
