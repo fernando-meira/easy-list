@@ -1,18 +1,22 @@
 'use client';
 
 import * as React from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useCallback, useState } from 'react';
 
+import { CirclePlus } from 'lucide-react';
 import { useCategories } from '@/context';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { ActionButton } from './action-button';
 import { capitalizeFirstLetter } from '@/utils';
-import { Button } from '@/components/ui/button';
+import { CurrencyInput } from './currency-input';
 import { ProductProps } from '@/types/interfaces';
 import useWindowSize from '@/hooks/useWindowSize';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProducts } from '@/context/ProductContext';
+import { FormProvider, useForm } from 'react-hook-form';
 import { AddOrEditProductTypeEnum, UnitEnum } from '@/types/enums';
+
 import {
   Select,
   SelectContent,
@@ -29,9 +33,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { useCallback, useState } from 'react';
-import { ActionButton } from './action-button';
-import { CurrencyInput } from './currency-input';
 
 interface ProductManagerSheetProps {
   open?: boolean;
@@ -111,7 +112,7 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
     <Sheet open={open} onOpenChange={onOpenChange} key={type}>
       {type === AddOrEditProductTypeEnum.add && (
         <SheetTrigger asChild>
-          <ActionButton text="Novo produto" />
+          <ActionButton text="Novo produto" icon={CirclePlus}/>
         </SheetTrigger>
       )}
 
@@ -214,7 +215,11 @@ export const ProductManagerSheet = ({ open, type, product, onOpenChange }: Produ
             </div>
 
             <SheetFooter>
-              <Button disabled={isLoadingCategories || isProductLoading.isLoading || isLoadingProduct} type="submit">{type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}</Button>
+              <ActionButton
+                type="submit"
+                disabled={isLoadingCategories || isProductLoading.isLoading || isLoadingProduct}
+                text={type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'}
+              />
             </SheetFooter>
           </form>
         </FormProvider>

@@ -1,7 +1,8 @@
 import { toast } from 'sonner';
 
+import { Trash } from 'lucide-react';
 import { useCategories } from '@/context';
-import { Button } from '@/components/ui/button';
+import { ActionButton } from './action-button';
 import { CategoryProps } from '@/types/interfaces';
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 
@@ -37,8 +38,8 @@ export function ConfirmRemoveCategoryDrawer({ category, open, onOpenChange }: Co
           </DrawerDescription>
         </DrawerHeader>
 
-        <DrawerFooter className="mb-8">
-          <Button variant="destructive" onClick={handleRemoveCategory}>Remover {category.name}</Button>
+        <DrawerFooter>
+          <ActionButton text={`Remover ${category.name}`} icon={Trash} onClick={handleRemoveCategory} />
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

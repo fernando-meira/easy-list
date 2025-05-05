@@ -2,6 +2,7 @@
 
 import React from 'react';
 
+import { CirclePlus } from 'lucide-react';
 import { useCategories } from '@/context';
 import { Input } from '@/components/ui/input';
 import { ActionButton } from './action-button';
@@ -29,7 +30,7 @@ export function NewCategoryDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <ActionButton text="Nova categoria" onClick={() => setOpen?.(true)} />
+        <ActionButton text="Nova categoria" onClick={() => setOpen?.(true)} icon={CirclePlus}/>
       </DrawerTrigger>
 
       <DrawerContent className='max-w-3xl my-0 mx-auto'>
@@ -57,7 +58,7 @@ export function NewCategoryDrawer() {
                 </div>
 
                 <DrawerFooter className="mt-4">
-                  <ActionButton text="Adicionar" type="submit" />
+                  <ActionButton text="Adicionar" type="submit" icon={CirclePlus}/>
                 </DrawerFooter>
               </form>
             </FormProvider>

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ActionButton } from './action-button';
 import { capitalizeFirstLetter } from '@/utils';
+import { CirclePlus, Edit } from 'lucide-react';
 import { CurrencyInput } from './currency-input';
 import { ProductProps } from '@/types/interfaces';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -116,7 +117,7 @@ export const ProductManagerDrawer = ({ open, type, product, onOpenChange }: Prod
     <Drawer open={open} onOpenChange={onOpenChange} key={type}>
       {type === AddOrEditProductTypeEnum.add && (
         <DrawerTrigger asChild>
-          <ActionButton text="Novo produto" />
+          <ActionButton text="Novo produto" icon={CirclePlus}/>
         </DrawerTrigger>
       )}
 
@@ -234,7 +235,7 @@ export const ProductManagerDrawer = ({ open, type, product, onOpenChange }: Prod
                 </div>
 
                 <DrawerFooter className="mt-4">
-                  <ActionButton variant={type === AddOrEditProductTypeEnum.edit ? 'default' : 'destructive'} text={type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'} disabled={isLoadingCategories || isProductLoading.isLoading || isLoadingProduct} type="submit"/>
+                  <ActionButton   icon={type === AddOrEditProductTypeEnum.edit ? Edit : CirclePlus} text={type === AddOrEditProductTypeEnum.edit ? 'Editar produto' : 'Adicionar produto'} disabled={isLoadingCategories || isProductLoading.isLoading || isLoadingProduct} type="submit"/>
                 </DrawerFooter>
               </form>
             </FormProvider>
