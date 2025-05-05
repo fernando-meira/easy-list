@@ -43,19 +43,28 @@ export const ProductManagerDrawer = ({ open, type, product, onOpenChange }: Prod
   const { managerProduct, isProductLoading } = useProducts();
   const { categories, selectedCategoryId, isLoadingCategories } = useCategories();
 
-  const methods = useForm<ProductProps>({
+  const methods = useForm<Omit<ProductProps, 'category'> & { categoryId: string }>({
     defaultValues: {
       name: '',
       price: '',
       quantity: '',
       addToCart: false,
       unit: UnitEnum.unit,
-      ...product,
+      ...product && {
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        quantity: product.quantity,
+        addToCart: product.addToCart,
+        unit: product.unit,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt
+      },
       categoryId: selectedCategoryId || product?.category?._id || product?.categoryId || categories[0]?._id || '',
     },
   });
 
-  const onSubmit = methods.handleSubmit((data: ProductProps) => {
+  const onSubmit = methods.handleSubmit((data) => {
     const productData = {
       ...data,
       categoryId: data.categoryId,
@@ -80,7 +89,14 @@ export const ProductManagerDrawer = ({ open, type, product, onOpenChange }: Prod
       const data = await response.json();
 
       methods.reset({
-        ...data,
+        _id: data._id,
+        name: data.name,
+        price: data.price,
+        quantity: data.quantity,
+        addToCart: data.addToCart,
+        unit: data.unit,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
         categoryId: selectedCategoryId || data.category?._id,
       });
     } catch (error) {

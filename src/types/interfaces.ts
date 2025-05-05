@@ -3,15 +3,7 @@ export interface CategoryProps {
   name: string;
   createdAt: string;
   updatedAt: string;
-  products?: Array<{
-    _id?: string;
-    name: string;
-    unit?: string;
-    price?: string;
-    quantity?: string;
-    categoryId?: string;
-    addToCart?: boolean;
-  }>;
+  products?: Array<ProductProps>;
 }
 
 export interface ProductProps {
@@ -22,5 +14,7 @@ export interface ProductProps {
   quantity?: string;
   categoryId?: string;
   addToCart?: boolean;
+  updatedAt: string;
+  createdAt: string;
   category?: CategoryProps;
 }
