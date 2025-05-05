@@ -30,17 +30,19 @@ export function ConfirmRemoveCategoryDrawer({ category, open, onOpenChange }: Co
   return category && (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className='max-w-3xl my-0 mx-auto'>
-        <DrawerHeader>
-          <DrawerTitle>{category.name}</DrawerTitle>
+        <div className="mx-auto w-full max-w-lg">
+          <DrawerHeader>
+            <DrawerTitle>{category.name}</DrawerTitle>
 
-          <DrawerDescription>
-            Tem certeza que deseja remover a categoria {category.name}?
-          </DrawerDescription>
-        </DrawerHeader>
+            <DrawerDescription>
+              Tem certeza que deseja remover a categoria {category.name}?
+            </DrawerDescription>
+          </DrawerHeader>
 
-        <DrawerFooter>
-          <ActionButton text={`Remover ${category.name}`} icon={Trash} onClick={handleRemoveCategory} />
-        </DrawerFooter>
+          <DrawerFooter>
+            <ActionButton text={`Remover ${category.name}`} icon={Trash} onClick={handleRemoveCategory} />
+          </DrawerFooter>
+        </div>
       </DrawerContent>
     </Drawer>
   );
