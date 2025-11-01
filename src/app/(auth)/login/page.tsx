@@ -161,7 +161,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="mt-20 min-h-screen flex justify-center bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Header isSimple />
 
       <div className="w-full max-w-md">
