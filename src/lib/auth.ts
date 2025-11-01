@@ -14,6 +14,11 @@ export const authOptions: AuthOptions = {
     EmailProvider({
       async sendVerificationRequest({ identifier, url }) {
         try {
+          if (!process.env.RESEND_API_KEY) {
+            console.error('RESEND_API_KEY não está configurada');
+            throw new Error('Serviço de email não configurado');
+          }
+
           const result = await resend.emails.send({
             from: process.env.EMAIL_FROM || 'Easy List <onboarding@resend.dev>',
             to: identifier,
@@ -30,7 +35,12 @@ export const authOptions: AuthOptions = {
             `,
           });
 
-          console.log('Email enviado:', result);
+          if (result.error) {
+            console.error('Erro do Resend ao enviar email:', result.error);
+            throw new Error(`Falha ao enviar email: ${result.error.message}`);
+          }
+
+          console.log('Email enviado com sucesso:', result.data);
         } catch (error) {
           console.error('Erro ao enviar email:', error);
           throw new Error('Erro ao enviar email de verificação');
