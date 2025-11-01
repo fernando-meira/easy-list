@@ -35,10 +35,11 @@ export function Header({ isSimple }: HeaderProps) {
     if (isSimple) {
       return (
         <header className={commonHeaderClass}>
-          <div className="flex items-center gap-2 w-full justify-between">
-            {isVerifyRequestPage && <ArrowLeft className="cursor-pointer" onClick={() => router.push(PagesEnum.login)} />}
-
-            <ThemeToggle/>
+          {isVerifyRequestPage && (
+            <ArrowLeft className="cursor-pointer" onClick={() => router.push(PagesEnum.login)} />
+          )}
+          <div className="ml-auto">
+            <ThemeToggle />
           </div>
         </header>
       );

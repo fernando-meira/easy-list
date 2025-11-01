@@ -34,6 +34,15 @@ export async function POST(request: Request) {
 
     const { email } = result.data;
 
+    // Verificar se a API key do Resend está configurada
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY não está configurada');
+      return NextResponse.json(
+        { error: 'Serviço de email não configurado' },
+        { status: 500 }
+      );
+    }
+
     // Gerar código de verificação
     const verificationCode = generateVerificationCode();
 
@@ -69,22 +78,45 @@ export async function POST(request: Request) {
     });
 
     // Enviar email com o código
-    await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'Easy List <onboarding@resend.dev>',
-      to: email,
-      subject: 'Código de acesso - Easy List',
-      html: `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #333;">Bem-vindo ao Easy List!</h1>
-      <p>Use o código abaixo para acessar sua conta:</p>
-      <div style="display: inline-block; padding: 12px 24px; background-color: #f5f5f5; color: #333; font-size: 24px; font-weight: bold; letter-spacing: 5px; margin: 16px 0; border-radius: 5px; border: 1px solid #ddd;">
-      ${verificationCode}
+    try {
+      const emailResult = await resend.emails.send({
+        from: process.env.EMAIL_FROM || 'Easy List <onboarding@resend.dev>',
+        to: email,
+        subject: 'Código de acesso - Easy List',
+        html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #333;">Bem-vindo ao Easy List!</h1>
+        <p>Use o código abaixo para acessar sua conta:</p>
+        <div style="display: inline-block; padding: 12px 24px; background-color: #f5f5f5; color: #333; font-size: 24px; font-weight: bold; letter-spacing: 5px; margin: 16px 0; border-radius: 5px; border: 1px solid #ddd;">
+        ${verificationCode}
+        </div>
+        <p>Este código expira em 10 minutos.</p>
+        <p style="color: #666; font-size: 14px;">Se você não solicitou este código, por favor ignore este email.</p>
       </div>
-      <p>Este código expira em 10 minutos.</p>
-      <p style="color: #666; font-size: 14px;">Se você não solicitou este código, por favor ignore este email.</p>
-    </div>
-    `,
-    });
+      `,
+      });
+
+      // Verificar se o email foi enviado com sucesso
+      if (emailResult.error) {
+        console.error('Erro do Resend ao enviar email:', emailResult.error);
+        throw new Error(`Falha ao enviar email: ${emailResult.error.message}`);
+      }
+
+      console.log('Email enviado com sucesso:', emailResult.data);
+    } catch (emailError) {
+      console.error('Erro ao enviar email:', emailError);
+
+      // Remover o código do banco já que o email falhou
+      await db.collection('verificationCodes').deleteOne({
+        email,
+        code: verificationCode,
+      });
+
+      return NextResponse.json(
+        { error: 'Erro ao enviar email. Por favor, tente novamente.' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
