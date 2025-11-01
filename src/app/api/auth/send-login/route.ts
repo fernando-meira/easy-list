@@ -12,9 +12,12 @@ const sendLoginSchema = z.object({
   email: z.string().email('Email inválido'),
 });
 
-// Função para gerar código alfanumérico de 4 caracteres
+// Função para gerar código numérico de 4 dígitos
 function generateVerificationCode() {
-  return crypto.randomBytes(2).toString('hex').toUpperCase();
+  // Gera um número aleatório entre 0000 e 9999
+  const code = Math.floor(Math.random() * 10000);
+  // Garante que sempre terá 4 dígitos (adiciona zeros à esquerda se necessário)
+  return code.toString().padStart(4, '0');
 }
 
 // Função para gerar token para magic link
@@ -96,7 +99,7 @@ export async function POST(request: Request) {
         html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #333; margin-bottom: 24px;">Bem-vindo ao Easy List!</h1>
-          
+
           <p style="color: #666; font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
             Você solicitou acesso à sua conta. Escolha uma das opções abaixo para continuar:
           </p>
@@ -109,7 +112,7 @@ export async function POST(request: Request) {
             <p style="color: #666; font-size: 14px; margin-bottom: 16px;">
               Clique no botão abaixo para acessar automaticamente:
             </p>
-            <a href="${magicLinkUrl}" 
+            <a href="${magicLinkUrl}"
                style="display: inline-block; padding: 12px 32px; background-color: #0d9488; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
               Acessar Easy List
             </a>

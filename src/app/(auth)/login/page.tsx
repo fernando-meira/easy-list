@@ -16,7 +16,9 @@ import { Header } from '@/components/header';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { OTPInput } from '@/components/otp-input';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { Controller } from 'react-hook-form';
 
 const emailSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -36,8 +38,8 @@ export default function LoginPage() {
   const { setInitialEmail } = useUser();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [showCodeForm, setShowCodeForm] = useState(false);
   const [currentEmail, setCurrentEmail] = useState('');
+  const [showCodeForm, setShowCodeForm] = useState(false);
 
   useAuth(false);
 
@@ -50,12 +52,17 @@ export default function LoginPage() {
   });
 
   const {
-    register: registerCode,
+    control: controlCode,
     handleSubmit: handleSubmitCode,
     formState: { errors: errorsCode },
     setValue: setCodeValue,
+    reset: resetCodeForm,
   } = useForm<CodeFormData>({
     resolver: zodResolver(codeSchema),
+    defaultValues: {
+      email: '',
+      code: '',
+    },
   });
 
   const sendLoginEmail = async (data: EmailFormData) => {
@@ -94,6 +101,8 @@ export default function LoginPage() {
   };
 
   const verifyCode = async (data: CodeFormData) => {
+    console.log('Verificando código:', data.code);
+
     try {
       setIsLoading(true);
 
@@ -148,22 +157,19 @@ export default function LoginPage() {
   const handleBackToEmailForm = () => {
     setShowCodeForm(false);
     setCurrentEmail('');
+    resetCodeForm();
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="mt-20 min-h-screen flex justify-center bg-background px-4">
       <Header isSimple />
 
       <div className="w-full max-w-md">
-        <div className="relative rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-2xl shadow-black/10 p-8 space-y-8">
+        <div className="relative rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-2xl shadow-black/10 p-4 space-y-4">
           <div className="space-y-4 text-center">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 ring-1 ring-primary/20">
               <Sparkles className="w-7 h-7 text-primary" />
             </div>
-
-            <h1 className="text-4xl font-bold tracking-tight">
-              Bem-vindo ao Easy List
-            </h1>
 
             {!showCodeForm ? (
               <p className="text-base text-muted-foreground/80">
@@ -171,7 +177,7 @@ export default function LoginPage() {
               </p>
             ) : (
               <p className="text-base text-muted-foreground/80">
-                Enviamos um email para <strong className="text-foreground font-semibold">{currentEmail}</strong> com um link e um código de acesso
+                Enviamos um email para <strong className="text-foreground font-semibold">{currentEmail}</strong>
               </p>
             )}
           </div>
@@ -241,7 +247,7 @@ export default function LoginPage() {
             </form>
           ) : (
             <div className="space-y-6">
-              <div className="rounded-xl border border-border/50 bg-muted/30 p-5 space-y-3">
+              <div className="rounded-xl border border-border/50 bg-muted/30 p-5 space-y-3 mb-6">
                 <p className="text-sm font-medium text-foreground/90">
                   Você pode acessar de duas formas:
                 </p>
@@ -261,24 +267,28 @@ export default function LoginPage() {
                 </ol>
               </div>
 
-              <form onSubmit={handleSubmitCode(verifyCode)} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="code" className="text-sm font-medium">
+              <form onSubmit={handleSubmitCode(verifyCode)} className="space-y-4">
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-center block">
                     Código de verificação
                   </Label>
 
-                  <Input
-                    id="code"
-                    type="text"
-                    maxLength={4}
-                    placeholder="XXXX"
-                    autoFocus
-                    className="text-center text-3xl tracking-[0.5em] font-bold uppercase h-16 bg-background/50 border-border/50 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all"
-                    {...registerCode('code')}
+                  <Controller
+                    name="code"
+                    control={controlCode}
+                    render={({ field }) => (
+                      <OTPInput
+                        value={field.value}
+                        onChange={field.onChange}
+                        length={4}
+                        disabled={isLoading}
+                        error={!!errorsCode.code}
+                      />
+                    )}
                   />
 
                   {errorsCode.code && (
-                    <p className="text-sm text-destructive flex items-center gap-1.5">
+                    <p className="text-sm text-destructive flex items-center justify-center gap-1.5">
                       <span className="inline-block w-1 h-1 rounded-full bg-destructive" />
                       {errorsCode.code.message}
                     </p>
