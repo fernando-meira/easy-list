@@ -18,7 +18,6 @@ import { AddOrEditProductTypeEnum, UnitEnum } from '@/types/enums';
 import {
   Drawer,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -143,12 +142,6 @@ export const ProductManagerDrawer = ({ open, type, product, onOpenChange }: Prod
         <DrawerContent className="flex flex-col h-[85vh]">
           <DrawerHeader className="space-y-2 flex-shrink-0">
             <DrawerTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar' : 'Adicionar'} produto</DrawerTitle>
-
-            <DrawerDescription>
-              {type === AddOrEditProductTypeEnum.edit
-                ? 'Faça alterações no seu produto aqui. Clique em salvar quando terminar.'
-                : 'Adicione um novo produto aqui. Clique em salvar quando terminar.'}
-            </DrawerDescription>
           </DrawerHeader>
 
           <FormProvider {...methods}>
