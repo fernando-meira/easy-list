@@ -140,7 +140,7 @@ export const ProductManagerDrawer = ({ open, type, product, onOpenChange }: Prod
       {isLoading ? (
         <></>
       ) : (
-        <DrawerContent className="flex flex-col">
+        <DrawerContent className="flex flex-col h-[85vh]">
           <DrawerHeader className="space-y-2 flex-shrink-0">
             <DrawerTitle>{type === AddOrEditProductTypeEnum.edit ? 'Editar' : 'Adicionar'} produto</DrawerTitle>
 
@@ -152,8 +152,8 @@ export const ProductManagerDrawer = ({ open, type, product, onOpenChange }: Prod
           </DrawerHeader>
 
           <FormProvider {...methods}>
-            <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0">
-              <div className='flex-1 overflow-y-auto px-4 space-y-4 pb-4'>
+            <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className='flex-1 overflow-y-auto overflow-x-hidden px-4 space-y-4 pb-4'>
                 <div className='flex gap-2 w-full'>
                   <div className='w-full'>
                     <Label htmlFor="name">Produto</Label>

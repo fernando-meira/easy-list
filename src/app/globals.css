@@ -70,3 +70,21 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevenir ajuste do viewport quando o teclado abre em mobile */
+@supports (-webkit-touch-callout: none) {
+  body {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+}
+
+/* Garantir que o drawer não seja afetado pelo teclado virtual */
+[data-vaul-drawer] {
+  touch-action: none;
+  will-change: transform;
+}
+
+[data-vaul-drawer][data-vaul-drawer-visible='true'] {
+  transform: translate3d(0, 0, 0) !important;
+}
