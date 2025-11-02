@@ -17,6 +17,13 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: 'Easy List',
   description: 'Sua lista de compras inteligente',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
+  },
 };
 
 export default function RootLayout({
