@@ -30,7 +30,7 @@ export function NewCategoryDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <ActionButton text="Nova categoria" onClick={() => setOpen?.(true)} icon={CirclePlus}/>
+        <ActionButton onClick={() => setOpen?.(true)} icon={CirclePlus}/>
       </DrawerTrigger>
 
       <DrawerContent className='max-w-3xl my-0 mx-auto'>
@@ -58,7 +58,7 @@ export function NewCategoryDrawer() {
                 </div>
 
                 <DrawerFooter className="mt-4">
-                  <ActionButton text="Adicionar" type="submit" icon={CirclePlus}/>
+                  <ActionButton type="submit" icon={CirclePlus}/>
                 </DrawerFooter>
               </form>
             </FormProvider>
