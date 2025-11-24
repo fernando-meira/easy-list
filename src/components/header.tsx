@@ -16,6 +16,7 @@ import { PagesEnum } from '@/types/enums';
 import { ThemeToggle } from './theme-toggle';
 import { useSession } from 'next-auth/react';
 import { useSignOut } from '@/hooks/useSignOut';
+import { getBiggestUsernamePart } from '@/utils';
 
 interface HeaderProps {
   isSimple?: boolean;
@@ -28,9 +29,11 @@ export function Header({ isSimple }: HeaderProps) {
 
   const isVerifyRequestPage = pathname === PagesEnum.verifyRequest;
 
+  const userName = session?.user?.email ? getBiggestUsernamePart(session.user.email) : undefined;
+
   const headerContent = useMemo(() => {
     const commonHeaderClass =
-      'fixed top-0 flex items-center z-10 justify-between w-full p-3 border-b bg-white dark:bg-background max-w-3xl mx-auto';
+      'fixed top-0 flex items-center z-10 justify-between w-full p-3 border-b bg-white dark:bg-background max-w-3xl mx-auto backdrop-blur-2xl';
 
     if (isSimple) {
       return (
@@ -48,7 +51,7 @@ export function Header({ isSimple }: HeaderProps) {
     return (
       <header className={commonHeaderClass}>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-center">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -64,6 +67,8 @@ export function Header({ isSimple }: HeaderProps) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+          {userName && <p className='font-bold text-xs'>{userName}</p>}
         </div>
 
         <div>
@@ -80,7 +85,7 @@ export function Header({ isSimple }: HeaderProps) {
         </div>
       </header>
     );
-  }, [isSimple, session, isVerifyRequestPage, router]);
+  }, [isSimple, session, isVerifyRequestPage, router, userName]);
 
   return headerContent;
 }

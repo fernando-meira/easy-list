@@ -4,7 +4,7 @@ import { LucideIcon } from 'lucide-react';
 import { Button, ButtonProps } from './ui/button';
 
 interface ButtonActionProps extends ButtonProps {
-  text: ReactNode;
+  text?: ReactNode;
   icon?: LucideIcon;
 }
 
