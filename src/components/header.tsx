@@ -51,7 +51,7 @@ export function Header({ isSimple }: HeaderProps) {
     return (
       <header className={commonHeaderClass}>
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-row gap-2 items-center">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

@@ -16,14 +16,12 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
   const { removeProduct, toggleCart, filter, isProductLoading } = useProducts();
 
   const productsToShow = useMemo(() => {
-    // Filtrar produtos com base no filtro
     const filtered = category.products?.filter(product => {
       if (filter === StatusEnum.all) return true;
       if (filter === StatusEnum.inCart) return product.addToCart;
       return !product.addToCart;
     }) || [];
 
-    // Ordenar produtos por nome em ordem alfabética
     return [...filtered].sort((a, b) => {
       const nameA = (a.name || '').toLowerCase();
       const nameB = (b.name || '').toLowerCase();
@@ -38,6 +36,11 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
       </div>);
   }
 
+  const productsInCart = productsToShow.filter(product => product.addToCart);
+  console.log('🥲 ~ productsInCart:', productsInCart);
+  const productsNotInCart = productsToShow.filter(product => !product.addToCart);
+  console.log('🥲 ~ productsNotInCart:', productsNotInCart);
+
   const handleEditProduct = (product: ProductProps) => {
     setSelectedProducts(product);
     setOpenEditSheet(true);
@@ -49,5 +52,26 @@ export const ProductsList = ({ category, setSelectedProducts, setOpenEditSheet }
     isProductLoading,
   });
 
-  return <DataTable columns={productColumns} data={productsToShow} onEditProduct={handleEditProduct} />;
+  return (
+    <div>
+      <p className='font-bold mb-2 text-sm'>Fora do carrinho</p>
+
+      <DataTable
+        columns={productColumns}
+        data={productsNotInCart}
+        onEditProduct={handleEditProduct}
+      />
+
+      <div className="my-4" />
+
+      <p className='mb-2 text-sm font-bold'>Carrinho</p>
+
+      <DataTable
+        data={productsInCart}
+        columns={productColumns}
+        onEditProduct={handleEditProduct}
+      />
+    </div>
+  );
+
 };

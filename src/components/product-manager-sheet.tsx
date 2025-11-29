@@ -267,9 +267,9 @@ export const ProductManagerSheet = ({
                 </div>
 
                 <ActionButton
+                  type="submit"
                   icon={type === AddOrEditProductTypeEnum.edit ? Edit : CirclePlus}
                   disabled={isLoadingCategories || isProductLoading.isLoading || isLoadingProduct}
-                  type="submit"
                 />
               </form>
             </FormProvider>
