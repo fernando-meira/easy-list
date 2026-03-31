@@ -4,6 +4,8 @@ type ResendLikeError = {
   statusCode?: number;
 };
 
+const EMAIL_FROM_FALLBACK = 'Easy List <onboarding@resend.dev>';
+
 function getErrorMessage(error: unknown) {
   if (!error) {
     return '';
@@ -21,12 +23,66 @@ function getErrorMessage(error: unknown) {
 }
 
 export function getEmailFromAddress() {
-  return process.env.EMAIL_FROM || 'Easy List <onboarding@resend.dev>';
+  return process.env.EMAIL_FROM || EMAIL_FROM_FALLBACK;
 }
 
-export function validateEmailConfig() {
+function containsLineBreak(value: string) {
+  return /[\r\n]/.test(value);
+}
+
+function isValidEmailAddress(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function parseEmailFrom(value: string) {
+  const trimmedValue = value.trim();
+  const namedMatch = trimmedValue.match(/^(?<name>.+?)\s*<(?<email>[^<>]+)>$/);
+
+  if (namedMatch?.groups?.email) {
+    return {
+      name: namedMatch.groups.name.trim(),
+      email: namedMatch.groups.email.trim(),
+    };
+  }
+
+  return {
+    name: '',
+    email: trimmedValue,
+  };
+}
+
+function isValidAppUrl(value: string) {
+  try {
+    const parsedUrl = new URL(value);
+
+    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function isLocalhostUrl(value: string) {
+  try {
+    const parsedUrl = new URL(value);
+    return ['localhost', '127.0.0.1', '0.0.0.0'].includes(parsedUrl.hostname);
+  } catch {
+    return false;
+  }
+}
+
+export function getAppBaseUrl() {
+  return process.env.NEXTAUTH_URL || 'http://localhost:3000';
+}
+
+interface ValidateEmailConfigOptions {
+  requireBaseUrl?: boolean;
+}
+
+export function validateEmailConfig(options: ValidateEmailConfigOptions = {}) {
   const issues: string[] = [];
-  const emailFrom = process.env.EMAIL_FROM;
+  const emailFrom = process.env.EMAIL_FROM?.trim() || '';
+  const baseUrl = process.env.NEXTAUTH_URL?.trim() || '';
+  const { requireBaseUrl = false } = options;
 
   if (!process.env.RESEND_API_KEY) {
     issues.push('RESEND_API_KEY não está configurada');
@@ -34,14 +90,45 @@ export function validateEmailConfig() {
 
   if (!emailFrom) {
     issues.push('EMAIL_FROM não está configurado');
-  } else if (process.env.NODE_ENV === 'production' && emailFrom.includes('onboarding@resend.dev')) {
-    issues.push('EMAIL_FROM usa onboarding@resend.dev em produção');
+  } else {
+    if (containsLineBreak(emailFrom)) {
+      issues.push('EMAIL_FROM contém quebra de linha');
+    }
+
+    const parsedFrom = parseEmailFrom(emailFrom);
+
+    if (!isValidEmailAddress(parsedFrom.email)) {
+      issues.push('EMAIL_FROM não contém um endereço de email válido');
+    }
+
+    if (process.env.NODE_ENV === 'production' && parsedFrom.email.includes('onboarding@resend.dev')) {
+      issues.push('EMAIL_FROM usa onboarding@resend.dev em produção');
+    }
+  }
+
+  if (requireBaseUrl) {
+    if (!baseUrl) {
+      issues.push('NEXTAUTH_URL não está configurado');
+    } else {
+      if (containsLineBreak(baseUrl)) {
+        issues.push('NEXTAUTH_URL contém quebra de linha');
+      }
+
+      if (!isValidAppUrl(baseUrl)) {
+        issues.push('NEXTAUTH_URL não é uma URL válida');
+      }
+
+      if (process.env.NODE_ENV === 'production' && isLocalhostUrl(baseUrl)) {
+        issues.push('NEXTAUTH_URL aponta para localhost em produção');
+      }
+    }
   }
 
   return {
     isValid: issues.length === 0,
     issues,
-    emailFrom: emailFrom || 'Easy List <onboarding@resend.dev>',
+    emailFrom: emailFrom || EMAIL_FROM_FALLBACK,
+    baseUrl: baseUrl || 'http://localhost:3000',
   };
 }
 

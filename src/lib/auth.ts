@@ -5,6 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { Resend } from 'resend';
 
 import {
+  getAppBaseUrl,
   getEmailFromAddress,
   getResendUserFacingError,
   logEmailError,
@@ -20,7 +21,7 @@ export const authOptions: AuthOptions = {
     EmailProvider({
       async sendVerificationRequest({ identifier, url }) {
         try {
-          const emailConfig = validateEmailConfig();
+          const emailConfig = validateEmailConfig({ requireBaseUrl: true });
 
           if (!emailConfig.isValid) {
             console.error('Configuração de email inválida no NextAuth', {
@@ -28,6 +29,7 @@ export const authOptions: AuthOptions = {
               environment: process.env.NODE_ENV,
               hasResendApiKey: Boolean(process.env.RESEND_API_KEY),
               emailFrom: emailConfig.emailFrom,
+              baseUrl: emailConfig.baseUrl,
             });
 
             throw new Error('Serviço de email configurado incorretamente. Verifique o ambiente.');
@@ -41,7 +43,7 @@ export const authOptions: AuthOptions = {
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h1 style="color: #333;">Bem-vindo ao Easy List!</h1>
                 <p>Clique no link abaixo para acessar sua conta:</p>
-                <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #0d9488; color: white; text-decoration: none; border-radius: 5px; margin: 16px 0;">
+                <a href="${new URL(url, getAppBaseUrl()).toString()}" style="display: inline-block; padding: 12px 24px; background-color: #0d9488; color: white; text-decoration: none; border-radius: 5px; margin: 16px 0;">
                   Acessar Easy List
                 </a>
                 <p style="color: #666; font-size: 14px;">Se você não solicitou este link, por favor ignore este email.</p>

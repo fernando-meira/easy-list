@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 import crypto from 'crypto';
 
 import {
+  getAppBaseUrl,
   getEmailFromAddress,
   getResendUserFacingError,
   logEmailError,
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
 
     const { email } = result.data;
 
-    const emailConfig = validateEmailConfig();
+    const emailConfig = validateEmailConfig({ requireBaseUrl: true });
 
     if (!emailConfig.isValid) {
       console.error('Configuração de email inválida', {
@@ -56,6 +57,7 @@ export async function POST(request: Request) {
         environment: process.env.NODE_ENV,
         hasResendApiKey: Boolean(process.env.RESEND_API_KEY),
         emailFrom: emailConfig.emailFrom,
+        baseUrl: emailConfig.baseUrl,
       });
 
       return NextResponse.json(
@@ -101,7 +103,7 @@ export async function POST(request: Request) {
     });
 
     // Criar URL do magic link
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const baseUrl = getAppBaseUrl();
     const magicLinkUrl = `${baseUrl}/api/auth/callback/email?token=${magicLinkToken}&email=${encodeURIComponent(email)}`;
 
     // Enviar email com código e magic link
