@@ -33,6 +33,14 @@ const codeSchema = z.object({
 
 type CodeFormData = z.infer<typeof codeSchema>;
 
+interface SendLoginResponse {
+  error?: string;
+  devPreview?: {
+    code: string;
+    magicLinkUrl: string;
+  };
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const { setInitialEmail } = useUser();
@@ -81,14 +89,20 @@ export default function LoginPage() {
         body: JSON.stringify({ email: data.email }),
       });
 
-      const responseData = await response.json();
+      const responseData: SendLoginResponse = await response.json();
 
       if (!response.ok) {
         throw new Error(responseData.error || 'Erro ao enviar email');
       }
 
       setShowCodeForm(true);
-      toast.success('Email enviado! Verifique sua caixa de entrada.');
+
+      if (responseData.devPreview) {
+        console.info('Login preview:', responseData.devPreview);
+        toast.success('Ambiente local: use o código exibido no console do navegador.');
+      } else {
+        toast.success('Email enviado! Verifique sua caixa de entrada.');
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -196,6 +210,7 @@ export default function LoginPage() {
                     autoFocus
                     id="email"
                     type="email"
+                    autoComplete="email"
                     placeholder="seu@email.com"
                     className="pl-10 h-11 bg-background/50 border-border/50 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all"
                     {...registerEmail('email')}
@@ -278,13 +293,34 @@ export default function LoginPage() {
                     name="code"
                     control={controlCode}
                     render={({ field }) => (
-                      <OTPInput
-                        value={field.value}
-                        onChange={field.onChange}
-                        length={4}
-                        disabled={isLoading}
-                        error={!!errorsCode.code}
-                      />
+                      <div className="space-y-3">
+                        <Input
+                          id="verification-code"
+                          name="code"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          autoComplete="one-time-code"
+                          className="sr-only"
+                          tabIndex={-1}
+                          aria-hidden="true"
+                          value={field.value}
+                          onChange={(event) => {
+                            const nextValue = event.target.value.replace(/\D/g, '').slice(0, 4);
+                            field.onChange(nextValue);
+                          }}
+                        />
+
+                        <OTPInput
+                          value={field.value}
+                          onChange={field.onChange}
+                          length={4}
+                          disabled={isLoading}
+                          error={!!errorsCode.code}
+                          name="verification-code"
+                          idPrefix="verification-code"
+                        />
+                      </div>
                     )}
                   />
 

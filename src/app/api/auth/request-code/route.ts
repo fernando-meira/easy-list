@@ -3,6 +3,12 @@ import { z } from 'zod';
 import { Resend } from 'resend';
 import crypto from 'crypto';
 
+import {
+  getEmailFromAddress,
+  getResendUserFacingError,
+  logEmailError,
+  validateEmailConfig,
+} from '@/lib/email-error';
 import { clientPromise } from '@/lib/mongodb-adapter';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -34,11 +40,18 @@ export async function POST(request: Request) {
 
     const { email } = result.data;
 
-    // Verificar se a API key do Resend está configurada
-    if (!process.env.RESEND_API_KEY) {
-      console.error('RESEND_API_KEY não está configurada');
+    const emailConfig = validateEmailConfig();
+
+    if (!emailConfig.isValid) {
+      console.error('Configuração de email inválida', {
+        issues: emailConfig.issues,
+        environment: process.env.NODE_ENV,
+        hasResendApiKey: Boolean(process.env.RESEND_API_KEY),
+        emailFrom: emailConfig.emailFrom,
+      });
+
       return NextResponse.json(
-        { error: 'Serviço de email não configurado' },
+        { error: 'Serviço de email configurado incorretamente. Verifique as variáveis de ambiente.' },
         { status: 500 }
       );
     }
@@ -80,7 +93,7 @@ export async function POST(request: Request) {
     // Enviar email com o código
     try {
       const emailResult = await resend.emails.send({
-        from: process.env.EMAIL_FROM || 'Easy List <onboarding@resend.dev>',
+        from: getEmailFromAddress(),
         to: email,
         subject: 'Código de acesso - Easy List',
         html: `
@@ -104,7 +117,11 @@ export async function POST(request: Request) {
 
       console.log('Email enviado com sucesso:', emailResult.data);
     } catch (emailError) {
-      console.error('Erro ao enviar email:', emailError);
+      logEmailError('Falha ao enviar código de acesso', emailError, {
+        to: email,
+        from: getEmailFromAddress(),
+        environment: process.env.NODE_ENV,
+      });
 
       // Remover o código do banco já que o email falhou
       await db.collection('verificationCodes').deleteOne({
@@ -113,7 +130,7 @@ export async function POST(request: Request) {
       });
 
       return NextResponse.json(
-        { error: 'Erro ao enviar email. Por favor, tente novamente.' },
+        { error: getResendUserFacingError(emailError) },
         { status: 500 }
       );
     }

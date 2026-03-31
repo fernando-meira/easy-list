@@ -5,10 +5,12 @@ import { cn } from '@/lib/utils';
 
 interface OTPInputProps {
   value: string;
-  onChange: (value: string) => void;
-  length?: number;
-  disabled?: boolean;
+  name?: string;
   error?: boolean;
+  length?: number;
+  idPrefix?: string;
+  disabled?: boolean;
+  onChange: (value: string) => void;
 }
 
 export function OTPInput({
@@ -17,6 +19,8 @@ export function OTPInput({
   length = 4,
   disabled = false,
   error = false,
+  name = 'otp',
+  idPrefix = 'otp-input',
 }: OTPInputProps) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -78,11 +82,15 @@ export function OTPInput({
       {Array.from({ length }).map((_, index) => (
         <input
           key={index}
+          id={`${idPrefix}-${index}`}
+          name={`${name}-${index}`}
           ref={(el) => {
             inputRefs.current[index] = el;
           }}
           type="text"
           inputMode="numeric"
+          pattern="[0-9]*"
+          autoComplete={index === 0 ? 'one-time-code' : 'off'}
           maxLength={1}
           value={value[index] || ''}
           onChange={(e) => handleChange(index, e)}

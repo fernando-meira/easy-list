@@ -4,6 +4,12 @@ import EmailProvider from 'next-auth/providers/email';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { Resend } from 'resend';
 
+import {
+  getEmailFromAddress,
+  getResendUserFacingError,
+  logEmailError,
+  validateEmailConfig,
+} from './email-error';
 import { clientPromise } from './mongodb-adapter';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -14,13 +20,21 @@ export const authOptions: AuthOptions = {
     EmailProvider({
       async sendVerificationRequest({ identifier, url }) {
         try {
-          if (!process.env.RESEND_API_KEY) {
-            console.error('RESEND_API_KEY não está configurada');
-            throw new Error('Serviço de email não configurado');
+          const emailConfig = validateEmailConfig();
+
+          if (!emailConfig.isValid) {
+            console.error('Configuração de email inválida no NextAuth', {
+              issues: emailConfig.issues,
+              environment: process.env.NODE_ENV,
+              hasResendApiKey: Boolean(process.env.RESEND_API_KEY),
+              emailFrom: emailConfig.emailFrom,
+            });
+
+            throw new Error('Serviço de email configurado incorretamente. Verifique o ambiente.');
           }
 
           const result = await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'Easy List <onboarding@resend.dev>',
+            from: getEmailFromAddress(),
             to: identifier,
             subject: 'Link de acesso - Easy List',
             html: `
@@ -42,8 +56,13 @@ export const authOptions: AuthOptions = {
 
           console.log('Email enviado com sucesso:', result.data);
         } catch (error) {
-          console.error('Erro ao enviar email:', error);
-          throw new Error('Erro ao enviar email de verificação');
+          logEmailError('Falha ao enviar email de verificação NextAuth', error, {
+            to: identifier,
+            from: getEmailFromAddress(),
+            environment: process.env.NODE_ENV,
+          });
+
+          throw new Error(getResendUserFacingError(error));
         }
       },
     }),
