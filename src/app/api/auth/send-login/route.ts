@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 import crypto from 'crypto';
 
 import { clientPromise } from '@/lib/mongodb-adapter';
+import { getMongoUserFacingError } from '@/lib/mongo-error';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -171,7 +172,7 @@ export async function POST(request: Request) {
     console.error('Erro ao processar solicitação de login:', error);
 
     return NextResponse.json(
-      { error: 'Erro ao processar solicitação' },
+      { error: getMongoUserFacingError(error) },
       { status: 500 }
     );
   }

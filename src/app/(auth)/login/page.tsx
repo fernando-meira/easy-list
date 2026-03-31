@@ -90,10 +90,11 @@ export default function LoginPage() {
       setShowCodeForm(true);
       toast.success('Email enviado! Verifique sua caixa de entrada.');
     } catch (error) {
-      toast.error('Erro ao enviar email. Tente novamente.');
-
       if (error instanceof Error) {
+        toast.error(error.message);
         console.error(error.message);
+      } else {
+        toast.error('Erro ao enviar email. Tente novamente.');
       }
     } finally {
       setIsLoading(false);
