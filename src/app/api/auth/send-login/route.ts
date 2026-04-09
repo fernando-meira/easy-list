@@ -8,7 +8,7 @@ import {
   getEmailFromAddress,
   getResendUserFacingError,
   logEmailError,
-  validateEmailConfig,
+  validateEmailConfig
 } from '@/lib/email-error';
 import { clientPromise } from '@/lib/mongodb-adapter';
 import { getMongoUserFacingError } from '@/lib/mongo-error';

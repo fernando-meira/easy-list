@@ -4,7 +4,7 @@ type ResendLikeError = {
   statusCode?: number;
 };
 
-const EMAIL_FROM_FALLBACK = 'Easy List <onboarding@resend.dev>';
+const EMAIL_FROM_FALLBACK = 'noreply@easy-list.site';
 
 function getErrorMessage(error: unknown) {
   if (!error) {
