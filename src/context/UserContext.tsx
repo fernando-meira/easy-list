@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { useState, useContext, createContext } from 'react';
 
 interface UserContextType {
   initialEmail: string | null;

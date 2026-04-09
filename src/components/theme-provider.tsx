@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
+import { useTheme, ThemeProvider as NextThemesProvider } from 'next-themes';
 
 function ThemeMetaEffect() {
   const { theme } = useTheme();

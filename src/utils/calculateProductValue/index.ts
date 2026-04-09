@@ -1,5 +1,5 @@
-import { convertToCurrency } from '@/utils';
 import { UnitEnum } from '@/types/enums';
+import { convertToCurrency } from '@/utils';
 
 interface CalculateProductValueProps {
   price: string;

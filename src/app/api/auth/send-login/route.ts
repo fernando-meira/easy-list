@@ -1,17 +1,18 @@
-import { NextResponse } from 'next/server';
-import { z } from 'zod';
-import { Resend } from 'resend';
 import crypto from 'crypto';
 
-import {
-  getAppBaseUrl,
-  getEmailFromAddress,
-  getResendUserFacingError,
-  logEmailError,
-  validateEmailConfig
-} from '@/lib/email-error';
+import { z } from 'zod';
+import { Resend } from 'resend';
+import { NextResponse } from 'next/server';
+
 import { clientPromise } from '@/lib/mongodb-adapter';
 import { getMongoUserFacingError } from '@/lib/mongo-error';
+import {
+  getAppBaseUrl,
+  logEmailError,
+  getEmailFromAddress,
+  validateEmailConfig,
+  getResendUserFacingError
+} from '@/lib/email-error';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 

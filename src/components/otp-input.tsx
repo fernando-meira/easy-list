@@ -1,6 +1,7 @@
 'use client';
 
-import { ChangeEvent, ClipboardEvent, KeyboardEvent, useRef } from 'react';
+import { useRef, ChangeEvent, KeyboardEvent, ClipboardEvent } from 'react';
+
 import { cn } from '@/lib/utils';
 
 interface OTPInputProps {

@@ -1,13 +1,14 @@
 'use client';
 
-import { ColumnDef } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
+import { ColumnDef } from '@tanstack/react-table';
 
 import { UnitEnum } from '@/types/enums';
-import { Checkbox } from '../ui/checkbox';
-import { Skeleton } from '../ui/skeleton';
 import { calculateProductValue } from '@/utils';
 import { ProductProps } from '@/types/interfaces';
+
+import { Checkbox } from '../ui/checkbox';
+import { Skeleton } from '../ui/skeleton';
 
 export type ProductColumn = {
   id: string;

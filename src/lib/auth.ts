@@ -1,17 +1,17 @@
-import { MongoDBAdapter } from '@auth/mongodb-adapter';
+import { Resend } from 'resend';
 import { AuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
+import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { Resend } from 'resend';
 
+import { clientPromise } from './mongodb-adapter';
 import {
   getAppBaseUrl,
-  getEmailFromAddress,
-  getResendUserFacingError,
   logEmailError,
+  getEmailFromAddress,
   validateEmailConfig,
+  getResendUserFacingError
 } from './email-error';
-import { clientPromise } from './mongodb-adapter';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 

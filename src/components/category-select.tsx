@@ -1,13 +1,15 @@
+import { useRouter } from 'next/navigation';
+
+import { useCategories } from '@/context';
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectTrigger,
 } from '@/components/ui/select';
+
 import { Label } from './ui/label';
-import { useCategories } from '@/context';
-import { useRouter } from 'next/navigation';
 
 interface CategorySelectProps {
   label?: string;

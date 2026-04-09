@@ -1,11 +1,13 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
+
 import { PagesEnum } from '@/types/enums';
 import { convertToCurrency } from '@/utils';
 import { calculateTotalValue } from '@/utils';
-import { usePathname } from 'next/navigation';
-import { NewProductForm } from './new-product-form';
 import { useProducts } from '@/context/ProductContext';
+
+import { NewProductForm } from './new-product-form';
 import { NewCategoryDrawer } from './new-category-drawer';
 
 export function Footer() {

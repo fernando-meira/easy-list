@@ -1,5 +1,5 @@
-import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
 
 import { Toaster } from '@/components/ui/sonner';
 
@@ -7,7 +7,7 @@ import './globals.css';
 
 import { AuthProvider } from '@/providers/session';
 import { ThemeProvider } from '@/components/theme-provider';
-import { CategoriesContextProvider, ProductsContextProvider, UserContextProvider } from '@/context';
+import { UserContextProvider, ProductsContextProvider, CategoriesContextProvider } from '@/context';
 
 const manrope = Manrope({
   subsets: ['latin'],

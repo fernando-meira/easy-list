@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { NextResponse } from 'next/server';
 
 import { clientPromise } from '@/lib/mongodb-adapter';
 

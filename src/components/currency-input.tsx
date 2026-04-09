@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { UseFormRegisterReturn } from 'react-hook-form';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { UseFormRegisterReturn } from 'react-hook-form';
 
 interface CurrencyInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id?: string;

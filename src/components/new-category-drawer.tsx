@@ -1,14 +1,23 @@
 'use client';
 
 import React from 'react';
-
 import { CirclePlus } from 'lucide-react';
+import { useForm, FormProvider } from 'react-hook-form';
+
 import { useCategories } from '@/context';
 import { Input } from '@/components/ui/input';
-import { ActionButton } from './action-button';
 import { CategoryProps } from '@/types/interfaces';
-import { FormProvider, useForm } from 'react-hook-form';
-import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import {
+  Drawer,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerContent,
+  DrawerTrigger,
+  DrawerDescription
+} from '@/components/ui/drawer';
+
+import { ActionButton } from './action-button';
 
 export function NewCategoryDrawer() {
   const { addCategory } = useCategories();

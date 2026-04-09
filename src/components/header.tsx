@@ -1,22 +1,18 @@
 'use client';
 
 import { useMemo } from 'react';
-import { ArrowLeft, LogOut } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-
-import { Button } from './ui/button';
-import { PagesEnum } from '@/types/enums';
-import { ThemeToggle } from './theme-toggle';
 import { useSession } from 'next-auth/react';
+import { LogOut, ArrowLeft } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
+
+import { PagesEnum } from '@/types/enums';
 import { useSignOut } from '@/hooks/useSignOut';
 import { getBiggestUsernamePart } from '@/utils';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+
+import { Button } from './ui/button';
+import { ThemeToggle } from './theme-toggle';
 
 interface HeaderProps {
   isSimple?: boolean;

@@ -1,6 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { useProducts } from '@/context/ProductContext';
-import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import {
+  Drawer,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerContent,
+  DrawerTrigger,
+  DrawerDescription
+} from '@/components/ui/drawer';
 
 export function ConfirmDeleteAllProductListDrawer() {
   const { removeAllProducts, hasAnyProduct } = useProducts();

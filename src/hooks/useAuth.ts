@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { AuthStatusEnum, PagesEnum } from '@/types/enums';
+
+import { PagesEnum, AuthStatusEnum } from '@/types/enums';
 
 export function useAuth(requireAuth = true) {
   const router = useRouter();

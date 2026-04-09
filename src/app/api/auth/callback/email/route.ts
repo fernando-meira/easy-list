@@ -1,5 +1,7 @@
-import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+
+import { NextResponse } from 'next/server';
+
 import { clientPromise } from '@/lib/mongodb-adapter';
 
 export async function GET(request: Request) {

@@ -1,10 +1,18 @@
 import { toast } from 'sonner';
-
 import { Trash } from 'lucide-react';
+
 import { useCategories } from '@/context';
-import { ActionButton } from './action-button';
 import { CategoryProps } from '@/types/interfaces';
-import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import {
+  Drawer,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerContent,
+  DrawerDescription
+} from '@/components/ui/drawer';
+
+import { ActionButton } from './action-button';
 
 interface ConfirmRemoveCategoryDrawerProps {
   open: boolean;

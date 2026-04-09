@@ -2,8 +2,8 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
 import connectDB from '@/lib/mongodb';
-import Category from '@/models/Category';
 import Product from '@/models/Product';
+import Category from '@/models/Category';
 
 interface CategoryData {
   name: string;

@@ -1,11 +1,11 @@
 'use client';
 
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-
 import { toast } from 'sonner';
-import { CategoryProps } from '@/types/interfaces';
 import { useSession } from 'next-auth/react';
+import React, { useState, useEffect, useContext, useCallback, createContext } from 'react';
+
 import { AuthStatusEnum } from '@/types/enums';
+import { CategoryProps } from '@/types/interfaces';
 
 interface CategoriesContextType {
   categories: CategoryProps[];

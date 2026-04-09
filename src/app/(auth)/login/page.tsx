@@ -1,24 +1,23 @@
 'use client';
 
-import { useState } from 'react';
-
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+import { Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight, Check, Mail, Sparkles } from 'lucide-react';
+import { Mail, Check, Sparkles, ArrowRight } from 'lucide-react';
 
 import { useUser } from '@/context';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/header';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { OTPInput } from '@/components/otp-input';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { Controller } from 'react-hook-form';
 
 const emailSchema = z.object({
   email: z.string().email('Email inválido'),

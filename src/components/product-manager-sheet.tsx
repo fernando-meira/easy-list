@@ -1,27 +1,28 @@
 'use client';
 
 import * as React from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { ArrowLeft, CirclePlus, Edit, ShoppingCart, X } from 'lucide-react';
+import { X, Edit, ArrowLeft, CirclePlus, ShoppingCart } from 'lucide-react';
 
 import { useCategories } from '@/context';
-import { useProducts } from '@/context/ProductContext';
-import { AddOrEditProductTypeEnum, UnitEnum } from '@/types/enums';
-import { ProductProps } from '@/types/interfaces';
-import { capitalizeFirstLetter } from '@/utils';
-import { ActionButton } from './action-button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { CurrencyInput } from './currency-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { capitalizeFirstLetter } from '@/utils';
+import { ProductProps } from '@/types/interfaces';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useProducts } from '@/context/ProductContext';
+import { UnitEnum, AddOrEditProductTypeEnum } from '@/types/enums';
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectTrigger,
 } from '@/components/ui/select';
+
+import { ActionButton } from './action-button';
+import { CurrencyInput } from './currency-input';
 
 interface ProductManagerSheetProps {
   open?: boolean;

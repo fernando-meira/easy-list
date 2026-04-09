@@ -1,17 +1,17 @@
-import React, { useCallback, useEffect } from 'react';
-
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { isBefore, subWeeks } from 'date-fns';
+import React, { useEffect, useCallback } from 'react';
 
-import { Badge } from './ui/badge';
-import PageTitle from './page-title';
-import { Skeleton } from './ui/skeleton';
 import { useCategories } from '@/context';
 import { Button } from '@/components/ui/button';
 import { CategoryProps } from '@/types/interfaces';
 import { Separator } from '@/components/ui/separator';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardTitle, CardHeader } from '@/components/ui/card';
+
+import { Badge } from './ui/badge';
+import PageTitle from './page-title';
+import { Skeleton } from './ui/skeleton';
 import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
 
 export function CategoryCard() {

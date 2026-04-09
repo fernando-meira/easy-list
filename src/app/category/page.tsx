@@ -3,11 +3,12 @@
 import { Suspense } from 'react';
 
 import { Main } from '@/components/main';
-import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { CategoryClient } from './category-client';
+import { Header } from '@/components/header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MainContent } from '@/components/main-content';
+
+import { CategoryClient } from './category-client';
 
 function CategorySkeleton() {
   return (

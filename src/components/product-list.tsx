@@ -2,9 +2,10 @@ import { useMemo } from 'react';
 
 import { useProducts } from '@/context';
 import { StatusEnum } from '@/types/enums';
+import { ProductProps, CategoryProps } from '@/types/interfaces';
+
 import { columns } from './product-table/columns';
 import { DataTable } from './product-table/data-table';
-import { CategoryProps, ProductProps } from '@/types/interfaces';
 
 interface ProductsListProps {
   category: CategoryProps;

@@ -1,15 +1,16 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCategories, useProducts } from '@/context';
-import { PrettyStatusEnum, StatusEnum } from '@/types/enums';
+import { useProducts, useCategories } from '@/context';
+import { StatusEnum, PrettyStatusEnum } from '@/types/enums';
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectTrigger,
 } from '@/components/ui/select';
+
 import { Label } from './ui/label';
 import { CategorySelect } from './category-select';
 
