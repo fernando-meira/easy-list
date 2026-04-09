@@ -36,12 +36,12 @@ function isValidEmailAddress(value: string) {
 
 function parseEmailFrom(value: string) {
   const trimmedValue = value.trim();
-  const namedMatch = trimmedValue.match(/^(?<name>.+?)\s*<(?<email>[^<>]+)>$/);
+  const match = trimmedValue.match(/^(.+?)\s*<([^<>]+)>$/);
 
-  if (namedMatch?.groups?.email) {
+  if (match?.[2]) {
     return {
-      name: namedMatch.groups.name.trim(),
-      email: namedMatch.groups.email.trim(),
+      name: match[1].trim(),
+      email: match[2].trim(),
     };
   }
 
