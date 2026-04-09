@@ -176,18 +176,6 @@ export async function POST(request: Request) {
         environment: process.env.NODE_ENV,
       });
 
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Falha no envio de email em desenvolvimento. Retornando dados de preview.');
-
-        return NextResponse.json({
-          success: true,
-          devPreview: {
-            code: verificationCode,
-            magicLinkUrl,
-          },
-        });
-      }
-
       // Remover o código do banco já que o email falhou
       await db.collection('verificationCodes').deleteOne({
         email,

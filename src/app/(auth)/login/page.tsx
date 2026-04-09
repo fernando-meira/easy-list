@@ -34,10 +34,6 @@ type CodeFormData = z.infer<typeof codeSchema>;
 
 interface SendLoginResponse {
   error?: string;
-  devPreview?: {
-    code: string;
-    magicLinkUrl: string;
-  };
 }
 
 export default function LoginPage() {
@@ -95,13 +91,7 @@ export default function LoginPage() {
       }
 
       setShowCodeForm(true);
-
-      if (responseData.devPreview) {
-        console.info('Login preview:', responseData.devPreview);
-        toast.success('Ambiente local: use o código exibido no console do navegador.');
-      } else {
-        toast.success('Email enviado! Verifique sua caixa de entrada.');
-      }
+      toast.success('Email enviado! Verifique sua caixa de entrada.');
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -244,6 +234,7 @@ export default function LoginPage() {
                 <p className="text-sm font-medium text-foreground/90">
                   Você receberá um email com:
                 </p>
+
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-center gap-2">
                     <div className="flex items-center justify-center w-5 h-5 rounded-md bg-primary/10">
@@ -251,6 +242,7 @@ export default function LoginPage() {
                     </div>
                     Um link para acesso direto
                   </li>
+
                   <li className="flex items-center gap-2">
                     <div className="flex items-center justify-center w-5 h-5 rounded-md bg-primary/10">
                       <Check className="w-3 h-3 text-primary" />
@@ -266,6 +258,7 @@ export default function LoginPage() {
                 <p className="text-sm font-medium text-foreground/90">
                   Você pode acessar de duas formas:
                 </p>
+
                 <ol className="space-y-2.5 text-sm text-muted-foreground">
                   <li className="flex items-start gap-3">
                     <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary font-semibold text-xs shrink-0 mt-0.5">
@@ -273,6 +266,7 @@ export default function LoginPage() {
                     </span>
                     <span>Clicando no link enviado no email</span>
                   </li>
+
                   <li className="flex items-start gap-3">
                     <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary font-semibold text-xs shrink-0 mt-0.5">
                       2
@@ -297,12 +291,12 @@ export default function LoginPage() {
                           id="verification-code"
                           name="code"
                           type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          autoComplete="one-time-code"
-                          className="sr-only"
                           tabIndex={-1}
+                          pattern="[0-9]*"
                           aria-hidden="true"
+                          className="sr-only"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
                           value={field.value}
                           onChange={(event) => {
                             const nextValue = event.target.value.replace(/\D/g, '').slice(0, 4);
@@ -311,12 +305,12 @@ export default function LoginPage() {
                         />
 
                         <OTPInput
-                          value={field.value}
-                          onChange={field.onChange}
                           length={4}
+                          value={field.value}
                           disabled={isLoading}
-                          error={!!errorsCode.code}
                           name="verification-code"
+                          onChange={field.onChange}
+                          error={!!errorsCode.code}
                           idPrefix="verification-code"
                         />
                       </div>
@@ -350,9 +344,9 @@ export default function LoginPage() {
 
               <Button
                 variant="outline"
-                className="w-full h-10 hover:bg-accent/50 transition-colors"
-                onClick={handleBackToEmailForm}
                 disabled={isLoading}
+                onClick={handleBackToEmailForm}
+                className="w-full h-10 hover:bg-accent/50 transition-colors"
               >
                 Voltar
               </Button>
