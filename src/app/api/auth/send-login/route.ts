@@ -50,6 +50,7 @@ export async function POST(request: Request) {
     const { email } = result.data;
 
     const emailConfig = validateEmailConfig({ requireBaseUrl: true });
+    console.log('🥲 ~ emailConfig:', emailConfig);
 
     if (!emailConfig.isValid) {
       console.error('Configuração de email inválida', {
