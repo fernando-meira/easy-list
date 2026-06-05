@@ -134,12 +134,6 @@ export const ProductManagerSheet = ({
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      {type === AddOrEditProductTypeEnum.add && (
-        <DialogPrimitive.Trigger asChild>
-          <ActionButton icon={CirclePlus} />
-        </DialogPrimitive.Trigger>
-      )}
-
       {isLoading ? null : (
         <DialogPrimitive.Portal>
           <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0" />
