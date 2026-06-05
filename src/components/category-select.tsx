@@ -29,7 +29,9 @@ export function CategorySelect() {
             {selectedName}
           </span>
         </div>
-        <ChevronDown className="w-[18px] h-[18px] text-[var(--color-ink)] shrink-0" />
+        <span className="shrink-0 flex items-center">
+          <ChevronDown className="w-[18px] h-[18px] text-[var(--color-ink)]" />
+        </span>
       </SelectTrigger>
 
       <SelectContent>
