@@ -2,13 +2,13 @@
 
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Check, Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 import { useUser } from '@/context';
 import { useAuth } from '@/hooks/useAuth';
@@ -27,13 +27,28 @@ type EmailFormData = z.infer<typeof emailSchema>;
 
 const codeSchema = z.object({
   email: z.string().email('Email inválido'),
-  code: z.string().length(4, 'O código deve ter 4 caracteres'),
+  code: z.string().length(4, 'O código deve ter 4 dígitos'),
 });
 
 type CodeFormData = z.infer<typeof codeSchema>;
 
-interface SendLoginResponse {
-  error?: string;
+function formatCountdown(seconds: number): string {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function ExpiredLinkBanner() {
+  const searchParams = useSearchParams();
+  if (searchParams.get('error') !== 'Verification') return null;
+  return (
+    <div
+      role="alert"
+      className="mb-4 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+    >
+      Seu link expirou ou já foi usado. Solicite um novo acesso.
+    </div>
+  );
 }
 
 export default function LoginPage() {
@@ -43,8 +58,17 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentEmail, setCurrentEmail] = useState('');
   const [showCodeForm, setShowCodeForm] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(600);
 
   useAuth(false);
+
+  useEffect(() => {
+    if (!showCodeForm || resendCountdown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCountdown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [showCodeForm, resendCountdown]);
 
   const {
     register: registerEmail,
@@ -62,10 +86,7 @@ export default function LoginPage() {
     reset: resetCodeForm,
   } = useForm<CodeFormData>({
     resolver: zodResolver(codeSchema),
-    defaultValues: {
-      email: '',
-      code: '',
-    },
+    defaultValues: { email: '', code: '' },
   });
 
   const sendLoginEmail = async (data: EmailFormData) => {
@@ -78,24 +99,22 @@ export default function LoginPage() {
 
       const response = await fetch('/api/auth/send-login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: data.email }),
       });
 
-      const responseData: SendLoginResponse = await response.json();
-
       if (!response.ok) {
-        throw new Error(responseData.error || 'Erro ao enviar email');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Erro ao enviar email. Tente novamente.');
       }
 
+      sessionStorage.setItem('auth_email', data.email);
+      setResendCountdown(600);
       setShowCodeForm(true);
       toast.success('Email enviado! Verifique sua caixa de entrada.');
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
-        console.error(error.message);
       } else {
         toast.error('Erro ao enviar email. Tente novamente.');
       }
@@ -104,21 +123,36 @@ export default function LoginPage() {
     }
   };
 
-  const verifyCode = async (data: CodeFormData) => {
-    console.log('Verificando código:', data.code);
+  const handleResend = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/auth/send-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: currentEmail }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Erro ao reenviar email. Tente novamente.');
+      }
+      setResendCountdown(600);
+      toast.success('Email reenviado! Verifique sua caixa de entrada.');
+    } catch (error) {
+      if (error instanceof Error) toast.error(error.message);
+      else toast.error('Erro ao reenviar email. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  const verifyCode = async (data: CodeFormData) => {
     try {
       setIsLoading(true);
 
       const verifyResponse = await fetch('/api/auth/verify-code', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-          code: data.code,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: data.email, code: data.code }),
       });
 
       const verifyData = await verifyResponse.json();
@@ -140,9 +174,7 @@ export default function LoginPage() {
       router.push('/');
     } catch (error) {
       let errorMessage = 'Erro ao verificar código. Tente novamente.';
-
       if (error instanceof Error) {
-        console.error(error.message);
         if (error.message.includes('Código expirado')) {
           errorMessage = 'Código expirado. Solicite um novo código.';
         } else if (error.message.includes('Código já utilizado')) {
@@ -151,7 +183,6 @@ export default function LoginPage() {
           errorMessage = 'Código inválido. Verifique e tente novamente.';
         }
       }
-
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -169,118 +200,78 @@ export default function LoginPage() {
       <Header isSimple />
 
       <div className="w-full max-w-md">
-        <div className="relative rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-2xl shadow-black/10 p-4 space-y-4">
-          <div className="space-y-4 text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 ring-1 ring-primary/20">
-              <Sparkles className="w-7 h-7 text-primary" />
-            </div>
+        <Suspense fallback={null}>
+          <ExpiredLinkBanner />
+        </Suspense>
 
-            {!showCodeForm ? (
-              <p className="text-base text-muted-foreground/80">
-                Digite seu email para acessar sua conta
-              </p>
-            ) : (
-              <p className="text-base text-muted-foreground/80">
-                Enviamos um email para <strong className="text-foreground font-semibold">{currentEmail}</strong>
-              </p>
-            )}
+        <div className="rounded-lg border border-border bg-card shadow-sm p-8 space-y-6">
+          {/* Progress indicator */}
+          <div className="space-y-1.5">
+            <p className="text-xs text-muted-foreground">
+              Passo {showCodeForm ? 2 : 1} de 2
+            </p>
+            <div className="h-1 bg-muted rounded-full">
+              <div
+                className={`h-1 bg-primary rounded-full transition-all duration-300 ${
+                  showCodeForm ? 'w-full' : 'w-1/2'
+                }`}
+              />
+            </div>
           </div>
 
           {!showCodeForm ? (
-            <form onSubmit={handleSubmitEmail(sendLoginEmail)} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email
-                </Label>
+            <>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight">Acesse sua conta</h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Digite seu email para continuar
+                </p>
+              </div>
 
-                <div className="relative group">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50 transition-colors group-focus-within:text-primary" />
+              <form onSubmit={handleSubmitEmail(sendLoginEmail)} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     autoFocus
                     id="email"
                     type="email"
                     autoComplete="email"
                     placeholder="seu@email.com"
-                    className="pl-10 h-11 bg-background/50 border-border/50 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all"
                     {...registerEmail('email')}
                   />
+                  {errorsEmail.email && (
+                    <p role="alert" aria-live="polite" className="text-sm text-destructive">
+                      {errorsEmail.email.message}
+                    </p>
+                  )}
                 </div>
 
-                {errorsEmail.email && (
-                  <p className="text-sm text-destructive flex items-center gap-1.5">
-                    <span className="inline-block w-1 h-1 rounded-full bg-destructive" />
-                    {errorsEmail.email.message}
-                  </p>
-                )}
-              </div>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>Enviando <LoadingSpinner /></>
+                  ) : (
+                    <>Continuar <ArrowRight className="ml-1 h-4 w-4" /></>
+                  )}
+                </Button>
 
-              <Button
-                type="submit"
-                className="w-full h-11 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    Enviando <LoadingSpinner />
-                  </>
-                ) : (
-                  <>
-                    Continuar <ArrowRight className="ml-2 h-5 w-5" />
-                  </>
-                )}
-              </Button>
-
-              <div className="rounded-xl border border-border/50 bg-muted/30 p-4 space-y-2">
-                <p className="text-sm font-medium text-foreground/90">
-                  Você receberá um email com:
+                <p className="text-sm text-muted-foreground text-center">
+                  Você receberá um link e um código de 4 dígitos
                 </p>
-
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <div className="flex items-center justify-center w-5 h-5 rounded-md bg-primary/10">
-                      <Mail className="w-3 h-3 text-primary" />
-                    </div>
-                    Um link para acesso direto
-                  </li>
-
-                  <li className="flex items-center gap-2">
-                    <div className="flex items-center justify-center w-5 h-5 rounded-md bg-primary/10">
-                      <Check className="w-3 h-3 text-primary" />
-                    </div>
-                    Um código de 4 caracteres
-                  </li>
-                </ul>
-              </div>
-            </form>
+              </form>
+            </>
           ) : (
-            <div className="space-y-6">
-              <div className="rounded-xl border border-border/50 bg-muted/30 p-5 space-y-3 mb-6">
-                <p className="text-sm font-medium text-foreground/90">
-                  Você pode acessar de duas formas:
+            <>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight">Verifique seu email</h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Enviamos o código para{' '}
+                  <strong className="font-semibold text-foreground">{currentEmail}</strong>
                 </p>
-
-                <ol className="space-y-2.5 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-3">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary font-semibold text-xs shrink-0 mt-0.5">
-                      1
-                    </span>
-                    <span>Clicando no link enviado no email</span>
-                  </li>
-
-                  <li className="flex items-start gap-3">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary font-semibold text-xs shrink-0 mt-0.5">
-                      2
-                    </span>
-                    <span>Digitando o código de 4 caracteres abaixo</span>
-                  </li>
-                </ol>
               </div>
 
               <form onSubmit={handleSubmitCode(verifyCode)} className="space-y-4">
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-center block">
-                    Código de verificação
-                  </Label>
+                  <Label className="block text-center">Código de verificação</Label>
 
                   <Controller
                     name="code"
@@ -298,9 +289,9 @@ export default function LoginPage() {
                           inputMode="numeric"
                           autoComplete="one-time-code"
                           value={field.value}
-                          onChange={(event) => {
-                            const nextValue = event.target.value.replace(/\D/g, '').slice(0, 4);
-                            field.onChange(nextValue);
+                          onChange={(e) => {
+                            const next = e.target.value.replace(/\D/g, '').slice(0, 4);
+                            field.onChange(next);
                           }}
                         />
 
@@ -318,39 +309,47 @@ export default function LoginPage() {
                   />
 
                   {errorsCode.code && (
-                    <p className="text-sm text-destructive flex items-center justify-center gap-1.5">
-                      <span className="inline-block w-1 h-1 rounded-full bg-destructive" />
+                    <p role="alert" aria-live="polite" className="text-sm text-destructive text-center">
                       {errorsCode.code.message}
                     </p>
                   )}
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full h-11 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                  disabled={isLoading}
-                >
+                <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
-                    <>
-                      Verificando <LoadingSpinner />
-                    </>
+                    <>Verificando <LoadingSpinner /></>
                   ) : (
-                    <>
-                      Verificar código <Check className="ml-2 h-5 w-5" />
-                    </>
+                    <>Verificar →</>
                   )}
                 </Button>
               </form>
 
-              <Button
-                variant="outline"
-                disabled={isLoading}
-                onClick={handleBackToEmailForm}
-                className="w-full h-10 hover:bg-accent/50 transition-colors"
-              >
-                Voltar
-              </Button>
-            </div>
+              <div className="space-y-2 text-center">
+                <Button
+                  variant="ghost"
+                  disabled={isLoading}
+                  onClick={handleBackToEmailForm}
+                  className="w-full text-sm"
+                >
+                  <ArrowLeft className="mr-1 h-4 w-4" /> Voltar ao email
+                </Button>
+
+                <p className="text-sm text-muted-foreground">
+                  {resendCountdown > 0 ? (
+                    <>Não recebeu? Reenviar em {formatCountdown(resendCountdown)}</>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      onClick={handleResend}
+                      disabled={isLoading}
+                      className="text-sm h-auto p-0 underline-offset-4 hover:underline"
+                    >
+                      Reenviar email
+                    </Button>
+                  )}
+                </p>
+              </div>
+            </>
           )}
         </div>
       </div>
