@@ -10,7 +10,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { useUser } from '@/context';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/header';
 import { Input } from '@/components/ui/input';
@@ -53,8 +52,6 @@ function ExpiredLinkBanner() {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setInitialEmail } = useUser();
-
   const [isLoading, setIsLoading] = useState(false);
   const [currentEmail, setCurrentEmail] = useState('');
   const [showCodeForm, setShowCodeForm] = useState(false);
@@ -96,7 +93,6 @@ export default function LoginPage() {
   });
 
   const sendLoginEmail = async (data: EmailFormData) => {
-    setInitialEmail(data.email);
     setCurrentEmail(data.email);
     setCodeValue('email', data.email);
 
@@ -197,6 +193,7 @@ export default function LoginPage() {
   const handleBackToEmailForm = () => {
     setShowCodeForm(false);
     setCurrentEmail('');
+    setResendCountdown(600);
     resetCodeForm();
   };
 
@@ -324,7 +321,7 @@ export default function LoginPage() {
                   {isLoading ? (
                     <>Verificando <LoadingSpinner /></>
                   ) : (
-                    <>Verificar →</>
+                    <>Verificar <ArrowRight className="ml-1 h-4 w-4" /></>
                   )}
                 </Button>
               </form>

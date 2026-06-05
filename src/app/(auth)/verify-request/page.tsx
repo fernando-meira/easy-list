@@ -1,10 +1,10 @@
 'use client';
 
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Mail, ArrowLeft } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/header';
@@ -66,6 +66,7 @@ export default function VerifyRequestPage() {
         throw new Error((errorData as { error?: string }).error || 'Erro ao reenviar email.');
       }
       setCountdownKey((prev) => prev + 1);
+      toast.success('Email reenviado! Verifique sua caixa de entrada.');
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
       else toast.error('Erro ao reenviar email. Tente novamente.');
