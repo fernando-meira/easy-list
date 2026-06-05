@@ -28,7 +28,7 @@ const ThemeButton = ({
 };
 
 export const ThemeToggle = () => {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export const ThemeToggle = () => {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
   };
 
   if (!mounted) {
@@ -49,11 +49,7 @@ export const ThemeToggle = () => {
 
   return (
     <ThemeButton toggleTheme={toggleTheme}>
-      {theme === 'light' ? (
-        <MoonIcon />
-      ) : (
-        <SunIcon />
-      )}
+      {resolvedTheme === 'light' ? <MoonIcon /> : <SunIcon />}
     </ThemeButton>
   );
 };

@@ -1,4 +1,4 @@
-import { Manrope } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import type { Metadata, Viewport } from 'next';
 
 import { Toaster } from '@/components/ui/sonner';
@@ -9,9 +9,9 @@ import { AuthProvider } from '@/providers/session';
 import { ThemeProvider } from '@/components/theme-provider';
 import { UserContextProvider, ProductsContextProvider, CategoriesContextProvider } from '@/context';
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-manrope',
+  variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head />
-      <body className={manrope.className} suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
             <UserContextProvider>
