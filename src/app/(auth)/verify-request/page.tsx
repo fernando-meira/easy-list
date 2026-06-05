@@ -77,7 +77,7 @@ export default function VerifyRequestPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Header isSimple />
+      <Header />
 
       <div className="w-full max-w-md">
         <div className="rounded-lg border border-border bg-card shadow-sm p-8 space-y-6 text-center">

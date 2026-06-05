@@ -199,7 +199,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Header isSimple />
+      <Header />
 
       <div className="w-full max-w-md">
         <Suspense fallback={null}>

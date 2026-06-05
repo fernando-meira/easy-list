@@ -1,119 +1,155 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 
-import { useCategories } from '@/context';
 import { ProductProps } from '@/types/interfaces';
+import { StateCard } from '@/components/state-card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ProductsList } from '@/components/product-list';
+import { ProductRow } from '@/components/product-row';
+import { useProducts, useCategories } from '@/context';
+import { GroupHeader } from '@/components/group-header';
 import { AddOrEditProductTypeEnum } from '@/types/enums';
-import { CategorySelect } from '@/components/category-select';
+import { StickyFooter } from '@/components/sticky-footer';
+import { CategoryHeroCard } from '@/components/category-hero-card';
 import { ProductManagerSheet } from '@/components/product-manager-sheet';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 
 export function CategoryClient() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { setSelectedCategoryId, filteredCategory, isLoadingCategories } = useCategories();
+  const { removeProduct, toggleCart, isProductLoading } = useProducts();
 
   const categoryId = searchParams.get('id');
 
   const [isLoading, setIsLoading] = useState(true);
-  const [openEditSheet, setOpenEditSheet] = useState<boolean>(false);
-  const [selectedProducts, setSelectedProducts] = useState<ProductProps>({} as ProductProps);
+  const [openSwipeId, setOpenSwipeId] = useState<string | null>(null);
+  const [addSheetOpen, setAddSheetOpen] = useState(false);
+  const [editSheetOpen, setEditSheetOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductProps>({} as ProductProps);
 
   useEffect(() => {
-    if (!categoryId) return;
-
+    if (!categoryId) {
+      setIsLoading(false);
+      return;
+    }
     setSelectedCategoryId(categoryId);
     setIsLoading(false);
   }, [categoryId, setSelectedCategoryId]);
 
-  const renderContent = useMemo(() => {
-    if (isLoading) {
-      return (
-        <div className="w-full space-y-2 mt-4">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <Skeleton key={index} className="h-16 w-full" />
-          ))}
-        </div>
-      );
-    }
+  const handleEditProduct = (product: ProductProps) => {
+    setSelectedProduct(product);
+    setEditSheetOpen(true);
+  };
 
-    if (!filteredCategory && !isLoadingCategories) {
-      return (
-        <div className="w-full space-y-2 mt-4">
-          <p>Categoria não encontrada.</p>
-        </div>
-      );
-    }
+  const { productsNotInCart, productsInCart } = useMemo(() => {
+    const all = filteredCategory?.products ?? [];
+    const sorted = [...all].sort((a, b) =>
+      (a.name ?? '').toLowerCase().localeCompare(
+        (b.name ?? '').toLowerCase(),
+        'pt-BR'
+      )
+    );
+    return {
+      productsNotInCart: sorted.filter(p => !p.addToCart),
+      productsInCart: sorted.filter(p => p.addToCart),
+    };
+  }, [filteredCategory?.products]);
 
-    if (filteredCategory) {
-      return (
-        <div>
-          <div className="mt-4">
-            {filteredCategory.products && filteredCategory.products.length > 0 ? (
-              <ProductsList
-                category={filteredCategory}
-                setOpenEditSheet={setOpenEditSheet}
-                setSelectedProducts={setSelectedProducts}
-              />
-            ) : (
-              <p>Nenhum produto cadastrado nesta categoria.</p>
-            )}
-          </div>
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4 pb-[140px]">
+        <Skeleton className="h-[220px] w-full rounded-[var(--radius-xl)]" />
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-[68px] w-full rounded-[var(--radius-lg)]" />
+        ))}
+      </div>
+    );
+  }
 
-          <ProductManagerSheet
-            open={openEditSheet}
-            product={selectedProducts}
-            onOpenChange={setOpenEditSheet}
-            type={AddOrEditProductTypeEnum.edit}
-          />
-        </div>
-      );
-    }
+  // Error state — invalid category ID
+  if (!filteredCategory && !isLoadingCategories) {
+    return <StateCard variant="error" />;
+  }
 
-    return null;
-  }, [isLoading, filteredCategory, openEditSheet, selectedProducts, isLoadingCategories]);
+  if (!filteredCategory) return null;
+
+  const allProducts = filteredCategory.products ?? [];
 
   return (
-    <main>
-      <div className="flex items-center gap-2 justify-between">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={(e) => {
-                e.preventDefault();
-                router.push('/');
-              }}
-              className="cursor-pointer">Home</BreadcrumbLink>
-            </BreadcrumbItem>
+    <>
+      <div className="flex flex-col gap-4 pb-[140px]">
+        <CategoryHeroCard
+          category={filteredCategory}
+          products={allProducts}
+        />
 
-            {filteredCategory?.name &&
-              <>
-                <BreadcrumbSeparator />
+        {allProducts.length === 0 && (
+          <StateCard variant="empty" onAdd={() => setAddSheetOpen(true)} />
+        )}
 
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{filteredCategory.name}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </>
-            }
-          </BreadcrumbList>
-        </Breadcrumb>
+        {productsNotInCart.length > 0 && (
+          <>
+            <GroupHeader
+              title="Fora do carrinho"
+              count={productsNotInCart.length}
+            />
+            {productsNotInCart.map(p => (
+              <ProductRow
+                key={p._id}
+                product={p}
+                variant="pending"
+                openSwipeId={openSwipeId}
+                onSwipeOpen={setOpenSwipeId}
+                onToggleCart={toggleCart}
+                onEdit={handleEditProduct}
+                onDelete={removeProduct}
+                isProductLoading={isProductLoading}
+              />
+            ))}
+          </>
+        )}
 
-        <CategorySelect />
+        {productsInCart.length > 0 && (
+          <>
+            <GroupHeader
+              title="Carrinho"
+              count={productsInCart.length}
+            />
+            {productsInCart.map(p => (
+              <ProductRow
+                key={p._id}
+                product={p}
+                variant="cart"
+                openSwipeId={openSwipeId}
+                onSwipeOpen={setOpenSwipeId}
+                onToggleCart={toggleCart}
+                onEdit={handleEditProduct}
+                onDelete={removeProduct}
+                isProductLoading={isProductLoading}
+              />
+            ))}
+          </>
+        )}
       </div>
 
-      {renderContent}
+      <StickyFooter
+        products={allProducts}
+        onAddProduct={() => setAddSheetOpen(true)}
+      />
 
-    </main>
+      <ProductManagerSheet
+        open={addSheetOpen}
+        onOpenChange={setAddSheetOpen}
+        type={AddOrEditProductTypeEnum.add}
+      />
+
+      <ProductManagerSheet
+        open={editSheetOpen}
+        product={selectedProduct}
+        onOpenChange={setEditSheetOpen}
+        type={AddOrEditProductTypeEnum.edit}
+      />
+    </>
   );
 }
