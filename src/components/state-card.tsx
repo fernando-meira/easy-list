@@ -25,7 +25,7 @@ export function StateCard({ variant, onAdd }: StateCardProps) {
       </p>
 
       <button
-        onClick={isEmpty ? onAdd : () => router.push('/')}
+        onClick={isEmpty ? (onAdd ?? (() => {})) : () => router.push('/')}
         className="text-[12px] font-semibold text-[var(--color-ink)] text-left"
       >
         {isEmpty ? 'Adicionar primeiro produto' : 'Voltar para Home'}
