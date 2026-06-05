@@ -2,13 +2,13 @@
 
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { Suspense, useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { Controller } from 'react-hook-form';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { Suspense, useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useUser } from '@/context';
 import { useAuth } from '@/hooks/useAuth';
@@ -63,12 +63,18 @@ export default function LoginPage() {
   useAuth(false);
 
   useEffect(() => {
-    if (!showCodeForm || resendCountdown <= 0) return;
+    if (!showCodeForm) return;
     const timer = setInterval(() => {
-      setResendCountdown((prev) => prev - 1);
+      setResendCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
     return () => clearInterval(timer);
-  }, [showCodeForm, resendCountdown]);
+  }, [showCodeForm]);
 
   const {
     register: registerEmail,
@@ -155,10 +161,9 @@ export default function LoginPage() {
         body: JSON.stringify({ email: data.email, code: data.code }),
       });
 
-      const verifyData = await verifyResponse.json();
-
       if (!verifyResponse.ok) {
-        throw new Error(verifyData.error || 'Código inválido');
+        const errBody = await verifyResponse.json().catch(() => ({})) as { error?: string };
+        throw new Error(errBody.error || 'Código inválido');
       }
 
       const signInResult = await signIn('verification-code', {
