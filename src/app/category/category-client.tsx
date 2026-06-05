@@ -1,16 +1,15 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useMemo, useState, useEffect } from 'react';
 
-import { useCategories, useProducts } from '@/context';
 import { ProductProps } from '@/types/interfaces';
-import { AddOrEditProductTypeEnum } from '@/types/enums';
-import { Skeleton } from '@/components/ui/skeleton';
-
 import { StateCard } from '@/components/state-card';
-import { GroupHeader } from '@/components/group-header';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ProductRow } from '@/components/product-row';
+import { useProducts, useCategories } from '@/context';
+import { GroupHeader } from '@/components/group-header';
+import { AddOrEditProductTypeEnum } from '@/types/enums';
 import { StickyFooter } from '@/components/sticky-footer';
 import { CategoryHeroCard } from '@/components/category-hero-card';
 import { ProductManagerSheet } from '@/components/product-manager-sheet';
@@ -29,7 +28,10 @@ export function CategoryClient() {
   const [selectedProduct, setSelectedProduct] = useState<ProductProps>({} as ProductProps);
 
   useEffect(() => {
-    if (!categoryId) return;
+    if (!categoryId) {
+      setIsLoading(false);
+      return;
+    }
     setSelectedCategoryId(categoryId);
     setIsLoading(false);
   }, [categoryId, setSelectedCategoryId]);
