@@ -1,12 +1,18 @@
 'use client';
 
-import { signOut, useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { Sun, Moon, LogOut } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
 
 export function Header() {
   const { data: session } = useSession();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const firstName =
     session?.user?.name?.split(' ')[0] ??
@@ -32,13 +38,13 @@ export function Header() {
       {/* Right: theme toggle + logout */}
       <div className="flex items-center gap-2">
         <button
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
           className="w-9 h-9 rounded-full bg-[var(--color-canvas)] border border-[var(--color-hairline)] flex items-center justify-center"
           aria-label="Alternar tema"
         >
-          {theme === 'dark'
+          {mounted && (resolvedTheme === 'dark'
             ? <Sun className="w-4 h-4 text-[var(--color-ink)]" />
-            : <Moon className="w-4 h-4 text-[var(--color-ink)]" />}
+            : <Moon className="w-4 h-4 text-[var(--color-ink)]" />)}
         </button>
 
         <button
