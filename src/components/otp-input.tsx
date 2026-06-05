@@ -99,10 +99,13 @@ export function OTPInput({
           onPaste={handlePaste}
           disabled={disabled}
           autoFocus={index === 0}
+          aria-label={`Dígito ${index + 1} de ${length}`}
+          aria-required="true"
           className={cn(
             'w-12 h-12 text-center text-xl font-semibold rounded-md border transition-all',
             'focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary',
             'disabled:opacity-50 disabled:cursor-not-allowed',
+            'dark:border-zinc-700 dark:bg-zinc-900',
             error
               ? 'border-destructive focus:ring-destructive/30 focus:border-destructive'
               : 'border-input bg-background'
