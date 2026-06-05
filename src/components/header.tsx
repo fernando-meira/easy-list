@@ -1,74 +1,54 @@
 'use client';
 
-import { useMemo } from 'react';
-import { LogOut } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
+import { useTheme } from 'next-themes';
+import { Sun, Moon, LogOut } from 'lucide-react';
 
-import { useSignOut } from '@/hooks/useSignOut';
-import { getBiggestUsernamePart } from '@/utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-
-import { Button } from './ui/button';
-import { ThemeToggle } from './theme-toggle';
-
-interface HeaderProps {
-  isSimple?: boolean;
-}
-
-export function Header({ isSimple }: HeaderProps) {
+export function Header() {
   const { data: session } = useSession();
+  const { theme, setTheme } = useTheme();
 
-  const userName = session?.user?.email ? getBiggestUsernamePart(session.user.email) : undefined;
+  const firstName =
+    session?.user?.name?.split(' ')[0] ??
+    session?.user?.email?.split('@')[0] ??
+    '';
+  const email = session?.user?.email ?? '';
 
-  const headerContent = useMemo(() => {
-    const commonHeaderClass =
-      'fixed top-0 flex items-center z-10 justify-between w-full px-4 h-16 border-b bg-background max-w-3xl mx-auto';
-
-    if (isSimple) {
-      return (
-        <header className={commonHeaderClass}>
-          <span className="text-base font-semibold">Easy List</span>
-          <ThemeToggle />
-        </header>
-      );
-    }
-
-    return (
-      <header className={commonHeaderClass}>
-        <div className="flex flex-row gap-2 items-center">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Avatar className="cursor-pointer">
-                  <AvatarFallback>{session?.user?.email?.slice(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-              </TooltipTrigger>
-
-              <TooltipContent>
-                <p>{session?.user?.email || 'Usuário'}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {userName && <p className="font-bold text-xs">{userName}</p>}
+  return (
+    <header className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between h-14 px-3 bg-[var(--color-canvas)] border-b border-[var(--color-hairline)] max-w-3xl mx-auto">
+      {/* Left: avatar placeholder + greeting */}
+      <div className="flex items-center gap-2">
+        <div className="w-9 h-9 rounded-full bg-[var(--color-surface-card)] border border-[var(--color-hairline)] flex-shrink-0" />
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[13px] font-semibold leading-none text-[var(--color-ink)]">
+            Olá, {firstName}
+          </span>
+          <span className="text-[11px] leading-none text-[var(--color-muted)]">
+            {email}
+          </span>
         </div>
+      </div>
 
-        <div>
-          <ThemeToggle />
+      {/* Right: theme toggle + logout */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="w-9 h-9 rounded-full bg-[var(--color-canvas)] border border-[var(--color-hairline)] flex items-center justify-center"
+          aria-label="Alternar tema"
+        >
+          {theme === 'dark'
+            ? <Sun className="w-4 h-4 text-[var(--color-ink)]" />
+            : <Moon className="w-4 h-4 text-[var(--color-ink)]" />}
+        </button>
 
-          <Button
-            size="icon"
-            title="Sair"
-            variant="ghost"
-            onClick={useSignOut}
-          >
-            <LogOut />
-          </Button>
-        </div>
-      </header>
-    );
-  }, [isSimple, session, userName]);
-
-  return headerContent;
+        <button
+          onClick={() => signOut()}
+          className="w-9 h-9 rounded-full bg-[var(--color-canvas)] border border-[var(--color-hairline)] flex items-center justify-center"
+          aria-label="Sair"
+        >
+          <LogOut className="w-4 h-4 text-[var(--color-ink)]" />
+        </button>
+      </div>
+    </header>
+  );
 }
