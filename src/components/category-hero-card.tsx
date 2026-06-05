@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
-import { CategoryProps, ProductProps } from '@/types/interfaces';
+import { ProductProps, CategoryProps } from '@/types/interfaces';
 
 import { CategorySelect } from './category-select';
 

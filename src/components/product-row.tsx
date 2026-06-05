@@ -1,13 +1,13 @@
 'use client';
 
+import { useDrag } from '@use-gesture/react';
 import { useRef, useState, useEffect } from 'react';
 import { Check, Pencil, Trash2 } from 'lucide-react';
-import { useDrag } from '@use-gesture/react';
 
 import { UnitEnum } from '@/types/enums';
+import { calculateProductValue } from '@/utils';
 import { ProductProps } from '@/types/interfaces';
 import { Skeleton } from '@/components/ui/skeleton';
-import { calculateProductValue } from '@/utils';
 
 const DELETE_ZONE_WIDTH = 72;
 const SNAP_THRESHOLD = 56;
