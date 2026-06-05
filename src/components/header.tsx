@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useSession } from 'next-auth/react';
 import { LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 import { useSignOut } from '@/hooks/useSignOut';
 import { getBiggestUsernamePart } from '@/utils';
@@ -18,7 +17,6 @@ interface HeaderProps {
 }
 
 export function Header({ isSimple }: HeaderProps) {
-  const router = useRouter();
   const { data: session } = useSession();
 
   const userName = session?.user?.email ? getBiggestUsernamePart(session.user.email) : undefined;
@@ -70,7 +68,7 @@ export function Header({ isSimple }: HeaderProps) {
         </div>
       </header>
     );
-  }, [isSimple, session, router, userName]);
+  }, [isSimple, session, userName]);
 
   return headerContent;
 }
