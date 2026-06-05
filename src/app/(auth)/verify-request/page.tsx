@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Mail, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/header';
@@ -24,6 +25,7 @@ export default function VerifyRequestPage() {
   const [email, setEmail] = useState('');
   const [isResending, setIsResending] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(600);
+  const [countdownKey, setCountdownKey] = useState(0);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('auth_email');
@@ -37,6 +39,7 @@ export default function VerifyRequestPage() {
   }, [session, status, router]);
 
   useEffect(() => {
+    setResendCountdown(600);
     const timer = setInterval(() => {
       setResendCountdown((prev) => {
         if (prev <= 1) {
@@ -47,7 +50,7 @@ export default function VerifyRequestPage() {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [countdownKey]);
 
   const handleResend = async () => {
     if (!email) return;
@@ -62,9 +65,10 @@ export default function VerifyRequestPage() {
         const errorData = await response.json().catch(() => ({}));
         throw new Error((errorData as { error?: string }).error || 'Erro ao reenviar email.');
       }
-      setResendCountdown(600);
+      setCountdownKey((prev) => prev + 1);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) toast.error(error.message);
+      else toast.error('Erro ao reenviar email. Tente novamente.');
     } finally {
       setIsResending(false);
     }
