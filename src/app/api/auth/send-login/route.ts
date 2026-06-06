@@ -51,7 +51,6 @@ export async function POST(request: Request) {
     const { email } = result.data;
 
     const emailConfig = validateEmailConfig({ requireBaseUrl: true });
-    console.log('🥲 ~ emailConfig:', emailConfig);
 
     if (!emailConfig.isValid) {
       console.error('Configuração de email inválida', {
@@ -167,8 +166,6 @@ export async function POST(request: Request) {
         console.error('Erro do Resend ao enviar email:', emailResult.error);
         throw new Error(`Falha ao enviar email: ${emailResult.error.message}`);
       }
-
-      console.log('Email enviado com sucesso:', emailResult.data);
     } catch (emailError) {
       logEmailError('Falha ao enviar login email', emailError, {
         to: email,

@@ -1,8 +1,10 @@
 'use client';
 
-import { ShoppingCart } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronUp, ChevronDown, ShoppingCart } from 'lucide-react';
 
 import { ProductProps, CategoryProps } from '@/types/interfaces';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 import { CategorySelect } from './category-select';
 
@@ -26,20 +28,24 @@ interface CategoryHeroCardProps {
 }
 
 export function CategoryHeroCard({ category, products }: CategoryHeroCardProps) {
+  const [isOpen, setIsOpen] = useState(true);
   const pendingCount = products.filter(p => !p.addToCart).length;
   const cartCount = products.filter(p => p.addToCart).length;
   const totalCount = products.length;
+  const toggleLabel = isOpen ? 'Recolher detalhes da categoria' : 'Expandir detalhes da categoria';
 
   return (
-    <div className="flex flex-col gap-3.5 rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-[18px] [font-family:var(--font-body)]">
-      <div className="flex flex-col gap-2.5">
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="flex flex-col gap-3.5 rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-[18px] [font-family:var(--font-body)]"
+    >
+      <div className="relative flex flex-col gap-2.5 pr-10">
         <div className="flex flex-col gap-1">
-          {/* Hero title */}
           <h1 className="text-[28px] font-semibold leading-[1.2] tracking-[-0.5px] text-[var(--color-ink)] [font-family:var(--font-display)]">
             {category.name}
           </h1>
 
-          {/* Subtitle */}
           <p className="text-[13px] font-medium text-[var(--color-muted)]">
             {totalCount} produto{totalCount !== 1 ? 's' : ''} nesta lista
           </p>
@@ -51,16 +57,27 @@ export function CategoryHeroCard({ category, products }: CategoryHeroCardProps) 
             {cartCount} no carrinho
           </span>
         </div>
+
+        <CollapsibleTrigger
+          className="absolute right-0 top-0 flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-surface-soft)] text-[var(--color-ink)] transition-colors hover:bg-[var(--color-surface-card)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ink)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
+          aria-label={toggleLabel}
+        >
+          {isOpen ? (
+            <ChevronUp className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <ChevronDown className="h-4 w-4" aria-hidden="true" />
+          )}
+        </CollapsibleTrigger>
       </div>
 
-      {/* Stat pills */}
-      <div className="flex w-full gap-2.5">
-        <StatPill value={pendingCount} label="pendentes" />
-        <StatPill value={cartCount} label="comprados" />
-      </div>
+      <CollapsibleContent className="flex flex-col gap-3.5">
+        <div className="flex w-full gap-2.5">
+          <StatPill value={pendingCount} label="pendentes" />
+          <StatPill value={cartCount} label="comprados" />
+        </div>
 
-      {/* Category selector */}
-      <CategorySelect />
-    </div>
+        <CategorySelect />
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

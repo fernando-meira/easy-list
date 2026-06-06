@@ -115,8 +115,6 @@ export async function POST(request: Request) {
         console.error('Erro do Resend ao enviar email:', emailResult.error);
         throw new Error(`Falha ao enviar email: ${emailResult.error.message}`);
       }
-
-      console.log('Email enviado com sucesso:', emailResult.data);
     } catch (emailError) {
       logEmailError('Falha ao enviar código de acesso', emailError, {
         to: email,
