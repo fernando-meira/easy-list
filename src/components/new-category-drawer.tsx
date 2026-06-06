@@ -40,8 +40,7 @@ export function NewCategoryDrawer() {
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <button
-          onClick={() => setOpen?.(true)}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] transition-opacity active:opacity-80"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] transition-opacity hover:opacity-90 active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-primary)]"
           aria-label="Adicionar categoria"
         >
           <Plus className="h-[18px] w-[18px] text-[var(--color-on-primary)]" />
