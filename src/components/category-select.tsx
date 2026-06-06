@@ -20,17 +20,17 @@ export function CategorySelect() {
 
   return (
     <Select value={selectedCategoryId || ''} onValueChange={handleCategoryChange}>
-      <SelectTrigger className="flex h-16 w-full items-center justify-between rounded-[var(--radius-md)] border border-[var(--color-surface-dark-elevated)] bg-[var(--color-surface-dark)] px-[14px] py-[13px] shadow-none [&>svg]:hidden">
+      <SelectTrigger className="flex h-16 w-full items-center justify-between rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[var(--color-surface-card)] px-[14px] py-[13px] shadow-none [&>svg]:hidden">
         <div className="flex flex-col gap-[3px]">
-          <span className="text-[10px] font-bold leading-none text-[var(--color-on-dark-soft)]">
+          <span className="text-[10px] font-bold leading-none text-[var(--color-muted)]">
             Lista atual
           </span>
-          <span className="text-[14px] font-semibold leading-[1.15] text-[var(--color-on-dark)]">
+          <span className="text-[14px] font-semibold leading-[1.15] text-[var(--color-ink)]">
             {selectedName}
           </span>
         </div>
         <span className="flex shrink-0 items-center">
-          <ChevronDown className="h-[18px] w-[18px] text-[var(--color-on-dark)]" />
+          <ChevronDown className="h-[18px] w-[18px] text-[var(--color-ink)]" />
         </span>
       </SelectTrigger>
 
