@@ -1,6 +1,5 @@
 import 'server-only';
-
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 
 import { firestore } from './firebase-admin';
 
