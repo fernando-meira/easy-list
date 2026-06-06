@@ -10,7 +10,7 @@
 
 ## Overview
 
-The current category detail page uses a `DataTable` (TanStack Table) with table headers and a trash-icon delete column. The redesign replaces it with a mobile-first card layout: a Hero Card contextualizing the category, clean product rows with swipe-to-delete, and a sticky footer with totals and a primary CTA. Dark mode is implemented in the same pass.
+The current category detail page uses a `DataTable` (TanStack Table) with table headers and a trash-icon delete column. The redesign replaces it with a mobile-first card layout: a Hero Card contextualizing the category, clean product rows with explicit edit/delete actions, and a sticky footer with totals and a primary CTA. Dark mode is implemented in the same pass.
 
 ---
 
@@ -50,9 +50,11 @@ Current header is replaced with:
 
 - **Height:** 56px, white canvas background, `rounded-[--radius-lg]`, hairline border
 - **Left:** Avatar circle (36×36, `surface-card` fill, hairline border) + vertical stack: greeting ("Olá, [firstName]" — Inter 13px 600 ink) + email (Inter 11px normal muted)
-- **Right:** Two circular icon buttons (36×36, canvas fill, hairline border, `rounded-full`):
-  - Theme toggle — `sun` / `moon` Lucide icon, calls `setTheme` from `next-themes`
-  - Logout — `log-out` Lucide icon, calls `signOut`
+- **Logged-in left:** Avatar circle (36×36, `surface-card` fill, hairline border) + vertical stack: greeting ("Olá, [firstName]" — Inter 13px 600 ink) + email (Inter 11px normal muted)
+- **Logged-out left:** Dark brand circle with `shopping-basket` icon + vertical stack: "EasyList" and "Organize suas compras"
+- **Right:** Theme toggle button plus an auth action:
+  - Logged-in: circular logout button, calls `signOut`
+  - Logged-out: pill "Entrar" link to `PagesEnum.login`
 - **Data:** `firstName` and `email` read from `session.user` via `useSession()`. `firstName` is derived from `session.user.name?.split(' ')[0]`.
 
 ---
@@ -127,43 +129,22 @@ Single component with a `variant: 'pending' | 'cart'` prop.
 - **Edit button** (34×34, `rounded-full`, `surface-card` fill):
   - `pencil` Lucide icon 15×15 ink
   - `onClick`: calls `onEdit(product)` prop → opens `ProductManagerSheet`
+- **Delete button** (34×34, `rounded-full`, `surface-card` fill):
+  - `trash-2` Lucide icon 15×15 in `color-error`
+  - `onClick`: calls `onDelete(product._id)` prop
 
-**Swipe-to-delete (see Section 6).**
+**Delete behavior:** explicit button only. Swipe-to-delete was removed from the implemented version.
 
 ---
 
-### 6. Swipe-to-Delete on `ProductRow`
+### 6. Delete on `ProductRow`
 
-**Library:** `@use-gesture/react` (`useDrag` hook)
+The implemented row uses an explicit delete action instead of a gesture. This keeps the action discoverable and avoids requiring `openSwipeId` coordination in `CategoryClient`.
 
-**Structure:** two-layer wrapper inside `ProductRow`:
-
-```
-<div style={{ position: 'relative', overflow: 'hidden' }}>
-  {/* Delete zone — fixed behind, 72px wide, right-aligned */}
-  <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 72 }}>
-    🗑️ button
-  </div>
-  {/* Row content — slides left on drag */}
-  <div style={{ transform: `translateX(${offset}px)`, transition: dragging ? 'none' : 'transform 200ms ease' }}>
-    ... row content ...
-  </div>
-</div>
-```
-
-**Gesture logic (`useDrag`):**
-- `dx` clamped to `[-72, 0]` (no rightward drag, no over-swipe left)
-- On drag end:
-  - `dx > -56` → snap back to 0
-  - `dx ≤ -56` → snap to -72 (delete zone fully revealed)
-- Only one row open at a time: `CategoryClient` holds `openSwipeId: string | null`; opening a new row resets the previous
-
-**Delete action:**
-- Tap 🗑️: animate row `translateX(-100%)` + collapse height to 0 over 200ms → then call `removeProduct(id)`
-- Row disabled (opacity 50%, pointer-events none) while `isProductLoading.productId === id`
-
-**Close on outside tap:**
-- `CategoryClient` listens for clicks on the scroll container; if `openSwipeId` is set and click target is not inside that row, snaps it closed
+**Behavior:**
+- Tap trash icon: sets local `isDeleting` to `true`, fades row opacity to 50%, then calls `removeProduct(id)` via `onDelete`
+- Edit and delete buttons are disabled while the product is loading or deleting
+- The row no longer imports or depends on `@use-gesture/react`
 
 ---
 
@@ -228,7 +209,6 @@ Sticky bottom card: `rounded-[--radius-xl]`, canvas fill, hairline border, paddi
       <GroupHeader title="Fora do carrinho" count={productsNotInCart.length} />
       {productsNotInCart.map(p => (
         <ProductRow key={p._id} product={p} variant="pending"
-          openSwipeId={openSwipeId} onSwipeOpen={setOpenSwipeId}
           onToggleCart={toggleCart} onEdit={openEditSheet}
           isLoading={isProductLoading} onDelete={removeProduct} />
       ))}
@@ -254,7 +234,7 @@ Sticky bottom card: `rounded-[--radius-xl]`, canvas fill, hairline border, paddi
 
 **Loading state:** Hero Card and product rows show `Skeleton` placeholders while `isLoading`.
 
-**`openSwipeId` state:** `useState<string | null>(null)` in `CategoryClient`. Passed down to each `ProductRow`. When a row opens its swipe zone, it calls `onSwipeOpen(product._id)`. Rows check if their id matches — if not, they snap closed.
+**Product row state:** `CategoryClient` no longer tracks `openSwipeId`; rows receive only toggle, edit, delete, variant, product, and loading props.
 
 ---
 

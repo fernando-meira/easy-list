@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace the DataTable-based category detail page (`/category?id=...`) with a mobile-first card layout featuring a Hero Card, swipe-to-delete product rows, and a sticky footer — following the EasyList.pen design and DESIGN.md tokens.
+**Goal:** Replace the DataTable-based category detail page (`/category?id=...`) with a mobile-first card layout featuring a Hero Card, explicit edit/delete product rows, and a sticky footer — following the EasyList.pen design and DESIGN.md tokens.
 
 **Architecture:** Component-by-component replacement. Each new component is built in isolation and committed before the next. Everything is assembled in `CategoryClient` in the final task. Old DataTable files are deleted last. Design tokens are CSS variables in `globals.css`, referenced in Tailwind via arbitrary values (`bg-[var(--color-canvas)]`, etc.).
 
-**Tech Stack:** Next.js 15 (App Router), React, TypeScript, Tailwind CSS, shadcn/ui, next-themes, `@use-gesture/react` (new)
+**Tech Stack:** Next.js 15 (App Router), React, TypeScript, Tailwind CSS, shadcn/ui, next-themes
 
 **Spec:** `docs/superpowers/specs/2026-06-05-category-page-redesign.md`
 
@@ -18,7 +18,7 @@
 |---|---|---|
 | New | `src/components/category-hero-card.tsx` | Hero card: breadcrumb, title, stat pills, category selector |
 | New | `src/components/group-header.tsx` | Section header with count badge |
-| New | `src/components/product-row.tsx` | Product card row: pending/cart variants + swipe-to-delete |
+| New | `src/components/product-row.tsx` | Product card row: pending/cart variants + explicit edit/delete actions |
 | New | `src/components/state-card.tsx` | Empty and error state cards |
 | New | `src/components/sticky-footer.tsx` | Totals row + "Adicionar produto" CTA |
 | Modify | `src/app/globals.css` | Add design token CSS variables (`:root` + `.dark`) |
@@ -34,22 +34,13 @@
 
 ---
 
-### Task 1: Install @use-gesture/react + add design tokens + fix MainContent
+### Task 1: Add design tokens + fix MainContent
 
 **Files:**
-- Run: `npm install @use-gesture/react`
 - Modify: `src/app/globals.css`
 - Modify: `src/components/main-content.tsx`
 
-- [ ] **Step 1: Install @use-gesture/react**
-
-```bash
-npm install @use-gesture/react
-```
-
-Expected: `added 1 package` with no errors.
-
-- [ ] **Step 2: Add design token CSS variables to globals.css**
+- [ ] **Step 1: Add design token CSS variables to globals.css**
 
 Open `src/app/globals.css`. Find the existing `:root { ... }` block and add these variables inside it:
 
@@ -83,7 +74,7 @@ Find the existing `.dark { ... }` block and add these variables inside it:
 
 (Success and error colors stay the same in both modes — no `.dark` override needed.)
 
-- [ ] **Step 3: Update MainContent top margin**
+- [ ] **Step 2: Update MainContent top margin**
 
 The new Header is 56px tall (`h-14`). `src/components/main-content.tsx` currently uses `mt-16` (64px). Change it to `mt-14`:
 
@@ -97,7 +88,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
 }
 ```
 
-- [ ] **Step 4: Verify no build errors**
+- [ ] **Step 3: Verify no build errors**
 
 ```bash
 npm run dev
@@ -105,11 +96,11 @@ npm run dev
 
 Open any page. Confirm no terminal errors. Stop dev server.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add src/app/globals.css src/components/main-content.tsx package.json package-lock.json
-git commit -m "feat: add design tokens, install @use-gesture/react, fix MainContent margin"
+git add src/app/globals.css src/components/main-content.tsx
+git commit -m "feat: add design tokens and fix MainContent margin"
 ```
 
 ---
@@ -419,36 +410,29 @@ git commit -m "feat: add CategoryHeroCard with breadcrumb, stats, and inline sel
 **Files:**
 - Create: `src/components/product-row.tsx`
 
-Single component with `variant: 'pending' | 'cart'`. Uses `@use-gesture/react`'s `useDrag` for the swipe-to-delete gesture.
+Single component with `variant: 'pending' | 'cart'`. It renders explicit toggle, edit, and delete actions; the implemented PR does not use swipe-to-delete.
 
-**Swipe behavior:**
-- `DELETE_ZONE_WIDTH = 72` — how far the row slides to fully reveal the delete zone
-- `SNAP_THRESHOLD = 56` — if the user releases past this, the row snaps open; otherwise snaps closed
-- `startOffsetRef` captures the row's offset at the start of each drag so continued drags from an open state work correctly
-- `useEffect` resets offset to 0 whenever `openSwipeId` changes to a different row ID (closes this row when another opens)
+**Delete behavior:**
+- The delete button is always visible as a 34px circular icon button.
+- Clicking delete sets local `isDeleting` and calls `onDelete(product._id)`.
+- Edit/delete actions are disabled while this product is loading or being deleted.
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Check, Pencil, Trash2 } from 'lucide-react';
-import { useDrag } from '@use-gesture/react';
 
 import { UnitEnum } from '@/types/enums';
 import { ProductProps } from '@/types/interfaces';
 import { Skeleton } from '@/components/ui/skeleton';
 import { calculateProductValue } from '@/utils';
 
-const DELETE_ZONE_WIDTH = 72;
-const SNAP_THRESHOLD = 56;
-
 interface ProductRowProps {
   product: ProductProps;
   variant: 'pending' | 'cart';
-  openSwipeId: string | null;
-  onSwipeOpen: (id: string | null) => void;
   onToggleCart: (id: string) => void;
   onEdit: (product: ProductProps) => void;
   onDelete: (id: string) => void;
@@ -458,55 +442,16 @@ interface ProductRowProps {
 export function ProductRow({
   product,
   variant,
-  openSwipeId,
-  onSwipeOpen,
   onToggleCart,
   onEdit,
   onDelete,
   isProductLoading,
 }: ProductRowProps) {
-  const [offset, setOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const startOffsetRef = useRef(0);
 
   const isPending = variant === 'pending';
   const isThisLoading =
     isProductLoading.isLoading && isProductLoading.productId === product._id;
-
-  // Close this row when another row opens
-  useEffect(() => {
-    if (openSwipeId !== product._id) {
-      setOffset(0);
-    }
-  }, [openSwipeId, product._id]);
-
-  const bind = useDrag(
-    ({ movement: [mx], last, active, first }) => {
-      if (first) {
-        startOffsetRef.current = offset;
-      }
-
-      setIsDragging(active);
-      const newOffset = Math.max(
-        -DELETE_ZONE_WIDTH,
-        Math.min(0, startOffsetRef.current + mx)
-      );
-      setOffset(newOffset);
-
-      if (last) {
-        setIsDragging(false);
-        if (newOffset <= -SNAP_THRESHOLD) {
-          setOffset(-DELETE_ZONE_WIDTH);
-          onSwipeOpen(product._id!);
-        } else {
-          setOffset(0);
-          if (openSwipeId === product._id) onSwipeOpen(null);
-        }
-      }
-    },
-    { axis: 'x', filterTaps: true, pointer: { touch: true } }
-  );
 
   const handleDelete = () => {
     setIsDeleting(true);
@@ -521,42 +466,17 @@ export function ProductRow({
 
   return (
     <div
-      className="relative overflow-hidden rounded-[var(--radius-lg)]"
+      className={[
+        'flex items-center gap-3 h-[68px]',
+        'border border-[var(--color-hairline)] rounded-[var(--radius-lg)]',
+        'px-3 py-[10px]',
+        isPending
+          ? 'bg-[var(--color-canvas)]'
+          : 'bg-[var(--color-surface-card)]',
+      ].join(' ')}
       style={{ opacity: isDeleting ? 0.5 : 1, transition: 'opacity 200ms ease' }}
     >
-      {/* Delete zone — revealed as row content slides left */}
-      <div
-        className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-red-500 rounded-r-[var(--radius-lg)]"
-        style={{ width: DELETE_ZONE_WIDTH }}
-      >
-        <button
-          onClick={handleDelete}
-          disabled={isThisLoading || isDeleting}
-          className="flex items-center justify-center w-full h-full"
-          aria-label="Excluir produto"
-        >
-          <Trash2 className="w-5 h-5 text-white" />
-        </button>
-      </div>
-
-      {/* Row content — slides left on drag */}
-      <div
-        {...bind()}
-        className={[
-          'relative flex items-center gap-3 h-[68px]',
-          'border border-[var(--color-hairline)] rounded-[var(--radius-lg)]',
-          'px-3 py-[10px] select-none',
-          isPending
-            ? 'bg-[var(--color-canvas)]'
-            : 'bg-[var(--color-surface-card)]',
-        ].join(' ')}
-        style={{
-          transform: `translateX(${offset}px)`,
-          transition: isDragging ? 'none' : 'transform 200ms ease',
-          touchAction: 'pan-y',
-        }}
-      >
-        {/* Checkbox / skeleton while loading */}
+      {/* Checkbox / skeleton while loading */}
         {isThisLoading ? (
           <Skeleton className="w-[34px] h-[34px] rounded-full flex-shrink-0" />
         ) : (
@@ -596,13 +516,23 @@ export function ProductRow({
           )}
         </div>
 
-        {/* Edit button */}
+      <div className="flex h-[34px] items-center gap-2 flex-shrink-0">
         <button
           onClick={() => onEdit(product)}
-          className="w-[34px] h-[34px] rounded-full bg-[var(--color-surface-card)] flex items-center justify-center flex-shrink-0"
+          disabled={isThisLoading || isDeleting}
+          className="w-[34px] h-[34px] rounded-full bg-[var(--color-surface-card)] flex items-center justify-center disabled:opacity-50"
           aria-label="Editar produto"
         >
           <Pencil className="w-[15px] h-[15px] text-[var(--color-ink)]" />
+        </button>
+
+        <button
+          onClick={handleDelete}
+          disabled={isThisLoading || isDeleting}
+          className="w-[34px] h-[34px] rounded-full bg-[var(--color-surface-card)] flex items-center justify-center disabled:opacity-50"
+          aria-label="Excluir produto"
+        >
+          <Trash2 className="w-[15px] h-[15px] text-[var(--color-error)]" />
         </button>
       </div>
     </div>
@@ -614,7 +544,7 @@ export function ProductRow({
 
 ```bash
 git add src/components/product-row.tsx
-git commit -m "feat: add ProductRow with pending/cart variants and swipe-to-delete"
+git commit -m "feat: add ProductRow with pending/cart variants and explicit actions"
 ```
 
 ---
@@ -822,7 +752,6 @@ export function CategoryClient() {
   const categoryId = searchParams.get('id');
 
   const [isLoading, setIsLoading] = useState(true);
-  const [openSwipeId, setOpenSwipeId] = useState<string | null>(null);
   const [addSheetOpen, setAddSheetOpen] = useState(false);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductProps>({} as ProductProps);
@@ -896,8 +825,6 @@ export function CategoryClient() {
                 key={p._id}
                 product={p}
                 variant="pending"
-                openSwipeId={openSwipeId}
-                onSwipeOpen={setOpenSwipeId}
                 onToggleCart={toggleCart}
                 onEdit={handleEditProduct}
                 onDelete={removeProduct}
@@ -918,8 +845,6 @@ export function CategoryClient() {
                 key={p._id}
                 product={p}
                 variant="cart"
-                openSwipeId={openSwipeId}
-                onSwipeOpen={setOpenSwipeId}
                 onToggleCart={toggleCart}
                 onEdit={handleEditProduct}
                 onDelete={removeProduct}
@@ -1018,11 +943,8 @@ Navigate to `/category?id=[valid-id]`. Verify each behavior:
 | Carrinho section | Shows cart products with filled black checkbox + muted text |
 | Tap checkbox (pending row) | Product moves to Carrinho section, stat pills update |
 | Tap checkbox (cart row) | Product moves back to Fora do carrinho |
-| Swipe left on row | Row slides, red delete zone appears at 72px |
-| Release before 56px | Row snaps back closed |
-| Release past 56px | Row snaps open at full 72px |
 | Tap trash icon | Product is removed from list |
-| Swipe another row while one is open | Previous row snaps closed |
+| Product loading/deleting | Edit and delete actions are disabled and row opacity reflects pending deletion |
 | Tap edit (✏️) | Edit sheet opens with product data pre-filled |
 | Tap "Adicionar produto" | Add sheet opens |
 | Sticky footer totals | Total and Carrinho values match product data |
