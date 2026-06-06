@@ -1,5 +1,6 @@
 'use client';
 import { ShoppingCart } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 
 interface CartToggleRowProps {
@@ -28,9 +29,10 @@ export function CartToggleRow({ checked, onCheckedChange }: CartToggleRowProps) 
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={checked ? 'Produto no carrinho — ativado' : 'Adicionar direto ao carrinho — desativado'}
         onClick={() => onCheckedChange(!checked)}
         className={cn(
-          'relative flex h-[30px] w-[52px] flex-shrink-0 cursor-pointer items-center rounded-full p-[3px] transition-colors',
+          'relative flex h-[30px] w-[52px] flex-shrink-0 cursor-pointer items-center rounded-full p-[3px] transition-colors duration-200',
           checked ? 'bg-[#10b981]' : 'bg-[#e5e7eb]'
         )}
       >
