@@ -4,14 +4,9 @@ import { isBefore, subWeeks } from 'date-fns';
 import React, { useEffect, useCallback } from 'react';
 
 import { useCategories } from '@/context';
-import { Button } from '@/components/ui/button';
 import { CategoryProps } from '@/types/interfaces';
-import { Separator } from '@/components/ui/separator';
-import { Card, CardTitle, CardHeader } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
-import { Badge } from './ui/badge';
-import PageTitle from './page-title';
-import { Skeleton } from './ui/skeleton';
 import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
 
 export function CategoryCard() {
@@ -66,65 +61,68 @@ export function CategoryCard() {
   const renderContent = useCallback((renderCategories: CategoryProps[]) => {
     if (isLoadingCategories) {
       return Array.from({ length: 4 }).map((_, index) => (
-        <div className='flex flex-col gap-2 mt-4' key={index}>
-          <Skeleton className="h-16 w-full" />
-        </div>
+        <Skeleton key={index} className="h-[86px] w-full rounded-[var(--radius-lg)]" />
       ));
     }
 
     if (renderCategories) {
-      return renderCategories.map(category => {
-        return <Card
+      return renderCategories.map(category => (
+        <div
           key={category._id}
-          className="w-full cursor-pointer mb-2 mt-2"
+          className="w-full overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-hairline)] bg-[var(--color-canvas)]"
         >
-          <CardHeader className='p-4' onClick={(e) => {
-            e.preventDefault();
-            router.push(`/category?id=${category._id}`);
-          }}>
-            <div className="flex flex-row justify-between items-center">
-              <CardTitle>{category.name}</CardTitle>
-
-              <div className='flex gap-2'>
-                {category.products?.length ? <Badge variant="secondary" className="text-xs">{category.products?.length} produtos</Badge> : null}
-              </div>
-
-            </div>
-          </CardHeader>
-
-          <Button
-            onClick={() => handleRemoveClick(category)}
-            className="w-full bg-secondary dark:bg-primary-foreground hover:bg-secondary dark:hover:bg-primary-foreground flex items-center justify-center gap-2"
+          <div
+            className="flex cursor-pointer items-center justify-between gap-2 px-4 py-[14px]"
+            onClick={() => router.push(`/category?id=${category._id}`)}
           >
-            <Trash2 className="h-4 w-4 text-rose-500 dark:text-white" />
-          </Button>
-        </Card>;
-      });
+            <span className="flex-1 text-base font-semibold leading-snug text-[var(--color-ink)]">
+              {category.name}
+            </span>
+            {(category.products?.length ?? 0) > 0 && (
+              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--color-surface-card)] px-3 py-[9px]">
+                <span className="text-[13px] font-medium text-[var(--color-ink)]">
+                  {(category.products ?? []).length}
+                </span>
+                <span className="text-[13px] font-medium text-[var(--color-ink)]">
+                  produtos
+                </span>
+              </span>
+            )}
+          </div>
+
+          <div className="h-px w-full bg-[var(--color-hairline)]" />
+
+          <button
+            onClick={() => handleRemoveClick(category)}
+            className="flex h-10 w-full items-center justify-center bg-[var(--color-surface-soft)] transition-colors hover:bg-[var(--color-surface-card)]"
+          >
+            <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
+          </button>
+        </div>
+      ));
     }
 
     return null;
   }, [isLoadingCategories, router]);
 
   return (
-    <main>
-      <PageTitle title="Categorias" />
+    <main className="flex flex-col gap-4">
+      <h1 className="font-sans text-[28px] font-semibold leading-[1.2] tracking-[-0.5px] text-[var(--color-ink)]">
+        Categorias
+      </h1>
 
       {recentCategories && recentCategories.length > 0 && (
-        <>
-          <div className='my-4'>
-            <p className="mb-2 text-sm">Atualizadas</p>
-            {renderContent(recentCategories)}
-          </div>
-
-          {olderCategories && olderCategories.length > 0 && <Separator />}
-        </>
+        <section className="flex flex-col gap-2">
+          <p className="text-sm font-medium text-[var(--color-muted)]">Atualizadas</p>
+          {renderContent(recentCategories)}
+        </section>
       )}
 
       {olderCategories && olderCategories.length > 0 && (
-        <div className='my-4'>
-          <p className="mb-2 text-sm">Antigas</p>
+        <section className="flex flex-col gap-2">
+          <p className="text-sm font-medium text-[var(--color-muted)]">Antigas</p>
           {renderContent(olderCategories)}
-        </div>
+        </section>
       )}
 
       {selectedCategoryToRemove && (
