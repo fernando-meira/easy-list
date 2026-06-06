@@ -23,10 +23,10 @@ export function CategoryCard() {
     return isBefore(updatedAt, oneWeekAgo);
   };
 
-  const handleRemoveClick = (category: CategoryProps) => {
+  const handleRemoveClick = useCallback((category: CategoryProps) => {
     setSelectedCategoryToRemove(category);
     setOpenRemoveDrawer(true);
-  };
+  }, []);
 
   useEffect(() => {
     if (!categories) return;
@@ -94,6 +94,7 @@ export function CategoryCard() {
 
           <button
             onClick={() => handleRemoveClick(category)}
+            aria-label="Remover categoria"
             className="flex h-10 w-full items-center justify-center bg-[var(--color-surface-soft)] transition-colors hover:bg-[var(--color-surface-card)]"
           >
             <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
@@ -103,7 +104,7 @@ export function CategoryCard() {
     }
 
     return null;
-  }, [isLoadingCategories, router]);
+  }, [isLoadingCategories, router, handleRemoveClick]);
 
   return (
     <main className="flex flex-col gap-4">
