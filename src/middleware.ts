@@ -3,11 +3,12 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 import { PagesEnum } from '@/types/enums';
+import { authSecret } from '@/lib/auth-secret';
 
 const publicRoutes = [PagesEnum.login, PagesEnum.verifyRequest];
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
+  const token = await getToken({ req: request, secret: authSecret });
 
   const isPublicRoute = publicRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)

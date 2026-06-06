@@ -80,12 +80,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Marcar o código como usado
-    await db.collection('verificationCodes').updateOne(
-      { _id: verificationCode._id },
-      { $set: { used: true } }
-    );
-
     // Buscar ou criar o usuário
     const user = await db.collection('users').findOne({ email });
 

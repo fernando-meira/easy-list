@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Product from '@/models/Product';
 import Category from '@/models/Category';
+import { authSecret } from '@/lib/auth-secret';
 
 interface CategoryData {
   name: string;
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB();
 
-    const token = await getToken({ req: request });
+    const token = await getToken({ req: request, secret: authSecret });
 
     if (!token) {
       return NextResponse.json(
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
 
-    const token = await getToken({ req: request });
+    const token = await getToken({ req: request, secret: authSecret });
 
     if (!token) {
       return NextResponse.json(
@@ -123,7 +124,7 @@ export async function DELETE(request: NextRequest) {
   try {
     await connectDB();
 
-    const token = await getToken({ req: request });
+    const token = await getToken({ req: request, secret: authSecret });
 
     if (!token) {
       return NextResponse.json(

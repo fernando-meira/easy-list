@@ -4,6 +4,7 @@ import EmailProvider from 'next-auth/providers/email';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
+import { authSecret } from './auth-secret';
 import { clientPromise } from './mongodb-adapter';
 import {
   getAppBaseUrl,
@@ -17,6 +18,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const authOptions: AuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
+  secret: authSecret,
   providers: [
     EmailProvider({
       async sendVerificationRequest({ identifier, url }) {
@@ -86,11 +88,10 @@ export const authOptions: AuthOptions = {
           const client = await clientPromise;
           const db = client.db();
 
-          // Verificar se o código é válido
           const verificationCode = await db.collection('verificationCodes').findOne({
             email: credentials.email,
             code: credentials.code,
-            used: true, // Já deve ter sido marcado como usado pela API
+            used: false,
             expiresAt: { $gt: new Date() }
           });
 
@@ -98,14 +99,37 @@ export const authOptions: AuthOptions = {
             return null;
           }
 
-          // Buscar o usuário
-          const user = await db.collection('users').findOne({
+          if (verificationCode.attempts >= 5) {
+            return null;
+          }
+
+          let user = await db.collection('users').findOne({
             email: credentials.email
           });
 
           if (!user) {
-            return null;
+            const result = await db.collection('users').insertOne({
+              email: credentials.email,
+              emailVerified: new Date(),
+              createdAt: new Date(),
+            });
+
+            user = {
+              _id: result.insertedId,
+              email: credentials.email,
+              name: null,
+            };
+          } else if (!user.emailVerified) {
+            await db.collection('users').updateOne(
+              { _id: user._id },
+              { $set: { emailVerified: new Date() } }
+            );
           }
+
+          await db.collection('verificationCodes').updateOne(
+            { _id: verificationCode._id },
+            { $set: { used: true, usedAt: new Date() } }
+          );
 
           return {
             id: user._id.toString(),

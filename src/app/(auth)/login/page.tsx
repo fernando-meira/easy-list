@@ -151,25 +151,14 @@ export default function LoginPage() {
     try {
       setIsLoading(true);
 
-      const verifyResponse = await fetch('/api/auth/verify-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: data.email, code: data.code }),
-      });
-
-      if (!verifyResponse.ok) {
-        const errBody = await verifyResponse.json().catch(() => ({})) as { error?: string };
-        throw new Error(errBody.error || 'Código inválido');
-      }
-
       const signInResult = await signIn('verification-code', {
         email: data.email,
         code: data.code,
         redirect: false,
       });
 
-      if (signInResult?.error) {
-        throw new Error(signInResult.error);
+      if (!signInResult?.ok || signInResult.error) {
+        throw new Error('Código inválido');
       }
 
       router.push('/');
