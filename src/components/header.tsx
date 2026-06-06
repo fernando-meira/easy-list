@@ -7,6 +7,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { Sun, Moon, LogIn, LogOut, ShoppingBasket } from 'lucide-react';
 
 import { PagesEnum } from '@/types/enums';
+import { UserAvatar } from '@/components/user-avatar';
 
 export function Header() {
   const { data: session } = useSession();
@@ -28,7 +29,11 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between h-14 px-3 bg-[var(--color-canvas)] border-b border-[var(--color-hairline)] max-w-3xl mx-auto">
       {isLoggedIn ? (
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full bg-[var(--color-surface-card)] border border-[var(--color-hairline)] flex-shrink-0" />
+          <UserAvatar
+            name={session?.user?.name}
+            email={session?.user?.email}
+            image={session?.user?.image}
+          />
           <div className="flex flex-col gap-0.5">
             <span className="text-[13px] font-semibold leading-none text-[var(--color-ink)]">
               Olá, {firstName}
