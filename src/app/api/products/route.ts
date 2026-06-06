@@ -1,13 +1,24 @@
-import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { NextRequest, NextResponse } from 'next/server';
 
-import connectDB from '@/lib/mongodb';
-import Product from '@/models/Product';
+import { authSecret } from '@/lib/auth-secret';
+import { getProducts, createProduct } from '@/lib/firestore-domain';
 
-export async function GET() {
+async function getUserId(request: NextRequest) {
+  const token = await getToken({ req: request, secret: authSecret });
+
+  return token?.sub ?? null;
+}
+
+export async function GET(request: NextRequest) {
   try {
-    await connectDB();
+    const userId = await getUserId(request);
 
-    const products = await Product.find({}).populate('category', 'name');
+    if (!userId) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
+    const products = await getProducts(userId);
 
     return NextResponse.json(products);
   } catch (error) {
@@ -17,18 +28,20 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    await connectDB();
+    const userId = await getUserId(request);
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
 
     const data = await request.json();
-    const { categoryId, ...rest } = data;
+    const product = await createProduct(userId, data);
 
-    const product = await Product.create({
-      ...rest,
-      category: categoryId
-    });
-    await product.populate('category', 'name');
+    if (!product) {
+      return NextResponse.json({ error: 'Categoria não encontrada' }, { status: 404 });
+    }
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {

@@ -1,104 +1,85 @@
+import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
-import connectDB from '@/lib/mongodb';
-import Product from '@/models/Product';
+import { authSecret } from '@/lib/auth-secret';
+import { getProduct, deleteProduct, updateProduct } from '@/lib/firestore-domain';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function PUT(
-  request: NextRequest,
-  context: RouteContext
-) {
+async function getUserId(request: NextRequest) {
+  const token = await getToken({ req: request, secret: authSecret });
+
+  return token?.sub ?? null;
+}
+
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
-    await connectDB();
+    const userId = await getUserId(request);
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const { id } = await context.params;
     const data = await request.json();
-
-    // Atualiza o produto com os novos dados, incluindo a categoria
-    const product = await Product.findByIdAndUpdate(
-      id,
-      {
-        ...data,
-        category: data.categoryId, // Usar categoryId como referência para a categoria
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    ).populate('category'); // Popular a categoria completa
+    const product = await updateProduct(userId, id, data);
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     return NextResponse.json(product);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: 'Error updating product' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Error updating product' }, { status: 500 });
   }
 }
 
-export async function GET(
-  request: NextRequest,
-  context: RouteContext
-) {
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    await connectDB();
-    const { id } = await context.params;
+    const userId = await getUserId(request);
 
-    const product = await Product.findById(id).populate('category');
+    if (!userId) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
+    const { id } = await context.params;
+    const product = await getProduct(userId, id);
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     return NextResponse.json(product);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: 'Error getting product' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Error getting product' }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  context: RouteContext
-) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
-    await connectDB();
+    const userId = await getUserId(request);
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const { id } = await context.params;
+    const wasDeleted = await deleteProduct(userId, id);
 
-    const product = await Product.findByIdAndDelete(id).populate('category', 'name');
-
-    if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+    if (!wasDeleted) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     return NextResponse.json({ message: 'Product deleted successfully' });
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: 'Error deleting product' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Error deleting product' }, { status: 500 });
   }
 }
