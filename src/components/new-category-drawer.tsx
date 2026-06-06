@@ -24,13 +24,19 @@ export function NewCategoryDrawer({ open, onOpenChange }: NewCategoryDrawerProps
   });
 
   const onSubmit = methods.handleSubmit((data) => {
-    addCategory(data);
+    addCategory({ name: data.name } as CategoryProps);
     methods.reset();
     onOpenChange?.(false);
   });
 
   return (
-    <DrawerPrimitive.Root open={open} onOpenChange={onOpenChange}>
+    <DrawerPrimitive.Root
+      open={open}
+      onOpenChange={(value) => {
+        if (!value) methods.reset();
+        onOpenChange?.(value);
+      }}
+    >
       <DrawerPrimitive.Portal>
         <DrawerPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60" />
 
