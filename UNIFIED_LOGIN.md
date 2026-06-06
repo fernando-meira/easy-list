@@ -9,9 +9,10 @@
    - Substitui as rotas separadas de magic link e código
 
 2. **Página de Login Simplificada**
-   - Removidas as tabs (Magic Link / Código)
-   - Interface única e mais limpa
-   - Usuário digita o email e recebe ambas as opções
+    - Removidas as tabs (Magic Link / Código)
+    - Interface única e mais limpa
+    - Usuário digita o email e recebe ambas as opções
+    - A validação manual usa `signIn('verification-code')` diretamente, sem chamada prévia para `/api/auth/verify-code`
 
 3. **Email Unificado**
    - Contém duas opções de acesso:
@@ -67,11 +68,13 @@ Redireciona para /
 ```
 Digita código na tela
     ↓
-POST /api/auth/verify-code
-    ↓
-Valida código
-    ↓
 signIn('verification-code')
+    ↓
+CredentialsProvider valida código não usado
+    ↓
+Cria usuário se necessário e confirma email
+    ↓
+Marca código como usado
     ↓
 Redireciona para /
 ```
@@ -101,7 +104,7 @@ src/app/(auth)/login/
 ```
 src/app/api/auth/
 ├── verify-code/
-│   └── route.ts          # Valida código manual
+│   └── route.ts          # Compatibilidade: valida código sem consumir uso
 └── request-code/
     └── route.ts          # Pode ser removido (deprecated)
 ```
@@ -163,6 +166,7 @@ O email enviado contém:
 3. **Uso Único**: Código/token só pode ser usado uma vez
 4. **Validação**: Email e código validados no backend
 5. **Tentativas**: Contador de tentativas inválidas
+6. **Segredo compartilhado**: NextAuth, middleware e rotas protegidas usam `authSecret`, resolvido de `NEXTAUTH_SECRET` ou `AUTH_SECRET`
 
 ### Tokens
 
@@ -179,8 +183,8 @@ O email enviado contém:
 ### Compatibilidade
 
 O sistema atual mantém:
-- `/api/auth/verify-code` - Ainda necessário para validar código
-- Autenticação por código via NextAuth CredentialsProvider
+- `/api/auth/verify-code` - Compatível para validação externa, mas não consome o código
+- Autenticação por código via NextAuth CredentialsProvider, que consome o código e cria/confirma o usuário
 
 ## Testes
 
@@ -198,12 +202,17 @@ O sistema atual mantém:
    - Teste o magic link
    - Teste o código manual
 
-3. **Validar Código**
-   ```bash
-   curl -X POST http://localhost:3000/api/auth/verify-code \
-     -H 'Content-Type: application/json' \
-     -d '{"email":"seu@email.com","code":"A1B2"}'
-   ```
+3. **Validar Código via API de Compatibilidade**
+    ```bash
+    curl -X POST http://localhost:3000/api/auth/verify-code \
+      -H 'Content-Type: application/json' \
+      -d '{"email":"seu@email.com","code":"A1B2"}'
+    ```
+
+4. **Validar Código no Fluxo Real**
+   - Digite o código na tela de login.
+   - O frontend chama `signIn('verification-code')`.
+   - O CredentialsProvider valida, cria/confirma o usuário e marca o código como usado.
 
 ## Próximos Passos
 

@@ -2,6 +2,7 @@ import { Resend } from 'resend';
 import { AuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
+import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { authSecret } from './auth-secret';
@@ -20,6 +21,12 @@ export const authOptions: AuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   secret: authSecret,
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      // Google is treated as trusted for verified emails in this app.
+      allowDangerousEmailAccountLinking: true,
+    }),
     EmailProvider({
       async sendVerificationRequest({ identifier, url }) {
         try {

@@ -204,3 +204,14 @@ useEffect(() => {
 | `src/app/(auth)/verify-request/page.tsx` | Movido + redesign + sessionStorage |
 
 **Arquivo removido:** `src/app/verify-request/page.tsx` (movido para dentro do grupo `(auth)`)
+
+---
+
+## 7. Atualizações da PR #63
+
+- `src/lib/auth-secret.ts` centraliza o segredo do NextAuth em `authSecret`, usando `NEXTAUTH_SECRET` ou `AUTH_SECRET`.
+- `src/lib/auth.ts`, `src/middleware.ts` e `src/app/api/categories/route.ts` usam o mesmo segredo para evitar divergência na leitura de JWT.
+- O login por código chama `signIn('verification-code')` diretamente; o `CredentialsProvider` valida código não usado, cria usuário se necessário, confirma `emailVerified` e marca o código como usado.
+- `/api/auth/verify-code` deixa de marcar o código como usado, ficando como rota de validação compatível sem consumir o código.
+- `Header` agora tem estado deslogado com marca EasyList e botão "Entrar", além do estado autenticado com saudação e logout.
+- `ProductRow` remove o gesto de swipe-to-delete e passa a renderizar ações explícitas de editar e excluir.
