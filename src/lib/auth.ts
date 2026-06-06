@@ -64,8 +64,6 @@ export const authOptions: AuthOptions = {
             console.error('Erro do Resend ao enviar email:', result.error);
             throw new Error(`Falha ao enviar email: ${result.error.message}`);
           }
-
-          console.log('Email enviado com sucesso:', result.data);
         } catch (error) {
           logEmailError('Falha ao enviar email de verificação NextAuth', error, {
             to: identifier,
@@ -150,6 +148,20 @@ export const authOptions: AuthOptions = {
       }
     })
   ],
+  callbacks: {
+    async jwt({ token, account, profile }) {
+      if (account?.provider === 'google' && profile) {
+        token.picture = (profile as { picture?: string }).picture ?? token.picture;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.image = (token.picture as string | null | undefined) ?? null;
+      }
+      return session;
+    },
+  },
   pages: {
     signIn: '/login',
     verifyRequest: '/verify-request',
