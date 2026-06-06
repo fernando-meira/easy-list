@@ -30,14 +30,12 @@ export function Footer() {
       </div>)
       }
 
-      <div className="flex items-center gap-2">
-        <>
-          {!isHomePage ? (
-            <NewProductForm />
-          ) : (
-            <NewCategoryDrawer />
-          )}
-        </>
+      <div className={isHomePage ? 'w-full p-4' : 'flex items-center gap-2'}>
+        {!isHomePage ? (
+          <NewProductForm />
+        ) : (
+          <NewCategoryDrawer />
+        )}
       </div>
     </footer>
   );
