@@ -12,9 +12,7 @@ interface UserAvatarProps {
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) {
     const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) {
-      // fall through to email fallback
-    } else if (parts.length === 1) {
+    if (parts.length === 1) {
       return parts[0][0].toUpperCase();
     } else {
       return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
