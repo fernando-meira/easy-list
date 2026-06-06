@@ -44,6 +44,7 @@
     --color-on-dark-soft: #a1a1aa;
     --color-success: #10b981;
     --color-error: #ef4444;
+    --color-surface-soft: #f8f9fa;
     --font-body: Inter, sans-serif;
     --font-display: Cal Sans, Inter, sans-serif;
     --radius-md: 8px;
@@ -85,6 +86,7 @@
     --color-hairline: #27272a;
     --color-primary: #ffffff;
     --color-on-primary: #111111;
+    --color-surface-soft: #141414;
     --color-on-dark: #ffffff;
     --color-on-dark-soft: #a1a1aa;
   }
