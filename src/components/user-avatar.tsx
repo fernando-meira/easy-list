@@ -1,7 +1,7 @@
 'use client';
 
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { getBiggestUsernamePart } from '@/utils';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface UserAvatarProps {
   name?: string | null;
@@ -11,9 +11,14 @@ interface UserAvatarProps {
 
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) {
-    const parts = name.trim().split(/\s+/);
-    if (parts.length === 1) return parts[0][0].toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) {
+      // fall through to email fallback
+    } else if (parts.length === 1) {
+      return parts[0][0].toUpperCase();
+    } else {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
   }
   if (email) {
     const part = getBiggestUsernamePart(email);
