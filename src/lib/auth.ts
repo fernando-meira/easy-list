@@ -1,12 +1,12 @@
 import { Resend } from 'resend';
 import { AuthOptions } from 'next-auth';
-import { cert } from 'firebase-admin/app';
 import EmailProvider from 'next-auth/providers/email';
 import GoogleProvider from 'next-auth/providers/google';
 import { FirestoreAdapter } from '@auth/firebase-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { authSecret } from './auth-secret';
+import { firestore } from './firebase-admin';
 import { upsertAuthUserByEmail } from './firestore-auth-users';
 import {
   getAppBaseUrl,
@@ -24,16 +24,8 @@ import {
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const firebaseAdapterCredential = cert({
-  projectId: process.env.AUTH_FIREBASE_PROJECT_ID,
-  clientEmail: process.env.AUTH_FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.AUTH_FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-});
-
 export const authOptions: AuthOptions = {
-  adapter: FirestoreAdapter({
-    credential: firebaseAdapterCredential,
-  }),
+  adapter: FirestoreAdapter(firestore),
   secret: authSecret,
   providers: [
     GoogleProvider({
