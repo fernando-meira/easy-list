@@ -1,28 +1,21 @@
 'use client';
 
 import * as React from 'react';
+import { Drawer as DrawerPrimitive } from 'vaul';
 import { useForm, FormProvider } from 'react-hook-form';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { X, Edit, ArrowLeft, CirclePlus, ShoppingCart } from 'lucide-react';
+import { X, Check, Plus } from 'lucide-react';
 
+import { cn } from '@/lib/utils';
 import { useCategories } from '@/context';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { capitalizeFirstLetter } from '@/utils';
 import { ProductProps } from '@/types/interfaces';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useProducts } from '@/context/ProductContext';
 import { UnitEnum, AddOrEditProductTypeEnum } from '@/types/enums';
-import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectContent,
-  SelectTrigger,
-} from '@/components/ui/select';
+import { CartToggleRow } from '@/components/ui/cart-toggle-row';
+import { UnitSegmentedControl } from '@/components/ui/unit-segmented-control';
 
-import { ActionButton } from './action-button';
 import { CurrencyInput } from './currency-input';
+import { CategoryPopover } from './category-popover';
 
 interface ProductManagerSheetProps {
   open?: boolean;
@@ -40,6 +33,8 @@ export const ProductManagerSheet = ({
   const { managerProduct, isProductLoading } = useProducts();
   const { categories, selectedCategoryId, isLoadingCategories } = useCategories();
 
+  const isEdit = type === AddOrEditProductTypeEnum.edit;
+
   const methods = useForm<Omit<ProductProps, 'category'> & { categoryId: string }>({
     defaultValues: {
       name: '',
@@ -47,28 +42,17 @@ export const ProductManagerSheet = ({
       quantity: '',
       addToCart: false,
       unit: UnitEnum.unit,
-      ...(product && {
-        _id: product._id,
-        name: product.name,
-        price: product.price,
-        quantity: product.quantity,
-        addToCart: product.addToCart,
-        unit: product.unit,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-      }),
-      categoryId: selectedCategoryId || product?.category?._id || product?.categoryId || categories[0]?._id || '',
+      categoryId:
+        selectedCategoryId ||
+        product?.category?._id ||
+        product?.categoryId ||
+        categories[0]?._id ||
+        '',
     },
   });
 
   const onSubmit = methods.handleSubmit((data) => {
-    const productData = {
-      ...data,
-      categoryId: data.categoryId,
-    };
-
-    managerProduct({ product: productData });
-
+    managerProduct({ product: { ...data, categoryId: data.categoryId } });
     methods.reset();
     onOpenChange?.(false);
   });
@@ -79,13 +63,9 @@ export const ProductManagerSheet = ({
     async (productId: string) => {
       try {
         setIsLoadingProduct(true);
-
         const response = await fetch(`/api/products/${productId}`);
-
         if (!response.ok) throw new Error('Failed to fetch product');
-
         const data = await response.json();
-
         methods.reset({
           _id: data._id,
           name: data.name,
@@ -109,11 +89,11 @@ export const ProductManagerSheet = ({
   React.useEffect(() => {
     if (!open) return;
 
-    if (product?._id && type === AddOrEditProductTypeEnum.edit) {
+    if (product?._id && isEdit) {
       fetchProduct(product._id);
     }
 
-    if (type === AddOrEditProductTypeEnum.add && categories.length > 0) {
+    if (!isEdit && categories.length > 0) {
       methods.reset(
         {
           name: '',
@@ -126,151 +106,163 @@ export const ProductManagerSheet = ({
         { keepDefaultValues: true }
       );
     }
-  }, [open, product?._id, type, categories.length, fetchProduct, categories, methods, selectedCategoryId]);
+  }, [open, product?._id, isEdit, categories.length, fetchProduct, categories, methods, selectedCategoryId]);
 
-  const [unit, categoryId] = methods.watch(['unit', 'categoryId']);
+  const [unit, categoryId, addToCart] = methods.watch(['unit', 'categoryId', 'addToCart']);
 
   const isLoading = isLoadingCategories || isProductLoading.isLoading || isLoadingProduct;
 
+  const quantityLabel = unit === UnitEnum.unit || !unit ? 'Qtd.' : 'Peso';
+
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      {isLoading ? null : (
-        <DialogPrimitive.Portal>
-          <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0" />
+    <DrawerPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <DrawerPrimitive.Portal>
+        <DrawerPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60" />
 
-          <DialogPrimitive.Content
-            className="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-full flex-col bg-background shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right data-[state=open]:duration-300 data-[state=closed]:duration-300 sm:max-w-lg"
-          >
-            <button
-              type="button"
-              aria-label="Fechar"
-              onClick={() => onOpenChange?.(false)}
-              className="absolute right-4 top-4 rounded-sm p-1 text-muted-foreground transition hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            >
-              <X className="h-4 w-4" />
-            </button>
+        <DrawerPrimitive.Content
+          className={cn(
+            'fixed inset-x-0 bottom-0 z-50 flex flex-col',
+            'rounded-t-2xl bg-background outline-none',
+            'shadow-[0_-4px_12px_rgba(0,0,0,0.08)]'
+          )}
+        >
+          {/* Drag handle */}
+          <div className="flex flex-shrink-0 justify-center pt-2.5">
+            <div className="h-[5px] w-11 rounded-full bg-[#d1d5db]" />
+          </div>
 
-            <div className="space-y-2 px-6 pt-6 pb-2 text-left">
-              <DialogPrimitive.Title className="text-lg font-semibold">
-                {type === AddOrEditProductTypeEnum.edit ? 'Editar' : 'Adicionar'} produto
-              </DialogPrimitive.Title>
+          <div className="flex flex-col gap-4 overflow-y-auto px-5 pb-4 pt-4">
+            {/* Sheet header */}
+            <div className="flex items-start justify-between">
+              <div className="flex flex-1 flex-col gap-1 pr-3">
+                <DrawerPrimitive.Title className="text-[28px] font-semibold leading-[1.2] tracking-[-0.5px] text-foreground">
+                  {isEdit ? 'Editar produto' : 'Novo produto'}
+                </DrawerPrimitive.Title>
+                <DrawerPrimitive.Description className="text-sm leading-[1.5] text-[#374151] dark:text-[#a1a1aa]">
+                  {isEdit
+                    ? 'Ajuste só o necessário e salve.'
+                    : 'Digite o nome agora; detalhes podem ficar para depois.'}
+                </DrawerPrimitive.Description>
+              </div>
 
-              <DialogPrimitive.Description className="text-sm text-muted-foreground">
-                {type === AddOrEditProductTypeEnum.edit
-                  ? 'Faça alterações no seu produto aqui. Clique em salvar quando terminar.'
-                  : 'Adicione um novo produto aqui. Clique em salvar quando terminar.'}
-              </DialogPrimitive.Description>
+              <button
+                type="button"
+                aria-label="Fechar"
+                onClick={() => onOpenChange?.(false)}
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-border bg-white dark:border-[#242424] dark:bg-[#101010]"
+              >
+                <X className="h-5 w-5 text-foreground" />
+              </button>
             </div>
 
-            <FormProvider {...methods}>
-              <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-6 pb-4">
-                  <div className="flex w-full gap-2">
-                    <div className="w-full">
-                      <Label htmlFor="name">Produto</Label>
-
-                      <Input
-                        required
-                        id="name"
-                        type="text"
-                        placeholder="Nome do produto"
-                        {...methods.register('name')}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="categoryId">Categoria</Label>
-
-                      <Select
-                        required
-                        value={categoryId}
-                        onValueChange={(value: string) => {
-                          methods.setValue('categoryId', value, { shouldValidate: true });
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Categoria" />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category._id} value={category._id}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <div>
-                      <CurrencyInput
-                        label="Preço"
-                        placeholder="Preço"
-                        value={methods.watch('price')}
-                        onValueChange={(value) => methods.setValue('price', value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="quantity">Qtd/Peso</Label>
-
-                      <Input
-                        min={0}
-                        step={0.1}
-                        id="quantity"
-                        type="number"
-                        placeholder={unit === UnitEnum.unit || unit === undefined ? 'Qtd.' : 'Peso'}
-                        {...methods.register('quantity')}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="unit">Medida</Label>
-
-                      <Select
-                        defaultValue={UnitEnum.unit}
-                        value={unit || UnitEnum.unit}
-                        onValueChange={(value: UnitEnum) => methods.setValue('unit', value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Medida" />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                          <SelectItem value={UnitEnum.unit}>{capitalizeFirstLetter(UnitEnum.unit)}</SelectItem>
-
-                          <SelectItem value={UnitEnum.kg}>{capitalizeFirstLetter(UnitEnum.kg)}</SelectItem>
-
-                          <SelectItem value={UnitEnum.grams}>{capitalizeFirstLetter(UnitEnum.grams)}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-row-reverse">
-                    <Checkbox
-                      id="add-to-cart"
-                      className='w-6 h-6'
-                      checked={methods.watch('addToCart')}
-                      onCheckedChange={(checked) => methods.setValue('addToCart', checked as boolean)}
+            {isLoading ? (
+              <div className="flex h-40 items-center justify-center">
+                <span className="text-sm text-muted-foreground">Carregando...</span>
+              </div>
+            ) : (
+              <FormProvider {...methods}>
+                <form onSubmit={onSubmit} className="flex flex-col gap-4">
+                  {/* Campo Produto */}
+                  <div className="flex flex-col gap-[7px]">
+                    <span className="text-[13px] font-bold leading-[1.35] text-foreground">
+                      Produto
+                    </span>
+                    <Input
+                      required
+                      type="text"
+                      placeholder="Nome do produto"
+                      className="h-10 rounded-lg px-3.5 text-base font-semibold"
+                      {...methods.register('name')}
                     />
-
-                    <ArrowLeft  className='text-teal-400'/> <ShoppingCart className=''/>
                   </div>
-                </div>
 
-                <ActionButton
-                  type="submit"
-                  icon={type === AddOrEditProductTypeEnum.edit ? Edit : CirclePlus}
-                  disabled={isLoadingCategories || isProductLoading.isLoading || isLoadingProduct}
-                />
-              </form>
-            </FormProvider>
-          </DialogPrimitive.Content>
-        </DialogPrimitive.Portal>
-      )}
-    </DialogPrimitive.Root>
+                  {/* Categoria */}
+                  <CategoryPopover
+                    value={categoryId}
+                    categories={categories}
+                    onChange={(id) =>
+                      methods.setValue('categoryId', id, { shouldValidate: true })
+                    }
+                  />
+
+                  {/* Detalhes opcionais */}
+                  <div className="flex flex-col gap-3 rounded-xl border border-border bg-[#f5f5f5] p-3 dark:border-[#242424] dark:bg-[#1a1a1a]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-[750] leading-[1.35] text-foreground">
+                        Detalhes opcionais
+                      </span>
+                      <span className="text-xs font-semibold leading-[1.35] text-muted-foreground">
+                        pode preencher depois
+                      </span>
+                    </div>
+
+                    {/* Preço + Qtd */}
+                    <div className="flex gap-2.5">
+                      <div className="flex flex-1 flex-col gap-[7px]">
+                        <span className="text-[13px] font-bold leading-[1.35] text-foreground">
+                          Preço
+                        </span>
+                        <CurrencyInput
+                          label=""
+                          placeholder="R$ 0,00"
+                          value={methods.watch('price')}
+                          onValueChange={(value) => methods.setValue('price', value)}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-[7px]" style={{ width: 102 }}>
+                        <span className="text-[13px] font-bold leading-[1.35] text-foreground">
+                          {quantityLabel}
+                        </span>
+                        <Input
+                          min={0}
+                          step={0.1}
+                          type="number"
+                          placeholder={quantityLabel}
+                          className="h-10 rounded-lg px-3.5"
+                          {...methods.register('quantity')}
+                        />
+                      </div>
+                    </div>
+
+                    <UnitSegmentedControl
+                      value={(unit as UnitEnum) || UnitEnum.unit}
+                      onChange={(val) => methods.setValue('unit', val)}
+                    />
+                  </div>
+
+                  {/* Cart toggle */}
+                  <CartToggleRow
+                    checked={!!addToCart}
+                    onCheckedChange={(val) => methods.setValue('addToCart', val)}
+                  />
+
+                  {/* Footer */}
+                  <div className="flex flex-col gap-2.5">
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-foreground text-sm font-semibold text-background disabled:opacity-50"
+                    >
+                      {isEdit ? (
+                        <Check className="h-5 w-5" />
+                      ) : (
+                        <Plus className="h-5 w-5" />
+                      )}
+                      {isEdit ? 'Salvar alterações' : 'Adicionar produto'}
+                    </button>
+
+                    <p className="text-[13px] font-medium leading-[1.4] text-[#898989]">
+                      {isEdit
+                        ? 'As alterações atualizam esta lista imediatamente.'
+                        : 'Enter também salva quando o nome estiver preenchido.'}
+                    </p>
+                  </div>
+                </form>
+              </FormProvider>
+            )}
+          </div>
+        </DrawerPrimitive.Content>
+      </DrawerPrimitive.Portal>
+    </DrawerPrimitive.Root>
   );
 };
