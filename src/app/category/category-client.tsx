@@ -22,7 +22,6 @@ export function CategoryClient() {
   const categoryId = searchParams.get('id');
 
   const [isLoading, setIsLoading] = useState(true);
-  const [openSwipeId, setOpenSwipeId] = useState<string | null>(null);
   const [addSheetOpen, setAddSheetOpen] = useState(false);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductProps>({} as ProductProps);
@@ -99,8 +98,6 @@ export function CategoryClient() {
                 key={p._id}
                 product={p}
                 variant="pending"
-                openSwipeId={openSwipeId}
-                onSwipeOpen={setOpenSwipeId}
                 onToggleCart={toggleCart}
                 onEdit={handleEditProduct}
                 onDelete={removeProduct}
@@ -121,8 +118,6 @@ export function CategoryClient() {
                 key={p._id}
                 product={p}
                 variant="cart"
-                openSwipeId={openSwipeId}
-                onSwipeOpen={setOpenSwipeId}
                 onToggleCart={toggleCart}
                 onEdit={handleEditProduct}
                 onDelete={removeProduct}
