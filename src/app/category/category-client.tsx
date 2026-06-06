@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
 
@@ -78,6 +79,16 @@ export function CategoryClient() {
   return (
     <>
       <div className="flex flex-col gap-4 pb-[140px]">
+        <nav aria-label="breadcrumb" className="flex items-center gap-1.5">
+          <Link href="/" className="text-[12px] font-semibold text-[var(--color-ink)]">
+            Home
+          </Link>
+          <span className="text-[12px] text-[var(--color-muted)]">/</span>
+          <span className="text-[12px] font-semibold text-[var(--color-muted)]" aria-current="page">
+            {filteredCategory.name}
+          </span>
+        </nav>
+
         <CategoryHeroCard
           category={filteredCategory}
           products={allProducts}
