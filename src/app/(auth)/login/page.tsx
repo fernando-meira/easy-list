@@ -5,9 +5,9 @@ import { toast } from 'sonner';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Suspense, useState, useEffect } from 'react';
+import { Chrome, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useAuth } from '@/hooks/useAuth';
@@ -37,15 +37,22 @@ function formatCountdown(seconds: number): string {
   return `${m}:${s}`;
 }
 
-function ExpiredLinkBanner() {
+function LoginErrorBanner() {
   const searchParams = useSearchParams();
-  if (searchParams.get('error') !== 'Verification') return null;
+  const error = searchParams.get('error');
+
+  if (!error) return null;
+
+  const message = error === 'Verification'
+    ? 'Seu link expirou ou já foi usado. Solicite um novo acesso.'
+    : 'Não foi possível entrar com Google. Tente novamente ou use seu email.';
+
   return (
     <div
       role="alert"
       className="mb-4 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
     >
-      Seu link expirou ou já foi usado. Solicite um novo acesso.
+      {message}
     </div>
   );
 }
@@ -53,6 +60,7 @@ function ExpiredLinkBanner() {
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [currentEmail, setCurrentEmail] = useState('');
   const [showCodeForm, setShowCodeForm] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(600);
@@ -91,6 +99,16 @@ export default function LoginPage() {
     resolver: zodResolver(codeSchema),
     defaultValues: { email: '', code: '' },
   });
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsGoogleLoading(true);
+      await signIn('google', { callbackUrl: '/' });
+    } catch {
+      toast.error('Não foi possível entrar com Google. Tente novamente ou use seu email.');
+      setIsGoogleLoading(false);
+    }
+  };
 
   const sendLoginEmail = async (data: EmailFormData) => {
     setCurrentEmail(data.email);
@@ -192,7 +210,7 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md">
         <Suspense fallback={null}>
-          <ExpiredLinkBanner />
+          <LoginErrorBanner />
         </Suspense>
 
         <div className="rounded-lg border border-border bg-card shadow-sm p-8 space-y-6">
@@ -219,6 +237,29 @@ export default function LoginPage() {
                 </p>
               </div>
 
+              <div className="space-y-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={isLoading || isGoogleLoading}
+                  onClick={handleGoogleSignIn}
+                >
+                  {isGoogleLoading ? (
+                    <>Conectando <LoadingSpinner /></>
+                  ) : (
+                    <>Continuar com Google <Chrome className="ml-1 h-4 w-4" /></>
+                  )}
+                </Button>
+
+                <div className="relative text-center text-xs text-muted-foreground">
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-border" />
+                  </div>
+                  <span className="relative bg-card px-2">ou continue com email</span>
+                </div>
+              </div>
+
               <form onSubmit={handleSubmitEmail(sendLoginEmail)} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -228,6 +269,7 @@ export default function LoginPage() {
                     type="email"
                     autoComplete="email"
                     placeholder="seu@email.com"
+                    disabled={isGoogleLoading}
                     {...registerEmail('email')}
                   />
                   {errorsEmail.email && (
@@ -237,7 +279,7 @@ export default function LoginPage() {
                   )}
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
                   {isLoading ? (
                     <>Enviando <LoadingSpinner /></>
                   ) : (
