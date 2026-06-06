@@ -13,9 +13,9 @@ interface StatPillProps {
 
 function StatPill({ value, label }: StatPillProps) {
   return (
-    <div className="flex flex-1 items-center gap-1.5 rounded-full bg-[var(--color-surface-dark)] px-3 py-[9px]">
-      <span className="text-[13px] font-medium text-[var(--color-on-dark)]">{value}</span>
-      <span className="text-[13px] font-medium text-[var(--color-on-dark-soft)]">{label}</span>
+    <div className="flex flex-1 items-center gap-1.5 rounded-full bg-[var(--color-surface-soft)] px-3 py-[9px]">
+      <span className="text-[13px] font-medium text-[var(--color-ink)]">{value}</span>
+      <span className="text-[13px] font-medium text-[var(--color-muted)]">{label}</span>
     </div>
   );
 }
@@ -31,23 +31,23 @@ export function CategoryHeroCard({ category, products }: CategoryHeroCardProps) 
   const totalCount = products.length;
 
   return (
-    <div className="flex flex-col gap-3.5 rounded-[var(--radius-xl)] border border-[var(--color-surface-dark-elevated)] bg-[var(--color-surface-dark-elevated)] p-[18px] [font-family:var(--font-body)]">
+    <div className="flex flex-col gap-3.5 rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-[18px] [font-family:var(--font-body)]">
       <div className="flex flex-col gap-2.5">
         <div className="flex flex-col gap-1">
           {/* Hero title */}
-          <h1 className="text-[28px] font-semibold leading-[1.2] tracking-[-0.5px] text-[var(--color-on-dark)] [font-family:var(--font-display)]">
+          <h1 className="text-[28px] font-semibold leading-[1.2] tracking-[-0.5px] text-[var(--color-ink)] [font-family:var(--font-display)]">
             {category.name}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-[13px] font-medium text-[var(--color-on-dark-soft)]">
+          <p className="text-[13px] font-medium text-[var(--color-muted)]">
             {totalCount} produto{totalCount !== 1 ? 's' : ''} nesta lista
           </p>
         </div>
 
-        <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[var(--color-surface-dark)] px-2.5 py-2">
+        <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[var(--color-surface-soft)] px-2.5 py-2">
           <ShoppingCart className="h-3.5 w-3.5 text-[var(--color-success)]" />
-          <span className="text-[13px] font-medium text-[var(--color-on-dark)]">
+          <span className="text-[13px] font-medium text-[var(--color-ink)]">
             {cartCount} no carrinho
           </span>
         </div>
