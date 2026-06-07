@@ -113,6 +113,8 @@
 [data-vaul-drawer] {
   touch-action: none;
   will-change: transform;
+  max-height: 90vh; /* fallback para navegadores sem suporte a dvh */
+  max-height: 90dvh; /* viewport dinâmico — reduz automaticamente quando o teclado abre */
 }
 
 [data-vaul-drawer][data-vaul-drawer-visible='true'] {
