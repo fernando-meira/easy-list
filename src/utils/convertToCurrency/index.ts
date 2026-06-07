@@ -3,8 +3,8 @@ export const convertToCurrency = (value: number | string) => {
 
   const convertedValue = Number(parsedValue);
 
-  if (!convertedValue || isNaN(convertedValue)) {
-    return 'Valor inválido';
+  if (isNaN(convertedValue)) {
+    return '-';
   }
 
   return new Intl.NumberFormat('pt-BR', {

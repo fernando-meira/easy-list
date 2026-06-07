@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { toast } from 'sonner';
 import { X, Plus, Check } from 'lucide-react';
 import { Drawer as DrawerPrimitive } from 'vaul';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -51,10 +52,14 @@ export const ProductManagerSheet = ({
     },
   });
 
-  const onSubmit = methods.handleSubmit((data) => {
-    managerProduct({ product: { ...data, categoryId: data.categoryId } });
-    methods.reset();
-    onOpenChange?.(false);
+  const onSubmit = methods.handleSubmit(async (data) => {
+    try {
+      await managerProduct({ product: { ...data, categoryId: data.categoryId } });
+      methods.reset();
+      onOpenChange?.(false);
+    } catch {
+      // erro já tratado em managerProduct via toast e setError
+    }
   });
 
   const [isLoadingProduct, setIsLoadingProduct] = React.useState(false);
@@ -86,7 +91,8 @@ export const ProductManagerSheet = ({
           });
         } catch (error) {
           if ((error as { name?: string }).name !== 'AbortError') {
-            console.error('Error fetching product:', error);
+            toast.error('Não foi possível carregar o produto. Tente novamente.');
+            onOpenChange?.(false);
           }
         } finally {
           setIsLoadingProduct(false);
@@ -110,7 +116,11 @@ export const ProductManagerSheet = ({
     }
 
     return () => controller.abort();
-  }, [open, product?._id, isEdit, categories.length, selectedCategoryId, methods]);
+  // categories.length and methods intentionally omitted: including them
+  // would reset the form whenever categories finish loading or methods
+  // re-renders, which breaks the open-modal editing experience.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, product?._id, isEdit, selectedCategoryId, onOpenChange]);
 
   const [unit, categoryId, addToCart] = methods.watch(['unit', 'categoryId', 'addToCart']);
 
@@ -127,14 +137,15 @@ export const ProductManagerSheet = ({
           className={cn(
             'fixed inset-x-0 bottom-0 z-50 flex flex-col',
             'rounded-t-2xl bg-background outline-none',
-            'shadow-[0_-4px_12px_rgba(0,0,0,0.08)]'
+            'shadow-[0_-4px_12px_rgba(0,0,0,0.08)]',
+            'max-h-[90dvh]'
           )}
         >
           <div className="flex flex-shrink-0 justify-center pt-2.5">
             <div className="h-[5px] w-11 rounded-full bg-[#d1d5db]" />
           </div>
 
-          <div className="flex flex-col gap-4 overflow-y-auto px-5 pb-4 pt-4">
+          <div className="min-h-0 flex-1 flex flex-col gap-4 overflow-y-auto px-5 pb-4 pt-4">
             <div className="flex items-start justify-between">
               <div className="flex flex-1 flex-col gap-1 pr-3">
                 <DrawerPrimitive.Title className="text-[28px] font-semibold leading-[1.2] tracking-[-0.5px] text-foreground">
