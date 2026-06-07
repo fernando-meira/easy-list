@@ -49,11 +49,11 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
     const { data } = await response.json();
 
-    const updatedCategories = [...categories, data].sort((categoryA, categoryB) =>
-      categoryA.name.localeCompare(categoryB.name, 'pt-BR', { sensitivity: 'base' })
+    setCategories(prev =>
+      [...prev, data].sort((categoryA, categoryB) =>
+        categoryA.name.localeCompare(categoryB.name, 'pt-BR', { sensitivity: 'base' })
+      )
     );
-
-    setCategories(updatedCategories);
     toast('Categoria criada com sucesso');
   };
 
@@ -70,7 +70,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
     const status = response.status;
 
     if (status === 204) {
-      setCategories(categories.filter(category => category._id !== id));
+      setCategories(prev => prev.filter(category => category._id !== id));
 
       toast('Categoria removida com sucesso');
     }
