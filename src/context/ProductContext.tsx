@@ -116,7 +116,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         );
 
         if (oldCategory && oldCategory._id !== updatedProduct.category._id) {
-          setCategories(categories.map(category => {
+          setCategories(prev => prev.map(category => {
 
             if (category._id === oldCategory._id) {
               return {
@@ -135,7 +135,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
             return category;
           }));
         } else {
-          setCategories(categories.map(category => ({
+          setCategories(prev => prev.map(category => ({
             ...category,
             products: category?.products?.map(product =>
               product?._id === updatedProduct?._id ? updatedProduct : product
@@ -160,7 +160,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         const newProduct = await response.json();
         const productCategory = categories.find(category => category._id === newProduct.category._id);
 
-        setCategories(categories.map(category => ({
+        setCategories(prev => prev.map(category => ({
           ...category,
           products: category?._id === newProduct.category?._id ? [...category.products || [], newProduct] : category.products
         })));
@@ -171,6 +171,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      throw err;
     } finally {
       setIsProductLoading({ productId: null, isLoading: false });
     }
@@ -194,7 +195,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
       const category = categories.find(category => category.products?.some(product => product._id === id));
 
-      setCategories(categories.map(category => ({
+      setCategories(prev => prev.map(category => ({
         ...category,
         products: category.products?.filter(product => product._id !== id)
       })));
@@ -214,7 +215,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         fetch(`/api/products/${product._id}`, { method: 'DELETE' })
       ));
 
-      setCategories(categories.map(category => ({
+      setCategories(prev => prev.map(category => ({
         ...category,
         products: []
       })));
@@ -248,7 +249,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
       const updatedProduct = await response.json();
 
-      setCategories(categories.map(category => ({
+      setCategories(prev => prev.map(category => ({
         ...category,
         products: category.products?.map(product => product._id === id ? updatedProduct : product)
       })));

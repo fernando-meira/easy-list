@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { toast } from 'sonner';
 import { X, Plus, Check } from 'lucide-react';
 import { Drawer as DrawerPrimitive } from 'vaul';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -51,10 +52,14 @@ export const ProductManagerSheet = ({
     },
   });
 
-  const onSubmit = methods.handleSubmit((data) => {
-    managerProduct({ product: { ...data, categoryId: data.categoryId } });
-    methods.reset();
-    onOpenChange?.(false);
+  const onSubmit = methods.handleSubmit(async (data) => {
+    try {
+      await managerProduct({ product: { ...data, categoryId: data.categoryId } });
+      methods.reset();
+      onOpenChange?.(false);
+    } catch {
+      // erro já tratado em managerProduct via toast e setError
+    }
   });
 
   const [isLoadingProduct, setIsLoadingProduct] = React.useState(false);
@@ -86,7 +91,8 @@ export const ProductManagerSheet = ({
           });
         } catch (error) {
           if ((error as { name?: string }).name !== 'AbortError') {
-            console.error('Error fetching product:', error);
+            toast.error('Não foi possível carregar o produto. Tente novamente.');
+            onOpenChange?.(false);
           }
         } finally {
           setIsLoadingProduct(false);
@@ -110,7 +116,11 @@ export const ProductManagerSheet = ({
     }
 
     return () => controller.abort();
-  }, [open, product?._id, isEdit, categories.length, selectedCategoryId, methods]);
+  // categories.length and methods intentionally omitted: including them
+  // would reset the form whenever categories finish loading or methods
+  // re-renders, which breaks the open-modal editing experience.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, product?._id, isEdit, selectedCategoryId, onOpenChange]);
 
   const [unit, categoryId, addToCart] = methods.watch(['unit', 'categoryId', 'addToCart']);
 
