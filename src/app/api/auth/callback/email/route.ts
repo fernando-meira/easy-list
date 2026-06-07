@@ -1,8 +1,21 @@
-import crypto from 'crypto';
-
+import { encode } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 
-import { clientPromise } from '@/lib/mongodb-adapter';
+import { authSecret } from '@/lib/auth-secret';
+import { upsertAuthUserByEmail } from '@/lib/firestore-auth-users';
+import {
+  isVerificationRecordUsable,
+  markVerificationRecordUsed,
+  findVerificationRecordByToken,
+} from '@/lib/firestore-verification-codes';
+
+const sessionMaxAge = 30 * 24 * 60 * 60;
+
+function getSessionCookieName() {
+  return process.env.NODE_ENV === 'production'
+    ? '__Secure-next-auth.session-token'
+    : 'next-auth.session-token';
+}
 
 export async function GET(request: Request) {
   try {
@@ -14,63 +27,35 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/login?error=InvalidToken', request.url));
     }
 
-    // Conectar ao MongoDB
-    const client = await clientPromise;
-    const db = client.db();
+    const decodedEmail = decodeURIComponent(email);
+    const verificationRecord = await findVerificationRecordByToken(decodedEmail, token);
 
-    // Buscar o token no banco
-    const verificationRecord = await db.collection('verificationCodes').findOne({
-      email: decodeURIComponent(email),
-      token,
-      used: false,
-      expiresAt: { $gt: new Date() }
-    });
-
-    if (!verificationRecord) {
+    if (!verificationRecord || !isVerificationRecordUsable(verificationRecord)) {
       return NextResponse.redirect(new URL('/login?error=ExpiredToken', request.url));
     }
 
-    // Marcar como usado
-    await db.collection('verificationCodes').updateOne(
-      { _id: verificationRecord._id },
-      { $set: { used: true, usedAt: new Date() } }
-    );
+    const user = await upsertAuthUserByEmail(decodedEmail);
+    await markVerificationRecordUsed(verificationRecord.id);
 
-    // Buscar ou criar usuário
-    let user = await db.collection('users').findOne({ email: verificationRecord.email });
-
-    if (!user) {
-      const result = await db.collection('users').insertOne({
-        email: verificationRecord.email,
-        emailVerified: new Date(),
-        createdAt: new Date(),
-      });
-      user = { _id: result.insertedId, email: verificationRecord.email };
-    } else {
-      // Atualizar emailVerified se ainda não estiver definido
-      if (!user.emailVerified) {
-        await db.collection('users').updateOne(
-          { _id: user._id },
-          { $set: { emailVerified: new Date() } }
-        );
-      }
+    if (!authSecret) {
+      throw new Error('Auth secret is not configured');
     }
 
-    // Criar sessão
-    const sessionToken = crypto.randomUUID();
-    const sessionExpiry = new Date();
-    sessionExpiry.setDate(sessionExpiry.getDate() + 30); // 30 dias
-
-    await db.collection('sessions').insertOne({
-      sessionToken,
-      userId: user._id,
-      expires: sessionExpiry,
+    const sessionToken = await encode({
+      secret: authSecret,
+      token: {
+        sub: user.id,
+        email: user.email,
+        name: user.name,
+        picture: user.image,
+      },
+      maxAge: sessionMaxAge,
     });
 
-    // Criar cookie de sessão
     const response = NextResponse.redirect(new URL('/', request.url));
-    response.cookies.set('next-auth.session-token', sessionToken, {
-      expires: sessionExpiry,
+
+    response.cookies.set(getSessionCookieName(), sessionToken, {
+      maxAge: sessionMaxAge,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -80,6 +65,7 @@ export async function GET(request: Request) {
     return response;
   } catch (error) {
     console.error('Erro no callback do magic link:', error);
+
     return NextResponse.redirect(new URL('/login?error=CallbackError', request.url));
   }
 }

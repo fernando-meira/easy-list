@@ -4,8 +4,6 @@ import { z } from 'zod';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-import { clientPromise } from '@/lib/mongodb-adapter';
-import { getMongoUserFacingError } from '@/lib/mongo-error';
 import {
   getAppBaseUrl,
   logEmailError,
@@ -13,6 +11,11 @@ import {
   validateEmailConfig,
   getResendUserFacingError
 } from '@/lib/email-error';
+import {
+  createVerificationRecord,
+  deleteVerificationRecord,
+  countRecentVerificationAttempts,
+} from '@/lib/firestore-verification-codes';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -75,15 +78,11 @@ export async function POST(request: Request) {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
-    // Conectar ao MongoDB
-    const client = await clientPromise;
-    const db = client.db();
-
     // Verificar se já existem muitas tentativas recentes para este email
-    const recentAttempts = await db.collection('verificationCodes').countDocuments({
+    const recentAttempts = await countRecentVerificationAttempts(
       email,
-      createdAt: { $gte: new Date(Date.now() - 60 * 60 * 1000) } // Últimas 1 hora
-    });
+      new Date(Date.now() - 60 * 60 * 1000)
+    );
 
     if (recentAttempts >= 5) {
       return NextResponse.json(
@@ -93,14 +92,11 @@ export async function POST(request: Request) {
     }
 
     // Salvar o código e o token no banco
-    await db.collection('verificationCodes').insertOne({
+    const verificationRecordId = await createVerificationRecord({
       email,
       code: verificationCode,
       token: magicLinkToken,
       expiresAt,
-      createdAt: new Date(),
-      used: false,
-      attempts: 0
     });
 
     // Criar URL do magic link
@@ -174,10 +170,7 @@ export async function POST(request: Request) {
       });
 
       // Remover o código do banco já que o email falhou
-      await db.collection('verificationCodes').deleteOne({
-        email,
-        code: verificationCode,
-      });
+      await deleteVerificationRecord(verificationRecordId);
 
       return NextResponse.json(
         { error: getResendUserFacingError(emailError) },
@@ -190,7 +183,7 @@ export async function POST(request: Request) {
     console.error('Erro ao processar solicitação de login:', error);
 
     return NextResponse.json(
-      { error: getMongoUserFacingError(error) },
+      { error: 'Erro ao processar solicitação de login' },
       { status: 500 }
     );
   }

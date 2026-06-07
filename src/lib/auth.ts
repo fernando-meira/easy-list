@@ -1,12 +1,13 @@
 import { Resend } from 'resend';
 import { AuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
-import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import GoogleProvider from 'next-auth/providers/google';
+import { FirestoreAdapter } from '@auth/firebase-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { authSecret } from './auth-secret';
-import { clientPromise } from './mongodb-adapter';
+import { firestore } from './firebase-admin';
+import { upsertAuthUserByEmail } from './firestore-auth-users';
 import {
   getAppBaseUrl,
   logEmailError,
@@ -14,11 +15,17 @@ import {
   validateEmailConfig,
   getResendUserFacingError
 } from './email-error';
+import {
+  isVerificationRecordUsable,
+  markVerificationRecordUsed,
+  findVerificationRecordByCode,
+  incrementVerificationAttempts,
+} from './firestore-verification-codes';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const authOptions: AuthOptions = {
-  adapter: MongoDBAdapter(clientPromise),
+  adapter: FirestoreAdapter(firestore),
   secret: authSecret,
   providers: [
     GoogleProvider({
@@ -89,57 +96,27 @@ export const authOptions: AuthOptions = {
         }
 
         try {
-          // Conectar ao MongoDB
-          const client = await clientPromise;
-          const db = client.db();
-
-          const verificationCode = await db.collection('verificationCodes').findOne({
-            email: credentials.email,
-            code: credentials.code,
-            used: false,
-            expiresAt: { $gt: new Date() }
-          });
+          const verificationCode = await findVerificationRecordByCode(
+            credentials.email,
+            credentials.code
+          );
 
           if (!verificationCode) {
             return null;
           }
 
-          if (verificationCode.attempts >= 5) {
+          if (!isVerificationRecordUsable(verificationCode)) {
+            await incrementVerificationAttempts(verificationCode.id);
             return null;
           }
 
-          let user = await db.collection('users').findOne({
-            email: credentials.email
-          });
-
-          if (!user) {
-            const result = await db.collection('users').insertOne({
-              email: credentials.email,
-              emailVerified: new Date(),
-              createdAt: new Date(),
-            });
-
-            user = {
-              _id: result.insertedId,
-              email: credentials.email,
-              name: null,
-            };
-          } else if (!user.emailVerified) {
-            await db.collection('users').updateOne(
-              { _id: user._id },
-              { $set: { emailVerified: new Date() } }
-            );
-          }
-
-          await db.collection('verificationCodes').updateOne(
-            { _id: verificationCode._id },
-            { $set: { used: true, usedAt: new Date() } }
-          );
+          const user = await upsertAuthUserByEmail(credentials.email);
+          await markVerificationRecordUsed(verificationCode.id);
 
           return {
-            id: user._id.toString(),
+            id: user.id,
             email: user.email,
-            name: user.name || null,
+            name: user.name,
           };
         } catch (error) {
           console.error('Erro ao autenticar com código:', error);
