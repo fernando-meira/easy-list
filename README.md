@@ -8,7 +8,7 @@ Este projeto utiliza as seguintes tecnologias:
 
 - [Next.js 15](https://nextjs.org/) - Framework React com SSR
 - [React 19](https://react.dev/) - Biblioteca para construção de interfaces
-- [MongoDB](https://www.mongodb.com/) com Mongoose - Banco de dados
+- [Firebase Firestore](https://firebase.google.com/products/firestore) - Banco de dados
 - [NextAuth.js](https://next-auth.js.org/) - Autenticação
 - [TailwindCSS](https://tailwindcss.com/) - Estilização
 - [Radix UI](https://www.radix-ui.com/) - Componentes acessíveis
@@ -19,8 +19,9 @@ Este projeto utiliza as seguintes tecnologias:
 ## Pré-requisitos
 
 - Node.js 18+ 
-- MongoDB
-- Variáveis de ambiente configuradas (veja `.env.example`)
+- Projeto Firebase com Firestore
+- Firebase Emulator Suite para desenvolvimento local
+- Variáveis de ambiente configuradas em `.env.local`
 
 ## Começando
 
@@ -36,7 +37,7 @@ npm install
 ```
 
 3. Configure as variáveis de ambiente:
-Crie um arquivo `.env.local` baseado no `.env.example` e preencha com suas credenciais.
+Crie um arquivo `.env.local` e preencha com suas credenciais do Firebase, Resend e NextAuth.
 
 4. Inicie o servidor de desenvolvimento:
 ```bash
@@ -52,8 +53,7 @@ Acesse [http://localhost:3000](http://localhost:3000) no seu navegador.
 src/
   ├── app/          # Rotas e páginas
   ├── components/   # Componentes React reutilizáveis
-  ├── lib/         # Utilitários e configurações
-  ├── models/      # Modelos do Mongoose
+  ├── lib/         # Firebase, autenticação e utilitários de servidor
   └── types/       # Definições de tipos TypeScript
 ```
 
