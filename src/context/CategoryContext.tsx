@@ -16,7 +16,7 @@ interface CategoriesContextType {
   fetchCategories: () => Promise<void>;
   removeCategory: (id: string) => Promise<void>;
   setSelectedCategoryId: (categoryId: string) => void;
-  setCategories: (categories: CategoryProps[]) => void;
+  setCategories: React.Dispatch<React.SetStateAction<CategoryProps[]>>;
   addCategory: (category: CategoryProps) => Promise<void>;
 }
 
