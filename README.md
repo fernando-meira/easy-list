@@ -46,6 +46,31 @@ npm run dev
 
 Acesse [http://localhost:3000](http://localhost:3000) no seu navegador.
 
+## Firebase e Firestore
+
+O app usa Firebase Admin SDK no servidor e Firestore como banco de dados.
+
+Variáveis esperadas em `.env.local`:
+
+```bash
+AUTH_FIREBASE_PROJECT_ID=easy-list-local
+AUTH_FIREBASE_CLIENT_EMAIL=
+AUTH_FIREBASE_PRIVATE_KEY=
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+RESEND_API_KEY=
+EMAIL_FROM=
+NEXTAUTH_URL=http://localhost:3000
+```
+
+Para desenvolvimento local com emulador:
+
+```bash
+npx firebase emulators:start --only firestore
+npm run dev
+```
+
+Resend continua responsável pelo envio dos emails de login. O emulador cobre o Firestore, não o envio de email.
+
 
 ## Estrutura do Projeto
 
