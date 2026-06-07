@@ -135,7 +135,7 @@ export const ProductManagerSheet = ({
             <div className="h-[5px] w-11 rounded-full bg-[#d1d5db]" />
           </div>
 
-          <div className="min-h-0 flex flex-col gap-4 overflow-y-auto px-5 pb-4 pt-4">
+          <div className="min-h-0 flex-1 flex flex-col gap-4 overflow-y-auto px-5 pb-4 pt-4">
             <div className="flex items-start justify-between">
               <div className="flex flex-1 flex-col gap-1 pr-3">
                 <DrawerPrimitive.Title className="text-[28px] font-semibold leading-[1.2] tracking-[-0.5px] text-foreground">
