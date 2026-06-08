@@ -46,9 +46,7 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
   };
 
   useEffect(() => {
-    if (propValue) {
-      setDisplayValue(formatAsCurrency(propValue));
-    }
+    setDisplayValue(propValue ? formatAsCurrency(propValue) : '');
   }, [propValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
