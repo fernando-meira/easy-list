@@ -6,7 +6,7 @@ import { query, where, Timestamp, collection, onSnapshot } from 'firebase/firest
 import React, { useRef, useState, useEffect, useContext, useCallback, createContext } from 'react';
 
 import { AuthStatusEnum } from '@/types/enums';
-import { db, auth } from '@/lib/firebase-client';
+import { getClientAuth, getClientDb } from '@/lib/firebase-client';
 import { useFirebaseAuth } from '@/hooks/useFirebaseAuth';
 import { ProductProps, CategoryProps } from '@/types/interfaces';
 
@@ -132,18 +132,18 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   useEffect(() => {
     if (!isReady || sessionStatus !== AuthStatusEnum.authenticated) return;
 
-    const userId = auth.currentUser?.uid;
+    const userId = getClientAuth().currentUser?.uid;
     if (!userId) return;
 
     pendingInitialSnapshots.current = 2;
 
     const categoriesQuery = query(
-      collection(db, 'categories'),
+      collection(getClientDb(), 'categories'),
       where('userId', '==', userId)
     );
 
     const productsQuery = query(
-      collection(db, 'products'),
+      collection(getClientDb(), 'products'),
       where('userId', '==', userId)
     );
 

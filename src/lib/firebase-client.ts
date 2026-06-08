@@ -8,16 +8,29 @@ const clientConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
 };
 
-const app = getApps().length ? getApp() : initializeApp(clientConfig);
+let emulatorsConnected = false;
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+// Lazy initialization — avoids running initializeApp during SSR/prerendering
+function getClientApp() {
+  const app = getApps().length ? getApp() : initializeApp(clientConfig);
 
-if (process.env.NODE_ENV === 'development') {
-  try {
-    connectFirestoreEmulator(db, 'localhost', 8080);
-    connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-  } catch {
-    // Emulators already connected (HMR re-execution)
+  if (process.env.NODE_ENV === 'development' && !emulatorsConnected) {
+    emulatorsConnected = true;
+    try {
+      connectAuthEmulator(getAuth(app), 'http://localhost:9099', { disableWarnings: true });
+      connectFirestoreEmulator(getFirestore(app), 'localhost', 8080);
+    } catch {
+      // Emulators already connected (HMR re-execution)
+    }
   }
+
+  return app;
+}
+
+export function getClientAuth() {
+  return getAuth(getClientApp());
+}
+
+export function getClientDb() {
+  return getFirestore(getClientApp());
 }

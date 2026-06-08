@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { signInWithCustomToken } from 'firebase/auth';
 
-import { auth } from '@/lib/firebase-client';
+import { getClientAuth } from '@/lib/firebase-client';
 import { AuthStatusEnum } from '@/types/enums';
 
 export function useFirebaseAuth() {
@@ -28,7 +28,7 @@ export function useFirebaseAuth() {
 
         const { token } = await response.json();
 
-        await signInWithCustomToken(auth, token);
+        await signInWithCustomToken(getClientAuth(), token);
 
         if (!cancelled) {
           setIsReady(true);
