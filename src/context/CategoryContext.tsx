@@ -6,8 +6,8 @@ import { query, where, Timestamp, collection, onSnapshot } from 'firebase/firest
 import React, { useRef, useState, useEffect, useContext, useCallback, createContext } from 'react';
 
 import { AuthStatusEnum } from '@/types/enums';
-import { getClientAuth, getClientDb } from '@/lib/firebase-client';
 import { useFirebaseAuth } from '@/hooks/useFirebaseAuth';
+import { getClientDb, getClientAuth } from '@/lib/firebase-client';
 import { ProductProps, CategoryProps } from '@/types/interfaces';
 
 interface RawCategory {

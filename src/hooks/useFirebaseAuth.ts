@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { signInWithCustomToken } from 'firebase/auth';
 
-import { getClientAuth } from '@/lib/firebase-client';
 import { AuthStatusEnum } from '@/types/enums';
+import { getClientAuth } from '@/lib/firebase-client';
 
 export function useFirebaseAuth() {
   const { status: sessionStatus } = useSession();
