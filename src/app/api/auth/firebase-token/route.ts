@@ -1,5 +1,5 @@
-import { getAuth } from 'firebase-admin/auth';
 import { getToken } from 'next-auth/jwt';
+import { getAuth } from 'firebase-admin/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authSecret } from '@/lib/auth-secret';
