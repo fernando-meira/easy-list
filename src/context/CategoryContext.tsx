@@ -57,7 +57,7 @@ function timestampToIso(value: unknown): string {
 
 function CategoriesContextProvider({ children }: CategoryProviderProps) {
   const { status: sessionStatus } = useSession();
-  const { isReady } = useFirebaseAuth();
+  const { isReady, isError } = useFirebaseAuth();
 
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [errorCategories, setErrorCategories] = useState<string | null>(null);
@@ -264,6 +264,13 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
       filterCategory(filteredCategory._id);
     }
   }, [categories, filterCategory, filteredCategory]);
+
+  useEffect(() => {
+    if (isError) {
+      setIsLoadingCategories(false);
+      setErrorCategories('Falha ao conectar em tempo real');
+    }
+  }, [isError]);
 
   useEffect(() => {
     if (

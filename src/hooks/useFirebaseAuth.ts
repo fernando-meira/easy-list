@@ -1,8 +1,8 @@
 'use client';
 
-import { signInWithCustomToken } from 'firebase/auth';
-import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { signInWithCustomToken } from 'firebase/auth';
 
 import { auth } from '@/lib/firebase-client';
 import { AuthStatusEnum } from '@/types/enums';
@@ -10,6 +10,7 @@ import { AuthStatusEnum } from '@/types/enums';
 export function useFirebaseAuth() {
   const { status: sessionStatus } = useSession();
   const [isReady, setIsReady] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (sessionStatus !== AuthStatusEnum.authenticated) return;
@@ -20,7 +21,10 @@ export function useFirebaseAuth() {
       try {
         const response = await fetch('/api/auth/firebase-token');
 
-        if (!response.ok) return;
+        if (!response.ok) {
+          if (!cancelled) setIsError(true);
+          return;
+        }
 
         const { token } = await response.json();
 
@@ -31,6 +35,7 @@ export function useFirebaseAuth() {
         }
       } catch (error) {
         console.error('Firebase auth failed:', error);
+        if (!cancelled) setIsError(true);
       }
     }
 
@@ -41,5 +46,5 @@ export function useFirebaseAuth() {
     };
   }, [sessionStatus]);
 
-  return { isReady };
+  return { isReady, isError };
 }
