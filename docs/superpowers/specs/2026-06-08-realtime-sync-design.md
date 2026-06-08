@@ -114,13 +114,14 @@ Hook chamado uma única vez no `CategoriesContextProvider`. Responsável por:
 
 ## Diferenciação: mudança local vs. remota
 
-Para exibir o toast apenas em mudanças de outros dispositivos:
+Para exibir o toast apenas em mudanças de outros dispositivos, `CategoriesContextProvider` mantém uma ref de controle e expõe uma função `markLocalMutation()` via contexto:
 
 ```ts
+// CategoriesContextProvider
 const isLocalMutation = useRef(false)
-
-// Chamado antes de cada mutation no contexto:
-isLocalMutation.current = true
+const markLocalMutation = useCallback(() => {
+  isLocalMutation.current = true
+}, [])
 
 // Handler do onSnapshot:
 if (isLocalMutation.current) {
@@ -129,6 +130,13 @@ if (isLocalMutation.current) {
 }
 // mudança remota → setCategories() + toast("Lista atualizada")
 ```
+
+**Onde `markLocalMutation()` é chamado:**
+
+- `CategoryContext.tsx` — antes de cada `fetch` em `addCategory()` e `removeCategory()` (mutations já vivem neste contexto, acesso direto à ref)
+- `ProductContext.tsx` — antes de cada `fetch` em `managerProduct()`, `toggleCart()`, `removeProduct()` e `removeAllProducts()`. Esses métodos já consomem `useCategories()`, então `markLocalMutation` é obtido do mesmo hook sem acoplamento extra
+
+`CategoriesContextType` recebe o campo `markLocalMutation: () => void`.
 
 Não requer nenhum campo extra no Firestore.
 
@@ -176,7 +184,7 @@ O Firebase Emulator (porta 8080) avalia as rules em desenvolvimento.
 | Mudança feita pelo próprio dispositivo | Nenhum toast |
 | Carregamento inicial da lista | Nenhum toast |
 
-O toast reutiliza o sistema de notificações já existente no projeto. Duração: ~3 segundos. Não-bloqueante.
+Usa `toast()` do `sonner`, já instalado e em uso em `CategoryContext.tsx` e `ProductContext.tsx`. Sem nova dependência. Duração padrão do sonner (~4 segundos). Não-bloqueante.
 
 ---
 
@@ -213,8 +221,8 @@ As credenciais de Admin SDK (`AUTH_FIREBASE_*`) já existem no projeto.
 | `src/lib/firebase-client.ts` | Novo |
 | `src/app/api/auth/firebase-token/route.ts` | Novo |
 | `src/hooks/useFirebaseAuth.ts` | Novo |
-| `src/context/CategoryContext.tsx` | Modificado (fetch → onSnapshot + isLocalMutation) |
-| `src/context/ProductContext.tsx` | Modificado (expor helper isLocalMutation para mutations de produto) |
+| `src/context/CategoryContext.tsx` | Modificado (fetch → onSnapshot + `isLocalMutation` ref + `markLocalMutation` no contexto) |
+| `src/context/ProductContext.tsx` | Modificado (chamar `markLocalMutation()` antes de cada mutation) |
 | `firestore.rules` | Modificado (adicionar rules de read para categories e products) |
 | `.env.local` / `.env.example` | Modificado (novas variáveis NEXT_PUBLIC_) |
 | `package.json` | Modificado (adicionar dependência `firebase` client SDK) |
