@@ -2,7 +2,7 @@
 
 import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
-import React, { useState, useEffect, useContext, useCallback, createContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback, useRef, createContext } from 'react';
 
 import { AuthStatusEnum } from '@/types/enums';
 import { CategoryProps } from '@/types/interfaces';
@@ -18,6 +18,7 @@ interface CategoriesContextType {
   setSelectedCategoryId: (categoryId: string) => void;
   setCategories: React.Dispatch<React.SetStateAction<CategoryProps[]>>;
   addCategory: (category: CategoryProps) => Promise<void>;
+  markLocalMutation: (count?: number) => void;
 }
 
 interface CategoryProviderProps {
@@ -34,6 +35,12 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
   const [filteredCategory, setFilteredCategory] = useState<CategoryProps | undefined>(undefined);
+
+  const localMutationCount = useRef(0);
+
+  const markLocalMutation = useCallback((count = 1) => {
+    localMutationCount.current += count;
+  }, []);
 
   const addCategory = async (category: CategoryProps) => {
     const response = await fetch('/api/categories', {
@@ -150,6 +157,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         selectedCategoryId,
         isLoadingCategories,
         setSelectedCategoryId,
+        markLocalMutation,
       }}
     >
       {children}
