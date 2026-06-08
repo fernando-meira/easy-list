@@ -105,6 +105,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         });
 
         if (!response.ok) {
+          markLocalMutation(-1);
           toast('Erro ao atualizar o produto');
 
           throw new Error('Failed to update product');
@@ -154,6 +155,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         });
 
         if (!response.ok) {
+          markLocalMutation(-1);
           toast('Erro ao criar o produto');
 
           throw new Error('Failed to create product');
@@ -189,6 +191,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       });
 
       if (!response.ok) {
+        markLocalMutation(-1);
         const productName = categories.flatMap(category => category.products || []).find(product => product._id === id)?.name;
 
         toast(`Erro ao remover o produto ${productName}`);
@@ -213,8 +216,9 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
   };
 
   const removeAllProducts = async () => {
+    const allProducts = categories.flatMap((category) => category.products || []);
+
     try {
-      const allProducts = categories.flatMap((category) => category.products || []);
       markLocalMutation(allProducts.length);
 
       await Promise.all(
@@ -229,6 +233,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       })));
 
     } catch (err) {
+      markLocalMutation(-allProducts.length);
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
@@ -237,13 +242,13 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     if (!id) return;
 
     setIsProductLoading({ productId: id, isLoading: true });
-    markLocalMutation();
 
     try {
       const product = categories.flatMap(category => category.products || []).find(product => product._id === id);
 
       if (!product) return;
 
+      markLocalMutation();
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -251,6 +256,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       });
 
       if (!response.ok) {
+        markLocalMutation(-1);
         toast.error('Erro ao atualizar produto no carrinho');
 
         throw new Error('Failed to update product');
