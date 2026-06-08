@@ -40,7 +40,7 @@ interface ProductsProviderProps {
 export const ProductsContext = createContext({} as ProductsContextType);
 
 function ProductsContextProvider({ children }: ProductsProviderProps) {
-  const { categories, setCategories, selectedCategoryId } = useCategories();
+  const { categories, setCategories, selectedCategoryId, markLocalMutation } = useCategories();
 
   const [error, setError] = useState<string | null>(null);
   const [hasAnyProduct, setHasAnyProduct] = useState(false);
@@ -97,6 +97,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       setIsProductLoading({ productId: product._id || null, isLoading: true });
 
       if (product._id) {
+        markLocalMutation();
         const response = await fetch(`/api/products/${product._id}`, {
           method: 'PUT',
           body: JSON.stringify(product),
@@ -145,6 +146,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
         toast.success('Produto atualizado');
       } else {
+        markLocalMutation();
         const response = await fetch('/api/products', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -180,6 +182,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
   const removeProduct = async (id: string) => {
     try {
       setIsProductLoading({ productId: id, isLoading: true });
+      markLocalMutation();
 
       const response = await fetch(`/api/products/${id}`, {
         method: 'DELETE',
@@ -211,9 +214,14 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
   const removeAllProducts = async () => {
     try {
-      await Promise.all(categories.flatMap(category => category.products || []).map(product =>
-        fetch(`/api/products/${product._id}`, { method: 'DELETE' })
-      ));
+      const allProducts = categories.flatMap((category) => category.products || []);
+      markLocalMutation(allProducts.length);
+
+      await Promise.all(
+        allProducts.map((product) =>
+          fetch(`/api/products/${product._id}`, { method: 'DELETE' })
+        )
+      );
 
       setCategories(prev => prev.map(category => ({
         ...category,
@@ -229,6 +237,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     if (!id) return;
 
     setIsProductLoading({ productId: id, isLoading: true });
+    markLocalMutation();
 
     try {
       const product = categories.flatMap(category => category.products || []).find(product => product._id === id);
