@@ -7,8 +7,8 @@ import React, { useRef, useState, useEffect, useContext, useCallback, createCont
 
 import { AuthStatusEnum } from '@/types/enums';
 import { useFirebaseAuth } from '@/hooks/useFirebaseAuth';
-import { getClientDb, getClientAuth } from '@/lib/firebase-client';
 import { ProductProps, CategoryProps } from '@/types/interfaces';
+import { getClientDb, getClientAuth } from '@/lib/firebase-client';
 
 interface RawCategory {
   id: string;
