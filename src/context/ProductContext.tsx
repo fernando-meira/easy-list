@@ -40,7 +40,7 @@ interface ProductsProviderProps {
 export const ProductsContext = createContext({} as ProductsContextType);
 
 function ProductsContextProvider({ children }: ProductsProviderProps) {
-  const { categories, setCategories, selectedCategoryId } = useCategories();
+  const { categories, setCategories, selectedCategoryId, markLocalMutation } = useCategories();
 
   const [error, setError] = useState<string | null>(null);
   const [hasAnyProduct, setHasAnyProduct] = useState(false);
@@ -97,6 +97,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       setIsProductLoading({ productId: product._id || null, isLoading: true });
 
       if (product._id) {
+        markLocalMutation();
         const response = await fetch(`/api/products/${product._id}`, {
           method: 'PUT',
           body: JSON.stringify(product),
@@ -104,6 +105,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         });
 
         if (!response.ok) {
+          markLocalMutation(-1);
           toast('Erro ao atualizar o produto');
 
           throw new Error('Failed to update product');
@@ -145,6 +147,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
         toast.success('Produto atualizado');
       } else {
+        markLocalMutation();
         const response = await fetch('/api/products', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -152,6 +155,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         });
 
         if (!response.ok) {
+          markLocalMutation(-1);
           toast('Erro ao criar o produto');
 
           throw new Error('Failed to create product');
@@ -180,12 +184,14 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
   const removeProduct = async (id: string) => {
     try {
       setIsProductLoading({ productId: id, isLoading: true });
+      markLocalMutation();
 
       const response = await fetch(`/api/products/${id}`, {
         method: 'DELETE',
       });
 
       if (!response.ok) {
+        markLocalMutation(-1);
         const productName = categories.flatMap(category => category.products || []).find(product => product._id === id)?.name;
 
         toast(`Erro ao remover o produto ${productName}`);
@@ -210,10 +216,16 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
   };
 
   const removeAllProducts = async () => {
+    const allProducts = categories.flatMap((category) => category.products || []);
+
     try {
-      await Promise.all(categories.flatMap(category => category.products || []).map(product =>
-        fetch(`/api/products/${product._id}`, { method: 'DELETE' })
-      ));
+      markLocalMutation(allProducts.length);
+
+      await Promise.all(
+        allProducts.map((product) =>
+          fetch(`/api/products/${product._id}`, { method: 'DELETE' })
+        )
+      );
 
       setCategories(prev => prev.map(category => ({
         ...category,
@@ -221,6 +233,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       })));
 
     } catch (err) {
+      markLocalMutation(-allProducts.length);
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
@@ -235,6 +248,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
 
       if (!product) return;
 
+      markLocalMutation();
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -242,6 +256,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
       });
 
       if (!response.ok) {
+        markLocalMutation(-1);
         toast.error('Erro ao atualizar produto no carrinho');
 
         throw new Error('Failed to update product');
