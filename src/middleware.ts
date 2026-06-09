@@ -15,13 +15,12 @@ export async function middleware(request: NextRequest) {
   );
 
   if (!token && !isPublicRoute) {
-    const url = new URL(PagesEnum.login, request.url);
-    url.searchParams.set(
-      'callbackUrl',
+    const callbackUrl = encodeURIComponent(
       request.nextUrl.pathname + request.nextUrl.search
     );
+    const loginUrl = `${request.nextUrl.origin}${PagesEnum.login}?callbackUrl=${callbackUrl}`;
 
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(loginUrl);
   }
 
   if (token && isPublicRoute) {
