@@ -73,6 +73,7 @@ async function getOwnedCategory(categoryId: string, userId: string) {
   return categoryFromDoc(categoryDoc);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getOwnedProductDoc(productId: string, userId: string) {
   const productDoc = await productsCollection.doc(productId).get();
 
@@ -109,7 +110,6 @@ async function getAccessibleCategory(
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getAccessibleProductDoc(productId: string, userId: string) {
   const productDoc = await productsCollection.doc(productId).get();
 
@@ -158,14 +158,14 @@ export async function getCategoriesWithProducts(userId: string) {
 }
 
 export async function getCategoryWithProducts(userId: string, categoryId: string) {
-  const category = await getOwnedCategory(categoryId, userId);
+  const result = await getAccessibleCategory(categoryId, userId);
 
-  if (!category) {
-    return null;
-  }
+  if (!result) return null;
+
+  const { category, ownerUserId } = result;
 
   const productsSnapshot = await productsCollection
-    .where('userId', '==', userId)
+    .where('userId', '==', ownerUserId)
     .where('categoryId', '==', categoryId)
     .get();
 
@@ -227,11 +227,11 @@ export async function getProducts(userId: string) {
 }
 
 export async function createProduct(userId: string, product: ProductWrite) {
-  const category = await getOwnedCategory(product.categoryId, userId);
+  const result = await getAccessibleCategory(product.categoryId, userId);
 
-  if (!category) {
-    return null;
-  }
+  if (!result) return null;
+
+  const { category, ownerUserId } = result;
 
   const productRef = productsCollection.doc();
 
@@ -241,7 +241,7 @@ export async function createProduct(userId: string, product: ProductWrite) {
     quantity: product.quantity ?? null,
     unit: product.unit ?? null,
     categoryId: product.categoryId,
-    userId,
+    userId: ownerUserId,
     addToCart: Boolean(product.addToCart),
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
@@ -253,33 +253,28 @@ export async function createProduct(userId: string, product: ProductWrite) {
 }
 
 export async function getProduct(userId: string, productId: string) {
-  const productDoc = await getOwnedProductDoc(productId, userId);
+  const productDoc = await getAccessibleProductDoc(productId, userId);
 
-  if (!productDoc) {
-    return null;
-  }
+  if (!productDoc) return null;
 
-  const category = await getOwnedCategory(productDoc.data()?.categoryId, userId);
+  const data = productDoc.data()!;
+  const result = await getAccessibleCategory(data.categoryId as string, userId);
 
-  if (!category) {
-    return null;
-  }
+  if (!result) return null;
 
-  return productFromDoc(productDoc, category);
+  return productFromDoc(productDoc, result.category);
 }
 
 export async function updateProduct(userId: string, productId: string, product: ProductWrite) {
-  const productDoc = await getOwnedProductDoc(productId, userId);
+  const productDoc = await getAccessibleProductDoc(productId, userId);
 
-  if (!productDoc) {
-    return null;
-  }
+  if (!productDoc) return null;
 
-  const category = await getOwnedCategory(product.categoryId, userId);
+  const result = await getAccessibleCategory(product.categoryId, userId);
 
-  if (!category) {
-    return null;
-  }
+  if (!result) return null;
+
+  const { category } = result;
 
   await productsCollection.doc(productId).update({
     name: product.name,
@@ -297,11 +292,9 @@ export async function updateProduct(userId: string, productId: string, product: 
 }
 
 export async function deleteProduct(userId: string, productId: string) {
-  const productDoc = await getOwnedProductDoc(productId, userId);
+  const productDoc = await getAccessibleProductDoc(productId, userId);
 
-  if (!productDoc) {
-    return false;
-  }
+  if (!productDoc) return false;
 
   await productDoc.ref.delete();
 
