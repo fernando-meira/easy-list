@@ -300,3 +300,44 @@ export async function deleteProduct(userId: string, productId: string) {
 
   return true;
 }
+
+export async function generateShareToken(userId: string, categoryId: string): Promise<string | null> {
+  const categoryDoc = await categoriesCollection.doc(categoryId).get();
+
+  if (!categoryDoc.exists || categoryDoc.data()?.userId !== userId) {
+    return null;
+  }
+
+  const existing = categoryDoc.data()?.shareToken as string | undefined;
+
+  if (existing) return existing;
+
+  const token = crypto.randomUUID();
+
+  await categoriesCollection.doc(categoryId).update({ shareToken: token });
+
+  return token;
+}
+
+export async function joinSharedList(
+  token: string,
+  requestingUserId: string
+): Promise<{ categoryId: string; categoryName: string } | null> {
+  const snapshot = await categoriesCollection
+    .where('shareToken', '==', token)
+    .limit(1)
+    .get();
+
+  if (snapshot.empty) return null;
+
+  const categoryDoc = snapshot.docs[0];
+
+  await categoriesCollection
+    .doc(categoryDoc.id)
+    .update({ sharedWith: FieldValue.arrayUnion(requestingUserId) });
+
+  return {
+    categoryId: categoryDoc.id,
+    categoryName: categoryDoc.data().name as string,
+  };
+}
