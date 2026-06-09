@@ -164,11 +164,6 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         const newProduct = await response.json();
         const productCategory = categories.find(category => category._id === newProduct.category._id);
 
-        setCategories(prev => prev.map(category => ({
-          ...category,
-          products: category?._id === newProduct.category?._id ? [...category.products || [], newProduct] : category.products
-        })));
-
         toast.success(`Produto adicionado a lista ${productCategory?.name}`);
 
         setFilter(StatusEnum.all);
