@@ -227,18 +227,24 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
           };
         });
 
-        handleSnapshotUpdate(true);
-
         if (sharedProductsUnsub) {
           sharedProductsUnsub();
           sharedProductsUnsub = null;
         }
+        latestSharedProductsRef.current = [];
+
+        handleSnapshotUpdate(true);
 
         const sharedCategoryIds = snapshot.docs.map((d) => d.id);
 
         if (sharedCategoryIds.length === 0) {
-          latestSharedProductsRef.current = [];
           return;
+        }
+
+        const FIRESTORE_IN_LIMIT = 30;
+        const idsForQuery = sharedCategoryIds.slice(0, FIRESTORE_IN_LIMIT);
+        if (sharedCategoryIds.length > FIRESTORE_IN_LIMIT) {
+          console.warn(`User has ${sharedCategoryIds.length} shared categories; only first ${FIRESTORE_IN_LIMIT} synced.`);
         }
 
         let isFirstFire = true;
@@ -246,7 +252,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         sharedProductsUnsub = onSnapshot(
           query(
             collection(getClientDb(), 'products'),
-            where('categoryId', 'in', sharedCategoryIds)
+            where('categoryId', 'in', idsForQuery)
           ),
           (prodSnapshot) => {
             latestSharedProductsRef.current = prodSnapshot.docs.map((doc) => {
