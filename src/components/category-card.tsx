@@ -5,7 +5,7 @@ import React, { useEffect, useCallback } from 'react';
 
 import { useCategories } from '@/context';
 import { CategoryProps } from '@/types/interfaces';
-import { Skeleton } from '@/components/ui/skeleton';
+import { CategoryListSkeleton } from '@/components/category-list-skeleton';
 
 import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
 
@@ -67,12 +67,6 @@ export function CategoryCard() {
   }, [categories]);
 
   const renderContent = useCallback((renderCategories: CategoryProps[], isShared?: boolean) => {
-    if (isLoadingCategories) {
-      return Array.from({ length: 4 }).map((_, index) => (
-        <Skeleton key={index} className="h-[86px] w-full rounded-[var(--radius-lg)]" />
-      ));
-    }
-
     if (renderCategories) {
       return renderCategories.map(category => (
         <div
@@ -117,7 +111,9 @@ export function CategoryCard() {
     }
 
     return null;
-  }, [isLoadingCategories, router, handleRemoveClick]);
+  }, [router, handleRemoveClick]);
+
+  if (isLoadingCategories) return <CategoryListSkeleton />;
 
   return (
     <main className="flex flex-col gap-4">
