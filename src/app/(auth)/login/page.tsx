@@ -59,6 +59,8 @@ function LoginErrorBanner() {
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/';
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [currentEmail, setCurrentEmail] = useState('');
@@ -103,7 +105,7 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     try {
       setIsGoogleLoading(true);
-      await signIn('google', { callbackUrl: '/' });
+      await signIn('google', { callbackUrl });
     } catch {
       toast.error('Não foi possível entrar com Google. Tente novamente ou use seu email.');
       setIsGoogleLoading(false);
@@ -179,7 +181,7 @@ export default function LoginPage() {
         throw new Error('Código inválido');
       }
 
-      router.push('/');
+      router.push(callbackUrl);
     } catch (error) {
       let errorMessage = 'Erro ao verificar código. Tente novamente.';
       if (error instanceof Error) {

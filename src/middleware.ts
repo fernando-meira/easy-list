@@ -16,6 +16,10 @@ export async function middleware(request: NextRequest) {
 
   if (!token && !isPublicRoute) {
     const url = new URL(PagesEnum.login, request.url);
+    url.searchParams.set(
+      'callbackUrl',
+      request.nextUrl.pathname + request.nextUrl.search
+    );
 
     return NextResponse.redirect(url);
   }
