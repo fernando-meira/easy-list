@@ -332,9 +332,11 @@ export async function joinSharedList(
 
   const categoryDoc = snapshot.docs[0];
 
-  await categoriesCollection
-    .doc(categoryDoc.id)
-    .update({ sharedWith: FieldValue.arrayUnion(requestingUserId) });
+  if (categoryDoc.data().userId !== requestingUserId) {
+    await categoriesCollection
+      .doc(categoryDoc.id)
+      .update({ sharedWith: FieldValue.arrayUnion(requestingUserId) });
+  }
 
   return {
     categoryId: categoryDoc.id,

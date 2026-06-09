@@ -60,7 +60,8 @@ function LoginErrorBanner() {
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/';
+  const rawCallback = searchParams.get('callbackUrl') ?? '/';
+  const callbackUrl = rawCallback.startsWith('/') ? rawCallback : '/';
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [currentEmail, setCurrentEmail] = useState('');

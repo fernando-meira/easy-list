@@ -90,15 +90,19 @@ export function CategoryCard() {
             )}
           </div>
 
-          <div className="h-px w-full bg-[var(--color-hairline)]" />
+          {!category.isShared && (
+            <>
+              <div className="h-px w-full bg-[var(--color-hairline)]" />
 
-          <button
-            onClick={() => handleRemoveClick(category)}
-            aria-label="Remover categoria"
-            className="flex h-10 w-full items-center justify-center bg-[var(--color-surface-soft)] transition-colors hover:bg-[var(--color-surface-card)]"
-          >
-            <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
-          </button>
+              <button
+                onClick={() => handleRemoveClick(category)}
+                aria-label="Remover categoria"
+                className="flex h-10 w-full items-center justify-center bg-[var(--color-surface-soft)] transition-colors hover:bg-[var(--color-surface-card)]"
+              >
+                <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
+              </button>
+            </>
+          )}
         </div>
       ));
     }
