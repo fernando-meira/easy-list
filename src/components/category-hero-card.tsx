@@ -4,8 +4,8 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { Share2, ChevronUp, ChevronDown, ShoppingCart } from 'lucide-react';
 
-import { ProductProps, CategoryProps } from '@/types/interfaces';
 import { Button } from '@/components/ui/button';
+import { ProductProps, CategoryProps } from '@/types/interfaces';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 import { CategorySelect } from './category-select';
