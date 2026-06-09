@@ -21,7 +21,7 @@ export function CategorySelect() {
   return (
     <Select value={selectedCategoryId || ''} onValueChange={handleCategoryChange}>
       <SelectTrigger className="flex h-16 w-full items-center justify-between rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[var(--color-surface-card)] px-[14px] py-[13px] shadow-none [&>svg]:hidden">
-        <div className="flex flex-col gap-[3px]">
+        <div className="flex flex-col items-start gap-[3px]">
           <span className="text-[10px] font-bold leading-none text-[var(--color-muted)]">
             Lista atual
           </span>
