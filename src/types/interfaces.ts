@@ -4,6 +4,7 @@ export interface CategoryProps {
   createdAt: string;
   updatedAt: string;
   products?: Array<ProductProps>;
+  isShared?: boolean;
 }
 
 export interface ProductProps {

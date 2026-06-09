@@ -4,13 +4,19 @@ service cloud.firestore {
 
     match /categories/{categoryId} {
       allow read: if request.auth != null
-                  && request.auth.uid == resource.data.userId;
+                  && (request.auth.uid == resource.data.userId
+                      || ('sharedWith' in resource.data
+                          && request.auth.uid in resource.data.sharedWith));
       allow write: if false;
     }
 
     match /products/{productId} {
       allow read: if request.auth != null
-                  && request.auth.uid == resource.data.userId;
+                  && (request.auth.uid == resource.data.userId
+                      || ('sharedWith' in get(/databases/$(database)/documents/categories/$(resource.data.categoryId)).data
+                          && request.auth.uid in
+                             get(/databases/$(database)/documents/categories/$(resource.data.categoryId))
+                             .data.sharedWith));
       allow write: if false;
     }
 

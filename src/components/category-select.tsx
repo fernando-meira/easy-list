@@ -1,7 +1,7 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Users, ChevronDown } from 'lucide-react';
 
 import { useCategories } from '@/context';
 import { Select, SelectItem, SelectContent, SelectTrigger } from '@/components/ui/select';
@@ -37,7 +37,12 @@ export function CategorySelect() {
       <SelectContent>
         {categories.map((category) => (
           <SelectItem key={category._id} value={category._id}>
-            {category.name}
+            <span className="flex items-center gap-1.5">
+              {category.name}
+              {category.isShared && (
+                <Users aria-hidden="true" className="h-3 w-3 text-muted-foreground shrink-0" />
+              )}
+            </span>
           </SelectItem>
         ))}
       </SelectContent>

@@ -69,25 +69,41 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   const latestCategoriesRef = useRef<RawCategory[]>([]);
   const latestProductsRef = useRef<RawProduct[]>([]);
   const pendingInitialSnapshots = useRef(2);
+  const latestSharedCategoriesRef = useRef<RawCategory[]>([]);
+  const latestSharedProductsRef = useRef<RawProduct[]>([]);
 
   const markLocalMutation = useCallback((count = 1) => {
     localMutationCount.current += count;
   }, []);
 
   const buildCategoriesFromRefs = useCallback((): CategoryProps[] => {
-    const cats = latestCategoriesRef.current;
-    const prods = latestProductsRef.current;
+    const ownedCatIds = new Set(latestCategoriesRef.current.map((c) => c.id));
 
-    return cats
+    const allRawCats = [
+      ...latestCategoriesRef.current.map((c) => ({ ...c, isShared: false as const })),
+      ...latestSharedCategoriesRef.current
+        .filter((sc) => !ownedCatIds.has(sc.id))
+        .map((c) => ({ ...c, isShared: true as const })),
+    ];
+
+    const ownedProdIds = new Set(latestProductsRef.current.map((p) => p.id));
+
+    const allRawProds = [
+      ...latestProductsRef.current,
+      ...latestSharedProductsRef.current.filter((sp) => !ownedProdIds.has(sp.id)),
+    ];
+
+    return allRawCats
       .map((cat): CategoryProps => {
         const catRef: CategoryProps = {
           _id: cat.id,
           name: cat.name,
           createdAt: cat.createdAt,
           updatedAt: cat.updatedAt,
+          isShared: cat.isShared,
         };
 
-        const products: ProductProps[] = prods
+        const products: ProductProps[] = allRawProds
           .filter((p) => p.categoryId === cat.id)
           .map((p) => ({
             _id: p.id,
@@ -137,18 +153,11 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
 
     pendingInitialSnapshots.current = 2;
 
-    const categoriesQuery = query(
-      collection(getClientDb(), 'categories'),
-      where('userId', '==', userId)
-    );
-
-    const productsQuery = query(
-      collection(getClientDb(), 'products'),
-      where('userId', '==', userId)
-    );
+    const unsubscribers: (() => void)[] = [];
+    let sharedProductsUnsub: (() => void) | null = null;
 
     const unsubCategories = onSnapshot(
-      categoriesQuery,
+      query(collection(getClientDb(), 'categories'), where('userId', '==', userId)),
       (snapshot) => {
         const isInitial = pendingInitialSnapshots.current > 0;
         if (isInitial) pendingInitialSnapshots.current -= 1;
@@ -170,9 +179,10 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         setErrorCategories(error.message);
       }
     );
+    unsubscribers.push(unsubCategories);
 
     const unsubProducts = onSnapshot(
-      productsQuery,
+      query(collection(getClientDb(), 'products'), where('userId', '==', userId)),
       (snapshot) => {
         const isInitial = pendingInitialSnapshots.current > 0;
         if (isInitial) pendingInitialSnapshots.current -= 1;
@@ -199,10 +209,84 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         setErrorCategories(error.message);
       }
     );
+    unsubscribers.push(unsubProducts);
+
+    const unsubSharedCategories = onSnapshot(
+      query(
+        collection(getClientDb(), 'categories'),
+        where('sharedWith', 'array-contains', userId)
+      ),
+      (snapshot) => {
+        latestSharedCategoriesRef.current = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name as string,
+            createdAt: timestampToIso(data.createdAt),
+            updatedAt: timestampToIso(data.updatedAt),
+          };
+        });
+
+        if (sharedProductsUnsub) {
+          sharedProductsUnsub();
+          sharedProductsUnsub = null;
+        }
+        latestSharedProductsRef.current = [];
+
+        handleSnapshotUpdate(true);
+
+        const sharedCategoryIds = snapshot.docs.map((d) => d.id);
+
+        if (sharedCategoryIds.length === 0) {
+          return;
+        }
+
+        const FIRESTORE_IN_LIMIT = 30;
+        const idsForQuery = sharedCategoryIds.slice(0, FIRESTORE_IN_LIMIT);
+        if (sharedCategoryIds.length > FIRESTORE_IN_LIMIT) {
+          console.warn(`User has ${sharedCategoryIds.length} shared categories; only first ${FIRESTORE_IN_LIMIT} synced.`);
+        }
+
+        let isFirstFire = true;
+
+        sharedProductsUnsub = onSnapshot(
+          query(
+            collection(getClientDb(), 'products'),
+            where('categoryId', 'in', idsForQuery)
+          ),
+          (prodSnapshot) => {
+            latestSharedProductsRef.current = prodSnapshot.docs.map((doc) => {
+              const data = doc.data();
+              return {
+                id: doc.id,
+                name: data.name as string,
+                categoryId: data.categoryId as string,
+                price: data.price as string | undefined,
+                quantity: data.quantity as string | undefined,
+                unit: data.unit as string | undefined,
+                addToCart: data.addToCart as boolean | undefined,
+                createdAt: timestampToIso(data.createdAt),
+                updatedAt: timestampToIso(data.updatedAt),
+              };
+            });
+
+            handleSnapshotUpdate(isFirstFire);
+            isFirstFire = false;
+          },
+          (error) => {
+            console.error('Shared products listener error:', error);
+          }
+        );
+      },
+      (error) => {
+        console.error('Shared categories listener error:', error);
+      }
+    );
+    unsubscribers.push(unsubSharedCategories);
 
     return () => {
-      unsubCategories();
-      unsubProducts();
+      unsubscribers.forEach((unsub) => unsub());
+      if (sharedProductsUnsub) sharedProductsUnsub();
     };
   }, [isReady, sessionStatus, handleSnapshotUpdate]);
 

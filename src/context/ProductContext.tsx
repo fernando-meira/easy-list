@@ -216,7 +216,9 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
   };
 
   const removeAllProducts = async () => {
-    const allProducts = categories.flatMap((category) => category.products || []);
+    const allProducts = categories
+      .filter((category) => !category.isShared)
+      .flatMap((category) => category.products || []);
 
     try {
       markLocalMutation(allProducts.length);
