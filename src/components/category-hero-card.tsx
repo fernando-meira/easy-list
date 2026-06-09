@@ -90,16 +90,19 @@ export function CategoryHeroCard({ category, products }: CategoryHeroCardProps) 
           <StatPill value={cartCount} label="comprados" />
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex-1">
-            <CategorySelect />
-          </div>
-          {!category.isShared && (
-            <Button variant="outline" size="sm" onClick={handleShare} className="shrink-0">
-              <Share2 aria-hidden="true" className="h-4 w-4 mr-1" />
-              Compartilhar
-            </Button>
-          )}
+        {!category.isShared && (
+          <Button
+            variant="outline"
+            onClick={handleShare}
+            className="h-10 w-full border-[var(--color-hairline)] bg-[var(--color-surface-card)] text-sm font-semibold text-[var(--color-ink)] shadow-none hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-ink)] [&_svg]:size-4"
+          >
+            <Share2 aria-hidden="true" />
+            Compartilhar lista
+          </Button>
+        )}
+
+        <div>
+          <CategorySelect />
         </div>
       </CollapsibleContent>
     </Collapsible>
