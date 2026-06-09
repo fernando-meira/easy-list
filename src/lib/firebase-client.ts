@@ -14,7 +14,7 @@ let emulatorsConnected = false;
 function getClientApp() {
   const app = getApps().length ? getApp() : initializeApp(clientConfig);
 
-  if (process.env.NODE_ENV === 'development' && !emulatorsConnected) {
+  if (process.env.NEXT_PUBLIC_FIREBASE_USE_EMULATOR === 'true' && !emulatorsConnected) {
     emulatorsConnected = true;
     try {
       connectAuthEmulator(getAuth(app), 'http://localhost:9099', { disableWarnings: true });

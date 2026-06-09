@@ -1,9 +1,11 @@
 'use client';
 
+import { toast } from 'sonner';
 import { useState } from 'react';
-import { ChevronUp, ChevronDown, ShoppingCart } from 'lucide-react';
+import { Share2, ChevronUp, ChevronDown, ShoppingCart } from 'lucide-react';
 
 import { ProductProps, CategoryProps } from '@/types/interfaces';
+import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 import { CategorySelect } from './category-select';
@@ -29,6 +31,18 @@ interface CategoryHeroCardProps {
 
 export function CategoryHeroCard({ category, products }: CategoryHeroCardProps) {
   const [isOpen, setIsOpen] = useState(true);
+
+  async function handleShare() {
+    try {
+      const response = await fetch(`/api/categories/${category._id}/share`);
+      if (!response.ok) { toast.error('Não foi possível gerar o link'); return; }
+      const { shareUrl } = await response.json();
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success('Link copiado!');
+    } catch {
+      toast.error('Não foi possível copiar o link');
+    }
+  }
   const pendingCount = products.filter(p => !p.addToCart).length;
   const cartCount = products.filter(p => p.addToCart).length;
   const totalCount = products.length;
@@ -76,7 +90,17 @@ export function CategoryHeroCard({ category, products }: CategoryHeroCardProps) 
           <StatPill value={cartCount} label="comprados" />
         </div>
 
-        <CategorySelect />
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <CategorySelect />
+          </div>
+          {!category.isShared && (
+            <Button variant="outline" size="sm" onClick={handleShare} className="shrink-0">
+              <Share2 aria-hidden="true" className="h-4 w-4 mr-1" />
+              Compartilhar
+            </Button>
+          )}
+        </div>
       </CollapsibleContent>
     </Collapsible>
   );
