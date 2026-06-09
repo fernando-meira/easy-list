@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { Sun, Moon, LogIn, LogOut, ShoppingBasket } from 'lucide-react';
 
@@ -10,13 +11,17 @@ import { PagesEnum } from '@/types/enums';
 import { UserAvatar } from '@/components/user-avatar';
 
 export function Header() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const isSessionLoading = status === 'loading';
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const pathname = usePathname();
+  const isLoginPage = pathname === PagesEnum.login;
 
   const firstName =
     session?.user?.name?.split(' ')[0] ??
@@ -27,7 +32,15 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between h-14 px-3 bg-[var(--color-canvas)] border-b border-[var(--color-hairline)] max-w-3xl mx-auto">
-      {isLoggedIn ? (
+      {isSessionLoading ? (
+        <div className="flex items-center gap-2">
+          <div className="w-9 h-9 rounded-full bg-[var(--color-hairline)] animate-pulse flex-shrink-0" />
+          <div className="flex flex-col gap-1.5">
+            <div className="w-24 h-3 rounded-full bg-[var(--color-hairline)] animate-pulse" />
+            <div className="w-32 h-2.5 rounded-full bg-[var(--color-hairline)] animate-pulse" />
+          </div>
+        </div>
+      ) : isLoggedIn ? (
         <div className="flex items-center gap-2">
           <UserAvatar
             name={session?.user?.name}
@@ -71,7 +84,9 @@ export function Header() {
             : <Moon className="w-4 h-4 text-[var(--color-ink)]" />)}
         </button>
 
-        {isLoggedIn ? (
+        {isSessionLoading ? (
+          <div className="w-9 h-9 rounded-full bg-[var(--color-hairline)] animate-pulse" />
+        ) : isLoggedIn ? (
           <button
             onClick={() => signOut()}
             className="w-9 h-9 rounded-full bg-[var(--color-canvas)] border border-[var(--color-hairline)] flex items-center justify-center"
@@ -79,7 +94,7 @@ export function Header() {
           >
             <LogOut className="w-4 h-4 text-[var(--color-ink)]" />
           </button>
-        ) : (
+        ) : !isLoginPage && (
           <Link
             href={PagesEnum.login}
             className="h-9 rounded-full bg-[var(--color-ink)] px-3.5 flex items-center justify-center gap-1.5"

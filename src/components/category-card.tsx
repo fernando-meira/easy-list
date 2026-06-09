@@ -1,5 +1,5 @@
-import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Users, Trash2 } from 'lucide-react';
 import { isBefore, subWeeks } from 'date-fns';
 import React, { useEffect, useCallback } from 'react';
 
@@ -16,6 +16,7 @@ export function CategoryCard() {
   const [openRemoveDrawer, setOpenRemoveDrawer] = React.useState<boolean>(false);
   const [olderCategories, setOlderCategories] = React.useState<CategoryProps[]>();
   const [recentCategories, setRecentCategories] = React.useState<CategoryProps[]>();
+  const [sharedCategories, setSharedCategories] = React.useState<CategoryProps[]>();
   const [selectedCategoryToRemove, setSelectedCategoryToRemove] = React.useState<CategoryProps>();
 
   const isOlderThanAWeek = (updatedAt: Date): boolean => {
@@ -34,8 +35,14 @@ export function CategoryCard() {
     const categorizeItems = () => {
       const recent: CategoryProps[] = [];
       const older: CategoryProps[] = [];
+      const shared: CategoryProps[] = [];
 
       categories.forEach(category => {
+        if (category.isShared) {
+          shared.push(category);
+          return;
+        }
+
         const isCategoryRecent = !isOlderThanAWeek(new Date(category.updatedAt));
 
         const hasRecentProducts = category.products?.some(
@@ -53,12 +60,13 @@ export function CategoryCard() {
 
       setRecentCategories(recent);
       setOlderCategories(older);
+      setSharedCategories(shared);
     };
 
     categorizeItems();
   }, [categories]);
 
-  const renderContent = useCallback((renderCategories: CategoryProps[]) => {
+  const renderContent = useCallback((renderCategories: CategoryProps[], isShared?: boolean) => {
     if (isLoadingCategories) {
       return Array.from({ length: 4 }).map((_, index) => (
         <Skeleton key={index} className="h-[86px] w-full rounded-[var(--radius-lg)]" />
@@ -80,6 +88,7 @@ export function CategoryCard() {
             </span>
             {(category.products?.length ?? 0) > 0 && (
               <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--color-surface-card)] px-3 py-[9px]">
+                {isShared && <Users className="h-3 w-3 text-[var(--color-ink)]" />}
                 <span className="text-[13px] font-medium text-[var(--color-ink)]">
                   {(category.products ?? []).length}
                 </span>
@@ -116,17 +125,28 @@ export function CategoryCard() {
         Categorias
       </h1>
 
-      {recentCategories && recentCategories.length > 0 && (
-        <section className="flex flex-col gap-2">
-          <p className="text-sm font-medium text-[var(--color-muted)]">Atualizadas</p>
-          {renderContent(recentCategories)}
-        </section>
-      )}
+      <section className="flex flex-col gap-3">
+        <p className="text-sm font-semibold text-[var(--color-ink)]">Minhas listas</p>
 
-      {olderCategories && olderCategories.length > 0 && (
-        <section className="flex flex-col gap-2">
-          <p className="text-sm font-medium text-[var(--color-muted)]">Antigas</p>
-          {renderContent(olderCategories)}
+        {recentCategories && recentCategories.length > 0 && (
+          <section className="flex flex-col gap-2">
+            <p className="text-sm font-medium text-[var(--color-muted)]">Atualizadas</p>
+            {renderContent(recentCategories)}
+          </section>
+        )}
+
+        {olderCategories && olderCategories.length > 0 && (
+          <section className="flex flex-col gap-2">
+            <p className="text-sm font-medium text-[var(--color-muted)]">Antigas</p>
+            {renderContent(olderCategories)}
+          </section>
+        )}
+      </section>
+
+      {sharedCategories && sharedCategories.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <p className="text-sm font-semibold text-[var(--color-ink)]">Compartilhadas</p>
+          {renderContent(sharedCategories, true)}
         </section>
       )}
 
