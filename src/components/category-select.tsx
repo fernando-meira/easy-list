@@ -40,7 +40,7 @@ export function CategorySelect() {
             <span className="flex items-center gap-1.5">
               {category.name}
               {category.isShared && (
-                <Users className="h-3 w-3 text-muted-foreground shrink-0" />
+                <Users aria-hidden="true" className="h-3 w-3 text-muted-foreground shrink-0" />
               )}
             </span>
           </SelectItem>
