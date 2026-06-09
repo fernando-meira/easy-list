@@ -83,6 +83,49 @@ async function getOwnedProductDoc(productId: string, userId: string) {
   return productDoc;
 }
 
+interface AccessibleCategoryResult {
+  category: CategoryProps;
+  ownerUserId: string;
+}
+
+async function getAccessibleCategory(
+  categoryId: string,
+  userId: string
+): Promise<AccessibleCategoryResult | null> {
+  const categoryDoc = await categoriesCollection.doc(categoryId).get();
+
+  if (!categoryDoc.exists) return null;
+
+  const data = categoryDoc.data()!;
+  const isOwner = data.userId === userId;
+  const isSharedWith =
+    Array.isArray(data.sharedWith) && data.sharedWith.includes(userId);
+
+  if (!isOwner && !isSharedWith) return null;
+
+  return {
+    category: categoryFromDoc(categoryDoc),
+    ownerUserId: data.userId as string,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getAccessibleProductDoc(productId: string, userId: string) {
+  const productDoc = await productsCollection.doc(productId).get();
+
+  if (!productDoc.exists) return null;
+
+  const data = productDoc.data()!;
+
+  if (data.userId === userId) return productDoc;
+
+  const result = await getAccessibleCategory(data.categoryId as string, userId);
+
+  if (!result) return null;
+
+  return productDoc;
+}
+
 export async function getCategoriesWithProducts(userId: string) {
   let categoriesSnapshot = await categoriesCollection.where('userId', '==', userId).get();
 
