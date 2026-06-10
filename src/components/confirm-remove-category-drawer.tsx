@@ -38,7 +38,8 @@ export function ConfirmRemoveCategoryDrawer({ category, open, onOpenChange }: Co
           className={cn(
             'fixed inset-x-0 bottom-0 z-50 flex flex-col',
             'rounded-t-2xl bg-background outline-none',
-            'shadow-[0_-4px_12px_rgba(0,0,0,0.08)]'
+            'shadow-[0_-4px_12px_rgba(0,0,0,0.08)]',
+            'sm:mx-auto sm:max-w-[460px] sm:rounded-2xl sm:mb-6 sm:[&::after]:hidden'
           )}
         >
           <div className="flex flex-shrink-0 justify-center pt-2.5">

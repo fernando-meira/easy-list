@@ -33,22 +33,7 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
           </span>
         </div>
 
-        <div className="grid grid-cols-[0.9fr_1.1fr] gap-2">
-          <button
-            type="button"
-            aria-label="Escanear produto"
-            onClick={(e) => {
-              (e.currentTarget as HTMLButtonElement).blur();
-              onScanProduct();
-            }}
-            className="flex h-12 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-ink)]"
-          >
-            <ScanLine className="h-[18px] w-[18px]" />
-            <span className="text-[14px] font-semibold">
-              Escanear
-            </span>
-          </button>
-
+        <div className="grid grid-cols-[1fr_48px] gap-2">
           <button
             type="button"
             onClick={(e) => {
@@ -61,6 +46,18 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
             <span className="text-[14px] font-semibold text-[var(--color-on-primary)]">
               Adicionar produto
             </span>
+          </button>
+
+          <button
+            type="button"
+            aria-label="Escanear produto"
+            onClick={(e) => {
+              (e.currentTarget as HTMLButtonElement).blur();
+              onScanProduct();
+            }}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-surface-card)]"
+          >
+            <ScanLine className="h-[15px] w-[15px] text-[var(--color-ink)]" />
           </button>
         </div>
       </div>
