@@ -188,7 +188,13 @@ export function CategoryClient() {
         />
 
         {allProducts.length === 0 && (
-          <StateCard variant="empty" onAdd={() => setAddSheetOpen(true)} />
+          <StateCard
+            variant="empty"
+            onAdd={() => {
+              setScannerInitialProduct(undefined);
+              setAddSheetOpen(true);
+            }}
+          />
         )}
 
         {productsNotInCart.length > 0 && (
