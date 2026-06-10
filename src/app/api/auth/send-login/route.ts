@@ -108,51 +108,63 @@ export async function POST(request: Request) {
       const emailResult = await resend.emails.send({
         from: getEmailFromAddress(),
         to: email,
-        subject: 'Acesse sua conta - Easy List',
+        subject: 'Acesse sua conta — Easy List',
         html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #333; margin-bottom: 24px;">Bem-vindo ao Easy List!</h1>
+        <div style="font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #ffffff; max-width: 600px; margin: 0 auto;">
 
-          <p style="color: #666; font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
-            Você solicitou acesso à sua conta. Escolha uma das opções abaixo para continuar:
-          </p>
-
-          <!-- Opção 1: Magic Link -->
-          <div style="margin-bottom: 32px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #0d9488;">
-            <h2 style="color: #333; font-size: 18px; margin-top: 0; margin-bottom: 12px;">
-              🔗 Opção 1: Link Mágico
-            </h2>
-            <p style="color: #666; font-size: 14px; margin-bottom: 16px;">
-              Clique no botão abaixo para acessar automaticamente:
+          <!-- Header -->
+          <div style="padding: 48px 48px 32px;">
+            <p style="font-size: 28px; font-weight: 600; letter-spacing: -0.5px; line-height: 1.2; color: #111111; margin: 0;">
+              Easy List
             </p>
-            <a href="${magicLinkUrl}"
-               style="display: inline-block; padding: 12px 32px; background-color: #0d9488; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
-              Acessar Easy List
-            </a>
           </div>
 
-          <!-- Opção 2: Código -->
-          <div style="margin-bottom: 32px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #0d9488;">
-            <h2 style="color: #333; font-size: 18px; margin-top: 0; margin-bottom: 12px;">
-              🔑 Opção 2: Código de Verificação
-            </h2>
-            <p style="color: #666; font-size: 14px; margin-bottom: 16px;">
-              Ou use este código na tela de login:
+          <!-- Body -->
+          <div style="padding: 0 48px 48px;">
+            <p style="font-size: 16px; font-weight: 400; line-height: 1.5; color: #374151; margin: 0 0 32px;">
+              Você solicitou acesso à sua conta. Use o botão ou o código abaixo para entrar.
             </p>
-            <div style="display: inline-block; padding: 16px 32px; background-color: #fff; color: #333; font-size: 32px; font-weight: bold; letter-spacing: 8px; border-radius: 8px; border: 2px solid #0d9488;">
-              ${verificationCode}
+
+            <!-- Magic Link -->
+            <div style="margin-bottom: 32px;">
+              <p style="font-size: 14px; font-weight: 500; color: #6b7280; margin: 0 0 12px; line-height: 1.4;">
+                Clique no botão para acessar diretamente:
+              </p>
+              <a href="${magicLinkUrl}"
+                 style="display: inline-block; padding: 12px 20px; background-color: #111111; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; line-height: 1;">
+                Acessar Easy List
+              </a>
             </div>
+
+            <!-- Divider -->
+            <div style="border-top: 1px solid #e5e7eb; margin: 32px 0;"></div>
+
+            <!-- Código de verificação -->
+            <div style="background-color: #f5f5f5; border-radius: 12px; padding: 32px; margin-bottom: 32px; text-align: center;">
+              <p style="font-size: 14px; font-weight: 400; color: #6b7280; line-height: 1.5; margin: 0 0 16px;">
+                Ou use este código na tela de login:
+              </p>
+              <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 36px; font-weight: 600; letter-spacing: 12px; color: #111111; line-height: 1;">
+                ${verificationCode}
+              </div>
+            </div>
+
+            <!-- Informações adicionais -->
+            <p style="font-size: 14px; font-weight: 400; color: #6b7280; line-height: 1.5; margin: 0 0 8px;">
+              O código e o link expiram em <strong style="color: #374151; font-weight: 600;">10 minutos</strong>.
+            </p>
+            <p style="font-size: 13px; font-weight: 500; color: #898989; line-height: 1.4; margin: 0;">
+              Se você não solicitou este acesso, ignore este email.
+            </p>
           </div>
 
-          <!-- Informações adicionais -->
-          <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
-            <p style="color: #666; font-size: 14px; margin-bottom: 8px;">
-              ⏱️ Este código e link expiram em <strong>10 minutos</strong>.
-            </p>
-            <p style="color: #999; font-size: 12px; margin-top: 16px;">
-              Se você não solicitou este acesso, por favor ignore este email.
+          <!-- Footer -->
+          <div style="background-color: #101010; padding: 32px 48px; border-radius: 0 0 12px 12px;">
+            <p style="font-size: 14px; font-weight: 400; color: #a1a1aa; line-height: 1.5; margin: 0;">
+              Easy List — Suas listas, organizadas.
             </p>
           </div>
+
         </div>
         `,
       });
