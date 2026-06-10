@@ -2,11 +2,17 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authSecret } from '@/lib/auth-secret';
-import { joinSharedList } from '@/lib/firestore-domain';
+import { joinSharedList, lookupShareToken } from '@/lib/firestore-domain';
 
 type RouteContext = {
   params: Promise<{ token: string }>;
 };
+
+export async function GET(_request: NextRequest, context: RouteContext) {
+  const { token } = await context.params;
+  const result = await lookupShareToken(token);
+  return NextResponse.json({ categoryName: result?.categoryName ?? null }, { status: 200 });
+}
 
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
