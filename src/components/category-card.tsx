@@ -80,32 +80,34 @@ export function CategoryCard() {
             <span className="flex-1 text-base font-semibold leading-snug text-[var(--color-ink)]">
               {category.name}
             </span>
-            {(category.products?.length ?? 0) > 0 && (
-              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--color-surface-card)] px-3 py-[9px]">
-                {isShared && <Users className="h-3 w-3 text-[var(--color-ink)]" />}
-                <span className="text-[13px] font-medium text-[var(--color-ink)]">
-                  {(category.products ?? []).length}
+
+            <div className="flex items-center gap-2">
+              {(category.products?.length ?? 0) > 0 && (
+                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--color-surface-card)] px-3 py-[9px]">
+                  {isShared && <Users className="h-3 w-3 text-[var(--color-ink)]" />}
+                  <span className="text-[13px] font-medium text-[var(--color-ink)]">
+                    {(category.products ?? []).length}
+                  </span>
+                  <span className="text-[13px] font-medium text-[var(--color-ink)]">
+                    produtos
+                  </span>
                 </span>
-                <span className="text-[13px] font-medium text-[var(--color-ink)]">
-                  produtos
-                </span>
-              </span>
-            )}
+              )}
+
+              {!isShared && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveClick(category);
+                  }}
+                  aria-label="Remover categoria"
+                  className="w-8 h-8 rounded-full bg-[#FEE2E2] flex items-center justify-center flex-shrink-0 transition-colors hover:bg-[#FECACA]"
+                >
+                  <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
+                </button>
+              )}
+            </div>
           </div>
-
-          {!category.isShared && (
-            <>
-              <div className="h-px w-full bg-[var(--color-hairline)]" />
-
-              <button
-                onClick={() => handleRemoveClick(category)}
-                aria-label="Remover categoria"
-                className="flex h-10 w-full items-center justify-center bg-[var(--color-surface-soft)] transition-colors hover:bg-[var(--color-surface-card)]"
-              >
-                <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
-              </button>
-            </>
-          )}
         </div>
       ));
     }
