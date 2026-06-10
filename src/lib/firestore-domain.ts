@@ -363,7 +363,6 @@ export async function getUserHistoryForAI(
 ): Promise<{ name: string; products: string[] }[]> {
   const categoriesSnapshot = await categoriesCollection
     .where('userId', '==', userId)
-    .orderBy('updatedAt', 'desc')
     .limit(5)
     .get();
 
