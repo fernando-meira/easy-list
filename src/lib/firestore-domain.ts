@@ -52,6 +52,7 @@ function productFromDoc(
   return {
     _id: doc.id,
     name: data.name,
+    barcode: data.barcode,
     price: data.price,
     quantity: data.quantity,
     unit: data.unit,
@@ -237,6 +238,7 @@ export async function createProduct(userId: string, product: ProductWrite) {
 
   await productRef.set({
     name: product.name,
+    barcode: product.barcode ?? null,
     price: product.price ?? null,
     quantity: product.quantity ?? null,
     unit: product.unit ?? null,
@@ -278,6 +280,7 @@ export async function updateProduct(userId: string, productId: string, product: 
 
   await productsCollection.doc(productId).update({
     name: product.name,
+    barcode: product.barcode ?? null,
     price: product.price ?? null,
     quantity: product.quantity ?? null,
     unit: product.unit ?? null,

@@ -10,6 +10,7 @@ export interface CategoryProps {
 export interface ProductProps {
   _id?: string;
   name: string;
+  barcode?: string;
   unit?: string;
   price?: string;
   quantity?: string;
