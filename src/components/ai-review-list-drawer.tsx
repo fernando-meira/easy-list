@@ -115,8 +115,6 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
                   key={index}
                   className="flex items-center gap-3 h-[68px] border border-[var(--color-hairline)] rounded-[var(--radius-lg)] px-3 py-[10px] bg-[var(--color-canvas)]"
                 >
-                  <div className="w-[34px] h-[34px] flex-shrink-0 rounded-full border-2 border-[var(--color-hairline)] bg-[var(--color-canvas)]" />
-
                   <div className="flex flex-1 flex-col gap-[3px] min-w-0">
                     <span className="text-[15px] font-semibold truncate text-[var(--color-ink)]">
                       {product.name}
