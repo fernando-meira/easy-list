@@ -1,5 +1,5 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { getToken } from 'next-auth/jwt';
+import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authSecret } from '@/lib/auth-secret';
@@ -38,7 +38,8 @@ async function callClaude(
     messages: [{ role: 'user', content: userPrompt }],
   });
 
-  const text = message.content[0].type === 'text' ? message.content[0].text : '';
+  const raw = message.content[0].type === 'text' ? message.content[0].text : '';
+  const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
 
   return JSON.parse(text);
 }
