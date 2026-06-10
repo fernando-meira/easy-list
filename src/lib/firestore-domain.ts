@@ -346,3 +346,14 @@ export async function joinSharedList(
     categoryName: categoryDoc.data().name as string,
   };
 }
+
+export async function lookupShareToken(token: string): Promise<{ categoryName: string } | null> {
+  const snapshot = await categoriesCollection
+    .where('shareToken', '==', token)
+    .limit(1)
+    .get();
+
+  if (snapshot.empty) return null;
+
+  return { categoryName: snapshot.docs[0].data().name as string };
+}
