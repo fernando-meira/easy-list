@@ -357,3 +357,32 @@ export async function lookupShareToken(token: string): Promise<{ categoryName: s
 
   return { categoryName: snapshot.docs[0].data().name as string };
 }
+
+export async function getUserHistoryForAI(
+  userId: string
+): Promise<{ name: string; products: string[] }[]> {
+  const categoriesSnapshot = await categoriesCollection
+    .where('userId', '==', userId)
+    .orderBy('updatedAt', 'desc')
+    .limit(5)
+    .get();
+
+  if (categoriesSnapshot.empty) return [];
+
+  const result: { name: string; products: string[] }[] = [];
+
+  for (const categoryDoc of categoriesSnapshot.docs) {
+    const productsSnapshot = await productsCollection
+      .where('userId', '==', userId)
+      .where('categoryId', '==', categoryDoc.id)
+      .limit(5)
+      .get();
+
+    result.push({
+      name: categoryDoc.data().name as string,
+      products: productsSnapshot.docs.map((doc) => doc.data().name as string),
+    });
+  }
+
+  return result;
+}
