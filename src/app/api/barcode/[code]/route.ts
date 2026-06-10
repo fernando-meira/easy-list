@@ -85,9 +85,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
       }
 
       return NextResponse.json({
+        name,
         barcode,
         found: true,
-        name,
         brand: normalizeString(data.product.brands),
         imageUrl: normalizeString(data.product.image_url),
       });

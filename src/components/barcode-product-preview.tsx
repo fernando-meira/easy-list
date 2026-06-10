@@ -9,33 +9,33 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Button } from '@/components/ui/button';
 
 export interface BarcodeLookupResult {
-  barcode: string;
-  found: boolean;
   name?: string;
   brand?: string;
+  found: boolean;
+  barcode: string;
   imageUrl?: string;
 }
 
 interface BarcodeProductPreviewProps {
   open: boolean;
-  result: BarcodeLookupResult | null;
-  duplicateName?: string;
-  isCreating?: boolean;
   onAdd: () => void;
   onEdit: () => void;
+  isCreating?: boolean;
+  duplicateName?: string;
   onEditDuplicate?: () => void;
+  result: BarcodeLookupResult | null;
   onOpenChange: (open: boolean) => void;
 }
 
 export function BarcodeProductPreview({
   open,
-  result,
-  duplicateName,
-  isCreating = false,
   onAdd,
   onEdit,
-  onEditDuplicate,
+  result,
   onOpenChange,
+  duplicateName,
+  onEditDuplicate,
+  isCreating = false,
 }: BarcodeProductPreviewProps) {
   const [imageFailed, setImageFailed] = React.useState(false);
 

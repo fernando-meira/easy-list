@@ -8,15 +8,15 @@ export interface CategoryProps {
 }
 
 export interface ProductProps {
-  _id?: string;
   name: string;
-  barcode?: string;
+  _id?: string;
   unit?: string;
   price?: string;
-  quantity?: string;
-  categoryId?: string;
-  addToCart?: boolean;
-  updatedAt: string;
+  barcode?: string;
   createdAt: string;
+  quantity?: string;
+  updatedAt: string;
+  addToCart?: boolean;
+  categoryId?: string;
   category?: CategoryProps;
 }

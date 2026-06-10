@@ -45,12 +45,12 @@ export function CategoryClient() {
   };
 
   const buildProductFromLookup = (result: BarcodeLookupResult): Partial<ProductProps> => ({
+    unit: UnitEnum.unit,
     name: result.name ?? '',
     barcode: result.barcode,
-    categoryId: filteredCategory?._id,
     quantity: '1',
-    unit: UnitEnum.unit,
     addToCart: false,
+    categoryId: filteredCategory?._id,
   });
 
   const findDuplicateProduct = (barcode?: string) => {
@@ -67,10 +67,10 @@ export function CategoryClient() {
   };
 
   const buildFallbackProduct = (barcode: string): Partial<ProductProps> => ({
-    barcode,
-    categoryId: filteredCategory?._id,
-    quantity: '1',
     unit: UnitEnum.unit,
+    barcode,
+    quantity: '1',
+    categoryId: filteredCategory?._id,
   });
 
   const handleBarcodeDetected = async (code: string) => {
@@ -112,12 +112,12 @@ export function CategoryClient() {
     try {
       await managerProduct({
         product: {
-          name: lookupResult.name,
-          barcode: lookupResult.barcode,
-          categoryId: filteredCategory._id,
           quantity: '1',
           unit: UnitEnum.unit,
+          name: lookupResult.name,
+          barcode: lookupResult.barcode,
           addToCart: false,
+          categoryId: filteredCategory._id,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },

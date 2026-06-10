@@ -109,7 +109,7 @@ export function BarcodeScannerSheet({
       cancelled = true;
       stopScanner();
     };
-  }, [handleCode, open, stopScanner]);
+  }, [open, handleCode, stopScanner]);
 
   const handleManualSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -20,8 +20,8 @@ import { ResponsiveProductDialog } from './responsive-product-dialog';
 interface ProductManagerSheetProps {
   open?: boolean;
   product?: ProductProps;
-  initialProduct?: Partial<ProductProps>;
   type?: AddOrEditProductTypeEnum;
+  initialProduct?: Partial<ProductProps>;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -29,8 +29,8 @@ export const ProductManagerSheet = ({
   open,
   type,
   product,
-  initialProduct,
   onOpenChange,
+  initialProduct,
 }: ProductManagerSheetProps) => {
   const { managerProduct, isProductLoading } = useProducts();
   const { categories, selectedCategoryId, isLoadingCategories } = useCategories();
@@ -83,9 +83,9 @@ export const ProductManagerSheet = ({
           methods.reset({
             _id: data._id,
             name: data.name,
-            barcode: data.barcode,
             unit: data.unit,
             price: data.price,
+            barcode: data.barcode,
             quantity: data.quantity,
             addToCart: data.addToCart,
             createdAt: data.createdAt,
@@ -111,8 +111,8 @@ export const ProductManagerSheet = ({
           name: initialProduct?.name ?? '',
           price: initialProduct?.price ?? '',
           quantity: initialProduct?.quantity ?? '1',
-          addToCart: initialProduct?.addToCart ?? false,
           unit: initialProduct?.unit ?? UnitEnum.unit,
+          addToCart: initialProduct?.addToCart ?? false,
           categoryId: initialProduct?.categoryId ?? selectedCategoryId,
         },
         { keepDefaultValues: true }
@@ -126,16 +126,16 @@ export const ProductManagerSheet = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     open,
-    product?._id,
     isEdit,
-    selectedCategoryId,
+    product?._id,
     onOpenChange,
-    initialProduct?.barcode,
+    selectedCategoryId,
+    initialProduct?.unit,
     initialProduct?.name,
     initialProduct?.price,
+    initialProduct?.barcode,
     initialProduct?.quantity,
     initialProduct?.addToCart,
-    initialProduct?.unit,
     initialProduct?.categoryId,
   ]);
 
