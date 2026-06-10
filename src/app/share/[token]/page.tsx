@@ -19,6 +19,7 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
   return {
     title,
+    description,
     openGraph: { title, description, type: 'website', locale: 'pt_BR' },
     twitter: { card: 'summary_large_image' },
   };
