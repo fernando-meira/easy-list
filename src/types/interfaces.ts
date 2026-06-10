@@ -20,3 +20,8 @@ export interface ProductProps {
   categoryId?: string;
   category?: CategoryProps;
 }
+
+export interface AiGeneratedList {
+  products: { name: string }[];
+  categoryName: string;
+}
