@@ -21,6 +21,7 @@ interface ProductManagerSheetProps {
   open?: boolean;
   product?: ProductProps;
   type?: AddOrEditProductTypeEnum;
+  initialProduct?: Partial<ProductProps>;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -29,6 +30,7 @@ export const ProductManagerSheet = ({
   type,
   product,
   onOpenChange,
+  initialProduct,
 }: ProductManagerSheetProps) => {
   const { managerProduct, isProductLoading } = useProducts();
   const { categories, selectedCategoryId, isLoadingCategories } = useCategories();
@@ -83,6 +85,7 @@ export const ProductManagerSheet = ({
             name: data.name,
             unit: data.unit,
             price: data.price,
+            barcode: data.barcode,
             quantity: data.quantity,
             addToCart: data.addToCart,
             createdAt: data.createdAt,
@@ -104,12 +107,13 @@ export const ProductManagerSheet = ({
     if (!isEdit && categories.length > 0) {
       methods.reset(
         {
-          name: '',
-          price: '',
-          quantity: '1',
-          addToCart: false,
-          unit: UnitEnum.unit,
-          categoryId: selectedCategoryId,
+          barcode: initialProduct?.barcode,
+          name: initialProduct?.name ?? '',
+          price: initialProduct?.price ?? '',
+          quantity: initialProduct?.quantity ?? '1',
+          unit: initialProduct?.unit ?? UnitEnum.unit,
+          addToCart: initialProduct?.addToCart ?? false,
+          categoryId: initialProduct?.categoryId ?? selectedCategoryId,
         },
         { keepDefaultValues: true }
       );
@@ -120,7 +124,20 @@ export const ProductManagerSheet = ({
   // would reset the form whenever categories finish loading or methods
   // re-renders, which breaks the open-modal editing experience.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, product?._id, isEdit, selectedCategoryId, onOpenChange]);
+  }, [
+    open,
+    isEdit,
+    product?._id,
+    onOpenChange,
+    selectedCategoryId,
+    initialProduct?.unit,
+    initialProduct?.name,
+    initialProduct?.price,
+    initialProduct?.barcode,
+    initialProduct?.quantity,
+    initialProduct?.addToCart,
+    initialProduct?.categoryId,
+  ]);
 
   const [unit, categoryId, addToCart] = methods.watch(['unit', 'categoryId', 'addToCart']);
 

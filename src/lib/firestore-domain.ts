@@ -50,16 +50,17 @@ function productFromDoc(
   }
 
   return {
+    category,
     _id: doc.id,
     name: data.name,
-    price: data.price,
-    quantity: data.quantity,
     unit: data.unit,
+    price: data.price,
+    barcode: data.barcode,
+    quantity: data.quantity,
     categoryId: data.categoryId,
     addToCart: Boolean(data.addToCart),
     createdAt: timestampToIso(data.createdAt),
     updatedAt: timestampToIso(data.updatedAt),
-    category,
   };
 }
 
@@ -237,11 +238,12 @@ export async function createProduct(userId: string, product: ProductWrite) {
 
   await productRef.set({
     name: product.name,
-    price: product.price ?? null,
-    quantity: product.quantity ?? null,
-    unit: product.unit ?? null,
-    categoryId: product.categoryId,
     userId: ownerUserId,
+    unit: product.unit ?? null,
+    price: product.price ?? null,
+    categoryId: product.categoryId,
+    barcode: product.barcode ?? null,
+    quantity: product.quantity ?? null,
     addToCart: Boolean(product.addToCart),
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
@@ -278,10 +280,11 @@ export async function updateProduct(userId: string, productId: string, product: 
 
   await productsCollection.doc(productId).update({
     name: product.name,
-    price: product.price ?? null,
-    quantity: product.quantity ?? null,
     unit: product.unit ?? null,
+    price: product.price ?? null,
     categoryId: product.categoryId,
+    barcode: product.barcode ?? null,
+    quantity: product.quantity ?? null,
     addToCart: Boolean(product.addToCart),
     updatedAt: FieldValue.serverTimestamp(),
   });
@@ -342,4 +345,15 @@ export async function joinSharedList(
     categoryId: categoryDoc.id,
     categoryName: categoryDoc.data().name as string,
   };
+}
+
+export async function lookupShareToken(token: string): Promise<{ categoryName: string } | null> {
+  const snapshot = await categoriesCollection
+    .where('shareToken', '==', token)
+    .limit(1)
+    .get();
+
+  if (snapshot.empty) return null;
+
+  return { categoryName: snapshot.docs[0].data().name as string };
 }

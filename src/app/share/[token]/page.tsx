@@ -1,59 +1,30 @@
-'use client';
+import type { Metadata } from 'next';
 
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { getCategoryNameByToken } from '@/lib/share';
 
-import { Header } from '@/components/header';
-import { LoadingSpinner } from '@/components/loading-spinner';
+import { ShareClient } from './share-client';
 
 interface SharePageProps {
   params: Promise<{ token: string }>;
 }
 
-export default function SharePage({ params }: SharePageProps) {
-  const router = useRouter();
-  const [error, setError] = useState(false);
+export async function generateMetadata({ params }: SharePageProps): Promise<Metadata> {
+  const { token } = await params;
+  const name = await getCategoryNameByToken(token);
 
-  useEffect(() => {
-    async function join() {
-      const { token } = await params;
+  const title = name ? `Lista: ${name} — Easy List` : 'Easy List';
+  const description = name
+    ? `Você foi convidado para a lista "${name}". Abra para entrar.`
+    : 'Você recebeu um convite para uma lista no Easy List.';
 
-      try {
-        const response = await fetch(`/api/share/${token}`, { method: 'POST' });
+  return {
+    title,
+    openGraph: { title, description, type: 'website', locale: 'pt_BR' },
+    twitter: { card: 'summary_large_image' },
+  };
+}
 
-        if (!response.ok) {
-          setError(true);
-          return;
-        }
-
-        const { categoryName } = await response.json();
-        toast.success(`Você foi adicionado à lista ${categoryName}`);
-        router.push('/');
-      } catch {
-        setError(true);
-      }
-    }
-
-    join();
-  }, [params, router]);
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
-        <Header />
-        <p className="mt-4 text-sm text-destructive">Link inválido ou expirado.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
-      <Header />
-      <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-        <LoadingSpinner />
-        <span>Entrando na lista...</span>
-      </div>
-    </div>
-  );
+export default async function SharePage({ params }: SharePageProps) {
+  const { token } = await params;
+  return <ShareClient token={token} />;
 }
