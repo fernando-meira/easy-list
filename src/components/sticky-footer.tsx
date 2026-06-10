@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Plus, ScanLine } from 'lucide-react';
 
 import { ProductProps } from '@/types/interfaces';
 import { convertToCurrency, calculateTotalValue } from '@/utils';
@@ -8,9 +8,10 @@ import { convertToCurrency, calculateTotalValue } from '@/utils';
 interface StickyFooterProps {
   products: ProductProps[];
   onAddProduct: () => void;
+  onScanProduct: () => void;
 }
 
-export function StickyFooter({ products, onAddProduct }: StickyFooterProps) {
+export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFooterProps) {
   const { totalProductsValue, filteredProductsValue } =
     calculateTotalValue(products);
 
@@ -32,19 +33,36 @@ export function StickyFooter({ products, onAddProduct }: StickyFooterProps) {
           </span>
         </div>
 
-        {/* Add product button */}
-        <button
-          onClick={(e) => {
-            (e.currentTarget as HTMLButtonElement).blur();
-            onAddProduct();
-          }}
-          className="flex items-center justify-center gap-2 w-full h-12 rounded-[var(--radius-md)] bg-[var(--color-primary)]"
-        >
-          <Plus className="w-[18px] h-[18px] text-[var(--color-on-primary)]" />
-          <span className="text-[14px] font-semibold text-[var(--color-on-primary)]">
-            Adicionar produto
-          </span>
-        </button>
+        <div className="grid grid-cols-[0.9fr_1.1fr] gap-2">
+          <button
+            type="button"
+            aria-label="Escanear produto"
+            onClick={(e) => {
+              (e.currentTarget as HTMLButtonElement).blur();
+              onScanProduct();
+            }}
+            className="flex h-12 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-ink)]"
+          >
+            <ScanLine className="h-[18px] w-[18px]" />
+            <span className="text-[14px] font-semibold">
+              Escanear
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              (e.currentTarget as HTMLButtonElement).blur();
+              onAddProduct();
+            }}
+            className="flex h-12 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)]"
+          >
+            <Plus className="h-[18px] w-[18px] text-[var(--color-on-primary)]" />
+            <span className="text-[14px] font-semibold text-[var(--color-on-primary)]">
+              Adicionar produto
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );
