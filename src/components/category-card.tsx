@@ -1,3 +1,5 @@
+'use client';
+
 import { useRouter } from 'next/navigation';
 import { Users, Trash2 } from 'lucide-react';
 import { isBefore, subWeeks } from 'date-fns';
