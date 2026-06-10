@@ -6,7 +6,6 @@ import { useMemo, useState, useEffect } from 'react';
 
 import { ProductProps } from '@/types/interfaces';
 import { StateCard } from '@/components/state-card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ProductRow } from '@/components/product-row';
 import { useProducts, useCategories } from '@/context';
 import { GroupHeader } from '@/components/group-header';
@@ -14,6 +13,7 @@ import { AddOrEditProductTypeEnum } from '@/types/enums';
 import { StickyFooter } from '@/components/sticky-footer';
 import { CategoryHeroCard } from '@/components/category-hero-card';
 import { ProductManagerSheet } from '@/components/product-manager-sheet';
+import { CategoryPageSkeleton } from '@/components/category-page-skeleton';
 
 export function CategoryClient() {
   const searchParams = useSearchParams();
@@ -22,18 +22,13 @@ export function CategoryClient() {
 
   const categoryId = searchParams.get('id');
 
-  const [isLoading, setIsLoading] = useState(true);
   const [addSheetOpen, setAddSheetOpen] = useState(false);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductProps>({} as ProductProps);
 
   useEffect(() => {
-    if (!categoryId) {
-      setIsLoading(false);
-      return;
-    }
+    if (!categoryId) return;
     setSelectedCategoryId(categoryId);
-    setIsLoading(false);
   }, [categoryId, setSelectedCategoryId]);
 
   const handleEditProduct = (product: ProductProps) => {
@@ -55,24 +50,13 @@ export function CategoryClient() {
     };
   }, [filteredCategory?.products]);
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="flex flex-col gap-4 pb-[140px]">
-        <Skeleton className="h-[220px] w-full rounded-[var(--radius-xl)]" />
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-[68px] w-full rounded-[var(--radius-lg)]" />
-        ))}
-      </div>
-    );
+  if (isLoadingCategories && !filteredCategory) {
+    return <CategoryPageSkeleton />;
   }
 
-  // Error state — invalid category ID
-  if (!filteredCategory && !isLoadingCategories) {
+  if (!filteredCategory) {
     return <StateCard variant="error" />;
   }
-
-  if (!filteredCategory) return null;
 
   const allProducts = filteredCategory.products ?? [];
 
