@@ -1,9 +1,9 @@
 'use client';
 
 import { toast } from 'sonner';
-import { X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { X, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Drawer as DrawerPrimitive } from 'vaul';
 
 import { cn } from '@/lib/utils';
@@ -95,7 +95,7 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
                   {result?.categoryName}
                 </DrawerPrimitive.Title>
                 <DrawerPrimitive.Description className="text-sm leading-[1.5] text-[#374151] dark:text-[#a1a1aa]">
-                  {products.length} {products.length === 1 ? 'item' : 'itens'} · toque em ✕ para remover
+                  {products.length} {products.length === 1 ? 'item' : 'itens'} gerados
                 </DrawerPrimitive.Description>
               </div>
 
@@ -113,17 +113,26 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
               {products.map((product, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between rounded-lg border border-border bg-background px-3.5 py-2.5"
+                  className="flex items-center gap-3 h-[68px] border border-[var(--color-hairline)] rounded-[var(--radius-lg)] px-3 py-[10px] bg-[var(--color-canvas)]"
                 >
-                  <span className="text-sm font-semibold text-foreground">{product.name}</span>
-                  <button
-                    type="button"
-                    aria-label={`Remover ${product.name}`}
-                    onClick={() => removeProduct(index)}
-                    className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
+                  <div className="w-[34px] h-[34px] flex-shrink-0 rounded-full border-2 border-[var(--color-hairline)] bg-[var(--color-canvas)]" />
+
+                  <div className="flex flex-1 flex-col gap-[3px] min-w-0">
+                    <span className="text-[15px] font-semibold truncate text-[var(--color-ink)]">
+                      {product.name}
+                    </span>
+                  </div>
+
+                  <div className="flex h-[34px] flex-shrink-0 items-center">
+                    <button
+                      type="button"
+                      aria-label={`Remover ${product.name}`}
+                      onClick={() => removeProduct(index)}
+                      className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[var(--color-surface-card)]"
+                    >
+                      <Trash2 className="h-[15px] w-[15px] text-[var(--color-error)]" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
