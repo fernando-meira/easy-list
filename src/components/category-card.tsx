@@ -98,10 +98,11 @@ export function CategoryCard() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    (e.currentTarget as HTMLButtonElement).blur();
                     handleRemoveClick(category);
                   }}
                   aria-label="Remover categoria"
-                  className="w-8 h-8 rounded-full bg-[#FEE2E2] flex items-center justify-center flex-shrink-0 transition-colors hover:bg-[#FECACA]"
+                  className="w-8 h-8 rounded-full bg-[var(--color-surface-card)] flex items-center justify-center flex-shrink-0"
                 >
                   <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
                 </button>

@@ -34,7 +34,10 @@ export function StickyFooter({ products, onAddProduct }: StickyFooterProps) {
 
         {/* Add product button */}
         <button
-          onClick={onAddProduct}
+          onClick={(e) => {
+            (e.currentTarget as HTMLButtonElement).blur();
+            onAddProduct();
+          }}
           className="flex items-center justify-center gap-2 w-full h-12 rounded-[var(--radius-md)] bg-[var(--color-primary)]"
         >
           <Plus className="w-[18px] h-[18px] text-[var(--color-on-primary)]" />

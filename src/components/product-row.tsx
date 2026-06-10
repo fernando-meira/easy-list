@@ -96,7 +96,10 @@ export function ProductRow({
 
       <div className="flex h-[34px] items-center gap-2 flex-shrink-0">
         <button
-          onClick={() => onEdit(product)}
+          onClick={(e) => {
+            (e.currentTarget as HTMLButtonElement).blur();
+            onEdit(product);
+          }}
           disabled={isThisLoading || isDeleting}
           className="w-[34px] h-[34px] rounded-full bg-[var(--color-surface-card)] flex items-center justify-center disabled:opacity-50"
           aria-label="Editar produto"
