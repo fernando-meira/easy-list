@@ -1,12 +1,15 @@
-'use client';
-
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 
 import { Main } from '@/components/main';
 import { Header } from '@/components/header';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { CategoryClient } from './category-client';
+
+export const metadata: Metadata = {
+  robots: { index: false },
+};
 
 function CategorySkeleton() {
   return (
