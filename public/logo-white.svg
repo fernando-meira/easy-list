@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 180" role="img" aria-label="Easy List logo white">
+  <g fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" transform="translate(16 14) scale(.62)">
+    <path d="M105 38h45c34 0 61 27 61 61v23"/>
+    <path d="M189 211h-84c-34 0-61-27-61-61V99c0-34 27-61 61-61"/>
+    <path d="M81 89h81"/>
+    <path d="M81 127h66"/>
+    <path d="M81 165h37"/>
+    <path d="M147 157l31 31 56-72"/>
+  </g>
+  <text x="178" y="120" fill="#ffffff" font-family="Inter, Arial, Helvetica, sans-serif" font-size="82" font-weight="700" letter-spacing="-2">Easy List</text>
+</svg>
