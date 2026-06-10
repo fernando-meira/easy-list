@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
 import { toast } from 'sonner';
+import { X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Drawer as DrawerPrimitive } from 'vaul';
 
@@ -23,7 +23,7 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
   const [products, setProducts] = useState<{ name: string }[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setProducts(result?.products ?? []);
   }, [result]);
 
@@ -49,11 +49,13 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
       const { data: category } = await categoryResponse.json();
 
       for (const product of products) {
-        await fetch('/api/products', {
+        const productResponse = await fetch('/api/products', {
           method: 'POST',
           body: JSON.stringify({ name: product.name, categoryId: category._id }),
           headers: { 'Content-Type': 'application/json' },
         });
+
+        if (!productResponse.ok) throw new Error('Failed to create product');
       }
 
       onOpenChange?.(false);

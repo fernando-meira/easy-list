@@ -5,15 +5,14 @@ import { Plus, Sparkles } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 import { PagesEnum } from '@/types/enums';
-import { convertToCurrency } from '@/utils';
-import { calculateTotalValue } from '@/utils';
 import { AiGeneratedList } from '@/types/interfaces';
 import { useProducts } from '@/context/ProductContext';
+import { convertToCurrency, calculateTotalValue } from '@/utils';
 
 import { NewProductForm } from './new-product-form';
 import { NewCategoryDrawer } from './new-category-drawer';
-import { AiGenerateListDrawer } from './ai-generate-list-drawer';
 import { AiReviewListDrawer } from './ai-review-list-drawer';
+import { AiGenerateListDrawer } from './ai-generate-list-drawer';
 
 export function Footer() {
   const pathname = usePathname();
