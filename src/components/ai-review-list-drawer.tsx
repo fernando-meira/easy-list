@@ -5,10 +5,15 @@ import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
+import { cn } from '@/lib/utils';
+import { UnitEnum } from '@/types/enums';
 import { useCategories } from '@/context';
 import { AiGeneratedList } from '@/types/interfaces';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { UnitSegmentedControl } from '@/components/ui/unit-segmented-control';
 import { ResponsiveProductDialog } from '@/components/responsive-product-dialog';
+
+type AiProduct = AiGeneratedList['products'][0];
 
 interface AiReviewListDrawerProps {
   open?: boolean;
@@ -19,7 +24,7 @@ interface AiReviewListDrawerProps {
 export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListDrawerProps) {
   const router = useRouter();
   const { markLocalMutation } = useCategories();
-  const [products, setProducts] = useState<{ name: string }[]>([]);
+  const [products, setProducts] = useState<AiProduct[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -28,6 +33,10 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
 
   const removeProduct = (index: number) => {
     setProducts((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateProduct = (index: number, updates: Partial<AiProduct>) => {
+    setProducts((prev) => prev.map((p, i) => (i === index ? { ...p, ...updates } : p)));
   };
 
   const handleConfirm = async () => {
@@ -50,8 +59,13 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
       for (const product of products) {
         const productResponse = await fetch('/api/products', {
           method: 'POST',
-          body: JSON.stringify({ name: product.name, categoryId: category._id }),
           headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: product.name,
+            categoryId: category._id,
+            ...(product.unit ? { unit: product.unit } : {}),
+            ...(product.quantity !== undefined && product.quantity !== '' ? { quantity: product.quantity } : {}),
+          }),
         });
 
         if (!productResponse.ok) throw new Error('Failed to create product');
@@ -87,29 +101,57 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
       )}
     >
       <div className="flex flex-col gap-2 overflow-y-auto">
-        {products.map((product, index) => (
-          <div
-            key={index}
-            className="flex h-[68px] items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-[10px]"
-          >
-            <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-              <span className="truncate text-[15px] font-semibold text-[var(--color-ink)]">
-                {product.name}
-              </span>
-            </div>
+        {products.map((product, index) => {
+          const hasExtracted = product.quantity !== undefined || product.unit !== undefined;
 
-            <div className="flex h-[34px] flex-shrink-0 items-center">
-              <button
-                type="button"
-                aria-label={`Remover ${product.name}`}
-                onClick={() => removeProduct(index)}
-                className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[var(--color-surface-card)]"
-              >
-                <Trash2 className="h-[15px] w-[15px] text-[var(--color-error)]" />
-              </button>
+          return (
+            <div
+              key={`${product.name}-${index}`}
+              className={cn(
+                'flex flex-col rounded-[var(--radius-lg)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3',
+                hasExtracted ? 'gap-2 py-3' : 'h-[68px] justify-center'
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                  <span className="truncate text-[15px] font-semibold text-[var(--color-ink)]">
+                    {product.name}
+                  </span>
+                </div>
+
+                <div className="flex h-[34px] flex-shrink-0 items-center">
+                  <button
+                    type="button"
+                    aria-label={`Remover ${product.name}`}
+                    onClick={() => removeProduct(index)}
+                    className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[var(--color-surface-card)]"
+                  >
+                    <Trash2 className="h-[15px] w-[15px] text-[var(--color-error)]" />
+                  </button>
+                </div>
+              </div>
+
+              {hasExtracted && (
+                <div className="flex items-center gap-2">
+                  <input
+                    min={0}
+                    step={0.1}
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="Qtd."
+                    value={product.quantity ?? ''}
+                    onChange={(e) => updateProduct(index, { quantity: e.target.value })}
+                    className="h-8 w-20 rounded-lg border border-input bg-background px-2.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                  <UnitSegmentedControl
+                    value={product.unit ?? UnitEnum.unit}
+                    onChange={(val) => updateProduct(index, { unit: val })}
+                  />
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </ResponsiveProductDialog>
   );
