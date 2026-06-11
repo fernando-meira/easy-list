@@ -8,10 +8,10 @@ import { cn } from '@/lib/utils';
 
 interface ResponsiveProductDialogProps {
   open?: boolean;
-  title: string;
+  title: React.ReactNode;
   footer?: React.ReactNode;
   children: React.ReactNode;
-  description: string;
+  description?: React.ReactNode;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -127,9 +127,11 @@ export function ResponsiveProductDialog({
                 <DialogPrimitive.Title className="text-[28px] font-semibold leading-[1.2] tracking-[-0.5px] text-foreground">
                   {title}
                 </DialogPrimitive.Title>
-                <DialogPrimitive.Description className="text-sm leading-[1.5] text-[#374151] dark:text-[#a1a1aa]">
-                  {description}
-                </DialogPrimitive.Description>
+                {description ? (
+                  <DialogPrimitive.Description className="text-sm leading-[1.5] text-[#374151] dark:text-[#a1a1aa]">
+                    {description}
+                  </DialogPrimitive.Description>
+                ) : null}
               </div>
 
               <DialogPrimitive.Close
