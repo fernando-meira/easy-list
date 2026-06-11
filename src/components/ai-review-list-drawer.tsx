@@ -144,7 +144,7 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
                     className="h-8 w-20 rounded-lg border border-input bg-background px-2.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   />
                   <UnitSegmentedControl
-                    value={(product.unit as UnitEnum) ?? UnitEnum.unit}
+                    value={product.unit ?? UnitEnum.unit}
                     onChange={(val) => updateProduct(index, { unit: val })}
                   />
                 </div>

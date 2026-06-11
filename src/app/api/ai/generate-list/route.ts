@@ -20,6 +20,9 @@ function normalizeUnit(raw?: string): UnitEnum | undefined {
   return UNIT_MAP[raw.toLowerCase()] ?? UnitEnum.unit;
 }
 
+type ClaudeProduct = { name: string; unit?: string; quantity?: string };
+type ClaudeResponse = { categoryName: string; products: ClaudeProduct[] };
+
 function buildSystemPrompt(history: { name: string; products: string[] }[]): string {
   const base = `Você é um assistente de lista de compras.
 Responda APENAS com JSON válido, sem texto adicional, no formato:
@@ -48,7 +51,7 @@ ${lines}
 Use esse histórico como referência de preferências, mas adapte ao pedido atual.`;
 }
 
-async function callClaude(systemPrompt: string, userPrompt: string): Promise<AiGeneratedList> {
+async function callClaude(systemPrompt: string, userPrompt: string): Promise<ClaudeResponse> {
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 1024,
@@ -81,7 +84,7 @@ export async function POST(request: NextRequest) {
     const history = await getUserHistoryForAI(userId);
     const systemPrompt = buildSystemPrompt(history);
 
-    let result: AiGeneratedList;
+    let result: ClaudeResponse;
 
     try {
       result = await callClaude(systemPrompt, prompt);

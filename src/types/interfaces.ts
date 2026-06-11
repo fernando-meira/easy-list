@@ -1,3 +1,5 @@
+import { UnitEnum } from '@/types/enums';
+
 export interface CategoryProps {
   _id: string;
   name: string;
@@ -25,7 +27,7 @@ export interface AiGeneratedList {
   categoryName: string;
   products: {
     name: string;
-    unit?: string;
+    unit?: UnitEnum;
     quantity?: string;
   }[];
 }
