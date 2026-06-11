@@ -215,6 +215,23 @@ export async function deleteCategory(userId: string, categoryId: string) {
   return true;
 }
 
+export async function updateCategory(userId: string, categoryId: string, name: string) {
+  const category = await getOwnedCategory(categoryId, userId);
+
+  if (!category) {
+    return null;
+  }
+
+  await categoriesCollection.doc(categoryId).update({
+    name,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+
+  const updated = await categoriesCollection.doc(categoryId).get();
+
+  return categoryFromDoc(updated);
+}
+
 export async function getProducts(userId: string) {
   const productsSnapshot = await productsCollection.where('userId', '==', userId).get();
   const categoriesSnapshot = await categoriesCollection.where('userId', '==', userId).get();
