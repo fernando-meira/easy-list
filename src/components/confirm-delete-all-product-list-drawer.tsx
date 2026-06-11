@@ -1,39 +1,41 @@
+'use client';
+
+import * as React from 'react';
+
 import { Button } from '@/components/ui/button';
 import { useProducts } from '@/context/ProductContext';
-import {
-  Drawer,
-  DrawerTitle,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerContent,
-  DrawerTrigger,
-  DrawerDescription
-} from '@/components/ui/drawer';
+import { ResponsiveProductDialog } from '@/components/responsive-product-dialog';
 
 export function ConfirmDeleteAllProductListDrawer() {
   const { removeAllProducts, hasAnyProduct } = useProducts();
+  const [open, setOpen] = React.useState(false);
+
+  const handleRemoveAllProducts = () => {
+    removeAllProducts();
+    setOpen(false);
+  };
 
   return hasAnyProduct && (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button variant="destructive" className="mt-4">
-            Limpar listas
-        </Button>
-      </DrawerTrigger>
+    <>
+      <Button variant="destructive" className="mt-4" onClick={() => setOpen(true)}>
+        Limpar listas
+      </Button>
 
-      <DrawerContent className='max-w-3xl my-0 mx-auto'>
-        <DrawerHeader>
-          <DrawerTitle>Limpar lista</DrawerTitle>
-
-          <DrawerDescription>
-            Tem certeza que deseja limpar a lista de produtos?
-          </DrawerDescription>
-        </DrawerHeader>
-
-        <DrawerFooter className="mb-8">
-          <Button variant="destructive" onClick={removeAllProducts}>Limpar lista</Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+      <ResponsiveProductDialog
+        open={open}
+        title="Limpar lista"
+        description="Tem certeza que deseja limpar a lista de produtos?"
+        onOpenChange={setOpen}
+        footer={(
+          <Button variant="destructive" className="w-full" onClick={handleRemoveAllProducts}>
+            Limpar lista
+          </Button>
+        )}
+      >
+        <p className="text-sm font-medium text-foreground">
+          Esta ação não pode ser desfeita.
+        </p>
+      </ResponsiveProductDialog>
+    </>
   );
 }
