@@ -10,8 +10,8 @@ import { getUserHistoryForAI } from '@/lib/firestore-domain';
 const client = new Anthropic();
 
 const UNIT_MAP: Record<string, UnitEnum> = {
-  g: UnitEnum.grams,
   kg: UnitEnum.kg,
+  g: UnitEnum.grams,
   uni: UnitEnum.unit,
 };
 
