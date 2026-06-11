@@ -22,6 +22,10 @@ export interface ProductProps {
 }
 
 export interface AiGeneratedList {
-  products: { name: string }[];
   categoryName: string;
+  products: {
+    name: string;
+    unit?: string;
+    quantity?: string;
+  }[];
 }
