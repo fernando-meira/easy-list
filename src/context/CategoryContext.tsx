@@ -36,11 +36,12 @@ interface CategoriesContextType {
   errorCategories: string | null;
   filteredCategory?: CategoryProps;
   fetchCategories: () => Promise<void>;
+  markLocalMutation: (count?: number) => void;
   removeCategory: (id: string) => Promise<void>;
   setSelectedCategoryId: (categoryId: string) => void;
-  setCategories: React.Dispatch<React.SetStateAction<CategoryProps[]>>;
   addCategory: (category: CategoryProps) => Promise<void>;
-  markLocalMutation: (count?: number) => void;
+  updateCategory: (id: string, name: string) => Promise<void>;
+  setCategories: React.Dispatch<React.SetStateAction<CategoryProps[]>>;
 }
 
 interface CategoryProviderProps {
@@ -327,6 +328,24 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
     }
   };
 
+  const updateCategory = async (id: string, name: string) => {
+    markLocalMutation();
+
+    const response = await fetch(`/api/categories?id=${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      localMutationCount.current -= 1;
+      toast('Erro ao atualizar categoria');
+      return;
+    }
+
+    toast('Categoria atualizada com sucesso');
+  };
+
   const fetchCategories = useCallback(async () => {
     // No-op: initial load is handled by onSnapshot
   }, []);
@@ -383,13 +402,14 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         addCategory,
         setCategories,
         removeCategory,
-        fetchCategories,
+        updateCategory,
         errorCategories,
+        fetchCategories,
         filteredCategory,
+        markLocalMutation,
         selectedCategoryId,
         isLoadingCategories,
         setSelectedCategoryId,
-        markLocalMutation,
       }}
     >
       {children}

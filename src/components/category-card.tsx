@@ -1,24 +1,27 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Users, Trash2 } from 'lucide-react';
 import { isBefore, subWeeks } from 'date-fns';
+import { Users, Pencil, Trash2 } from 'lucide-react';
 import React, { useEffect, useCallback } from 'react';
 
 import { useCategories } from '@/context';
 import { CategoryProps } from '@/types/interfaces';
 import { CategoryListSkeleton } from '@/components/category-list-skeleton';
 
+import { NewCategoryDrawer } from './new-category-drawer';
 import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
 
 export function CategoryCard() {
   const router = useRouter();
   const { categories, isLoadingCategories } = useCategories();
 
-  const [openRemoveDrawer, setOpenRemoveDrawer] = React.useState<boolean>(false);
+  const [openEditDrawer, setOpenEditDrawer] = React.useState<boolean>(false);
   const [olderCategories, setOlderCategories] = React.useState<CategoryProps[]>();
+  const [openRemoveDrawer, setOpenRemoveDrawer] = React.useState<boolean>(false);
   const [recentCategories, setRecentCategories] = React.useState<CategoryProps[]>();
   const [sharedCategories, setSharedCategories] = React.useState<CategoryProps[]>();
+  const [selectedCategoryToEdit, setSelectedCategoryToEdit] = React.useState<CategoryProps>();
   const [selectedCategoryToRemove, setSelectedCategoryToRemove] = React.useState<CategoryProps>();
 
   const isOlderThanAWeek = (updatedAt: Date): boolean => {
@@ -29,6 +32,11 @@ export function CategoryCard() {
   const handleRemoveClick = useCallback((category: CategoryProps) => {
     setSelectedCategoryToRemove(category);
     setOpenRemoveDrawer(true);
+  }, []);
+
+  const handleEditClick = useCallback((category: CategoryProps) => {
+    setSelectedCategoryToEdit(category);
+    setOpenEditDrawer(true);
   }, []);
 
   useEffect(() => {
@@ -97,17 +105,31 @@ export function CategoryCard() {
               )}
 
               {!isShared && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    (e.currentTarget as HTMLButtonElement).blur();
-                    handleRemoveClick(category);
-                  }}
-                  aria-label="Remover categoria"
-                  className="w-8 h-8 rounded-full bg-[var(--color-surface-card)] flex items-center justify-center flex-shrink-0"
-                >
-                  <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
-                </button>
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      (e.currentTarget as HTMLButtonElement).blur();
+                      handleEditClick(category);
+                    }}
+                    aria-label="Editar categoria"
+                    className="w-8 h-8 rounded-full bg-[var(--color-surface-card)] flex items-center justify-center flex-shrink-0"
+                  >
+                    <Pencil className="h-4 w-4 text-[var(--color-ink)]" />
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      (e.currentTarget as HTMLButtonElement).blur();
+                      handleRemoveClick(category);
+                    }}
+                    aria-label="Remover categoria"
+                    className="w-8 h-8 rounded-full bg-[var(--color-surface-card)] flex items-center justify-center flex-shrink-0"
+                  >
+                    <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -116,7 +138,7 @@ export function CategoryCard() {
     }
 
     return null;
-  }, [router, handleRemoveClick]);
+  }, [router, handleEditClick, handleRemoveClick]);
 
   if (isLoadingCategories) return <CategoryListSkeleton />;
 
@@ -149,6 +171,15 @@ export function CategoryCard() {
           <p className="text-sm font-semibold text-[var(--color-ink)]">Compartilhadas</p>
           {renderContent(sharedCategories, true)}
         </section>
+      )}
+
+      {selectedCategoryToEdit && (
+        <NewCategoryDrawer
+          key={selectedCategoryToEdit._id}
+          open={openEditDrawer}
+          onOpenChange={setOpenEditDrawer}
+          categoryToEdit={selectedCategoryToEdit}
+        />
       )}
 
       {selectedCategoryToRemove && (

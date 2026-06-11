@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Plus, Save } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import { useCategories } from '@/context';
@@ -10,20 +10,26 @@ import { ResponsiveProductDialog } from '@/components/responsive-product-dialog'
 
 interface NewCategoryDrawerProps {
   open?: boolean;
+  categoryToEdit?: CategoryProps;
   onOpenChange?: (open: boolean) => void;
 }
 
-export function NewCategoryDrawer({ open, onOpenChange }: NewCategoryDrawerProps) {
-  const { addCategory } = useCategories();
+export function NewCategoryDrawer({ open, onOpenChange, categoryToEdit }: NewCategoryDrawerProps) {
+  const { addCategory, updateCategory } = useCategories();
+  const isEditMode = Boolean(categoryToEdit);
 
   const methods = useForm<CategoryProps>({
     defaultValues: {
-      name: '',
+      name: categoryToEdit?.name ?? '',
     },
   });
 
   const onSubmit = methods.handleSubmit((data) => {
-    addCategory({ name: data.name } as CategoryProps);
+    if (isEditMode && categoryToEdit) {
+      updateCategory(categoryToEdit._id, data.name);
+    } else {
+      addCategory({ name: data.name } as CategoryProps);
+    }
     methods.reset();
     onOpenChange?.(false);
   });
@@ -31,7 +37,7 @@ export function NewCategoryDrawer({ open, onOpenChange }: NewCategoryDrawerProps
   return (
     <ResponsiveProductDialog
       open={open}
-      title="Nova categoria"
+      title={isEditMode ? 'Editar categoria' : 'Nova categoria'}
       description="Digite o nome e a categoria fica disponível imediatamente."
       onOpenChange={(value) => {
         if (!value) methods.reset();
@@ -44,12 +50,21 @@ export function NewCategoryDrawer({ open, onOpenChange }: NewCategoryDrawerProps
             form="new-category-form"
             className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-foreground text-sm font-semibold text-background"
           >
-            <Plus className="h-5 w-5" />
-            Criar categoria
+            {isEditMode ? (
+              <>
+                <Save className="h-5 w-5" />
+                Salvar
+              </>
+            ) : (
+              <>
+                <Plus className="h-5 w-5" />
+                Criar categoria
+              </>
+            )}
           </button>
 
           <p className="text-[13px] font-medium leading-[1.4] text-[#898989]">
-            Enter também cria quando o nome estiver preenchido.
+            Enter também {isEditMode ? 'salva' : 'cria'} quando o nome estiver preenchido.
           </p>
         </div>
       )}

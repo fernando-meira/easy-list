@@ -5,6 +5,7 @@ import { authSecret } from '@/lib/auth-secret';
 import {
   createCategory,
   deleteCategory,
+  updateCategory,
   getCategoryWithProducts,
   getCategoriesWithProducts,
 } from '@/lib/firestore-domain';
@@ -100,5 +101,40 @@ export async function DELETE(request: NextRequest) {
     console.error(error);
 
     return NextResponse.json({ error: 'Erro ao deletar categoria' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const userId = await getUserId(request);
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID da categoria é obrigatório' }, { status: 400 });
+    }
+
+    const data: CategoryData = await request.json();
+
+    if (!data.name || typeof data.name !== 'string' || !data.name.trim()) {
+      return NextResponse.json({ error: 'Nome da categoria é obrigatório' }, { status: 400 });
+    }
+
+    const category = await updateCategory(userId, id, data.name.trim());
+
+    if (!category) {
+      return NextResponse.json({ error: 'Categoria não encontrada' }, { status: 404 });
+    }
+
+    return NextResponse.json({ data: category }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json({ error: 'Erro ao atualizar categoria' }, { status: 500 });
   }
 }
