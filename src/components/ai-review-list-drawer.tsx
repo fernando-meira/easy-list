@@ -64,7 +64,7 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
             name: product.name,
             categoryId: category._id,
             ...(product.unit ? { unit: product.unit } : {}),
-            ...(product.quantity ? { quantity: product.quantity } : {}),
+            ...(product.quantity !== undefined && product.quantity !== '' ? { quantity: product.quantity } : {}),
           }),
         });
 
@@ -106,7 +106,7 @@ export function AiReviewListDrawer({ open, result, onOpenChange }: AiReviewListD
 
           return (
             <div
-              key={index}
+              key={`${product.name}-${index}`}
               className={cn(
                 'flex flex-col rounded-[var(--radius-lg)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3',
                 hasExtracted ? 'gap-2 py-3' : 'h-[68px] justify-center'
