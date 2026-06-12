@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
-import { Fragment, useMemo, useState, useEffect } from 'react';
+import { useMemo, Fragment, useState, useEffect } from 'react';
 
 import { ProductProps } from '@/types/interfaces';
 import { StateCard } from '@/components/state-card';
@@ -11,9 +11,9 @@ import { ProductRow } from '@/components/product-row';
 import { useProducts, useCategories } from '@/context';
 import { GroupHeader } from '@/components/group-header';
 import { StickyFooter } from '@/components/sticky-footer';
-import { SubcategoryHeader } from '@/components/subcategory-header';
 import { CategoryHeroCard } from '@/components/category-hero-card';
 import { UnitEnum, AddOrEditProductTypeEnum } from '@/types/enums';
+import { SubcategoryHeader } from '@/components/subcategory-header';
 import { BarcodeScannerSheet } from '@/components/barcode-scanner-sheet';
 import { ProductManagerSheet } from '@/components/product-manager-sheet';
 import { CategoryPageSkeleton } from '@/components/category-page-skeleton';
@@ -261,32 +261,32 @@ export function CategoryClient() {
             />
             {subcategoryOrder
               ? groupProductsBySubcategory(productsNotInCart, subcategoryOrder).map(group => (
-                  <Fragment key={group.subcategory}>
-                    <SubcategoryHeader title={group.subcategory} count={group.products.length} />
-                    {group.products.map(p => (
-                      <ProductRow
-                        key={p._id}
-                        product={p}
-                        variant="pending"
-                        onToggleCart={toggleCart}
-                        onEdit={handleEditProduct}
-                        onDelete={removeProduct}
-                        isProductLoading={isProductLoading}
-                      />
-                    ))}
-                  </Fragment>
-                ))
+                <Fragment key={group.subcategory}>
+                  <SubcategoryHeader title={group.subcategory} count={group.products.length} />
+                  {group.products.map(p => (
+                    <ProductRow
+                      key={p._id}
+                      product={p}
+                      variant="pending"
+                      onToggleCart={toggleCart}
+                      onEdit={handleEditProduct}
+                      onDelete={removeProduct}
+                      isProductLoading={isProductLoading}
+                    />
+                  ))}
+                </Fragment>
+              ))
               : productsNotInCart.map(p => (
-                  <ProductRow
-                    key={p._id}
-                    product={p}
-                    variant="pending"
-                    onToggleCart={toggleCart}
-                    onEdit={handleEditProduct}
-                    onDelete={removeProduct}
-                    isProductLoading={isProductLoading}
-                  />
-                ))
+                <ProductRow
+                  key={p._id}
+                  product={p}
+                  variant="pending"
+                  onToggleCart={toggleCart}
+                  onEdit={handleEditProduct}
+                  onDelete={removeProduct}
+                  isProductLoading={isProductLoading}
+                />
+              ))
             }
           </>
         )}
@@ -299,32 +299,32 @@ export function CategoryClient() {
             />
             {subcategoryOrder
               ? groupProductsBySubcategory(productsInCart, subcategoryOrder).map(group => (
-                  <Fragment key={group.subcategory}>
-                    <SubcategoryHeader title={group.subcategory} count={group.products.length} />
-                    {group.products.map(p => (
-                      <ProductRow
-                        key={p._id}
-                        product={p}
-                        variant="cart"
-                        onToggleCart={toggleCart}
-                        onEdit={handleEditProduct}
-                        onDelete={removeProduct}
-                        isProductLoading={isProductLoading}
-                      />
-                    ))}
-                  </Fragment>
-                ))
+                <Fragment key={group.subcategory}>
+                  <SubcategoryHeader title={group.subcategory} count={group.products.length} />
+                  {group.products.map(p => (
+                    <ProductRow
+                      key={p._id}
+                      product={p}
+                      variant="cart"
+                      onToggleCart={toggleCart}
+                      onEdit={handleEditProduct}
+                      onDelete={removeProduct}
+                      isProductLoading={isProductLoading}
+                    />
+                  ))}
+                </Fragment>
+              ))
               : productsInCart.map(p => (
-                  <ProductRow
-                    key={p._id}
-                    product={p}
-                    variant="cart"
-                    onToggleCart={toggleCart}
-                    onEdit={handleEditProduct}
-                    onDelete={removeProduct}
-                    isProductLoading={isProductLoading}
-                  />
-                ))
+                <ProductRow
+                  key={p._id}
+                  product={p}
+                  variant="cart"
+                  onToggleCart={toggleCart}
+                  onEdit={handleEditProduct}
+                  onDelete={removeProduct}
+                  isProductLoading={isProductLoading}
+                />
+              ))
             }
           </>
         )}
