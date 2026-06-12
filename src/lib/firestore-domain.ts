@@ -36,6 +36,7 @@ function categoryFromDoc(doc: FirebaseFirestore.DocumentSnapshot): CategoryProps
     name: data.name,
     createdAt: timestampToIso(data.createdAt),
     updatedAt: timestampToIso(data.updatedAt),
+    subcategoryOrder: data.subcategoryOrder as string[] | undefined,
   };
 }
 
@@ -58,6 +59,7 @@ function productFromDoc(
     barcode: data.barcode,
     quantity: data.quantity,
     categoryId: data.categoryId,
+    subcategory: data.subcategory,
     addToCart: Boolean(data.addToCart),
     createdAt: timestampToIso(data.createdAt),
     updatedAt: timestampToIso(data.updatedAt),
@@ -261,6 +263,7 @@ export async function createProduct(userId: string, product: ProductWrite) {
     categoryId: product.categoryId,
     barcode: product.barcode ?? null,
     quantity: product.quantity ?? null,
+    subcategory: product.subcategory ?? null,
     addToCart: Boolean(product.addToCart),
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
@@ -304,6 +307,7 @@ export async function updateProduct(userId: string, productId: string, product: 
     quantity: product.quantity ?? null,
     addToCart: Boolean(product.addToCart),
     updatedAt: FieldValue.serverTimestamp(),
+    subcategory: product.subcategory ?? null,
   });
 
   const updatedProductDoc = await productsCollection.doc(productId).get();
@@ -401,4 +405,51 @@ export async function getUserHistoryForAI(
   }
 
   return result;
+}
+
+export type OrganizeProduct = { id: string; subcategory: string };
+
+export async function getProductsForOrganize(
+  userId: string,
+  categoryId: string
+): Promise<{ id: string; name: string }[] | null> {
+  const category = await getOwnedCategory(categoryId, userId);
+  if (!category) return null;
+
+  const snapshot = await productsCollection
+    .where('userId', '==', userId)
+    .where('categoryId', '==', categoryId)
+    .get();
+
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    name: doc.data().name as string,
+  }));
+}
+
+export async function organizeList(
+  userId: string,
+  categoryId: string,
+  subcategoryOrder: string[],
+  productClassifications: OrganizeProduct[]
+): Promise<boolean> {
+  const category = await getOwnedCategory(categoryId, userId);
+  if (!category) return false;
+
+  const batch = firestore.batch();
+
+  for (const { id, subcategory } of productClassifications) {
+    batch.update(productsCollection.doc(id), {
+      subcategory,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  }
+
+  batch.update(categoriesCollection.doc(categoryId), {
+    subcategoryOrder,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+
+  await batch.commit();
+  return true;
 }
