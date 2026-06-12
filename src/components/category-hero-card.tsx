@@ -2,9 +2,10 @@
 
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { Share2, ChevronUp, ChevronDown, ShoppingCart } from 'lucide-react';
+import { Share2, Sparkles, ChevronUp, ChevronDown, ShoppingCart } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { LoadingSpinner } from '@/components/loading-spinner';
 import { ProductProps, CategoryProps } from '@/types/interfaces';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
@@ -27,9 +28,11 @@ function StatPill({ value, label }: StatPillProps) {
 interface CategoryHeroCardProps {
   category: CategoryProps;
   products: ProductProps[];
+  isOrganizing?: boolean;
+  onOrganize?: () => Promise<void>;
 }
 
-export function CategoryHeroCard({ category, products }: CategoryHeroCardProps) {
+export function CategoryHeroCard({ category, products, isOrganizing, onOrganize }: CategoryHeroCardProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   async function handleShare() {
@@ -91,14 +94,35 @@ export function CategoryHeroCard({ category, products }: CategoryHeroCardProps) 
         </div>
 
         {!category.isShared && (
-          <Button
-            variant="outline"
-            onClick={handleShare}
-            className="h-10 w-full border-[var(--color-hairline)] bg-[var(--color-surface-card)] text-sm font-semibold text-[var(--color-ink)] shadow-none hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-ink)] [&_svg]:size-4"
-          >
-            <Share2 aria-hidden="true" />
-            Compartilhar lista
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              onClick={handleShare}
+              className="h-10 w-full border-[var(--color-hairline)] bg-[var(--color-surface-card)] text-sm font-semibold text-[var(--color-ink)] shadow-none hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-ink)] [&_svg]:size-4"
+            >
+              <Share2 aria-hidden="true" />
+              Compartilhar lista
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={onOrganize}
+              disabled={isOrganizing || products.length < 2}
+              className="h-10 w-full border-[var(--color-hairline)] bg-[var(--color-surface-card)] text-sm font-semibold text-[var(--color-ink)] shadow-none hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-ink)] disabled:opacity-50 [&_svg]:size-4"
+            >
+              {isOrganizing ? (
+                <>
+                  <LoadingSpinner size={16} />
+                  Organizando...
+                </>
+              ) : (
+                <>
+                  <Sparkles aria-hidden="true" />
+                  Organizar lista
+                </>
+              )}
+            </Button>
+          </>
         )}
 
         <div>

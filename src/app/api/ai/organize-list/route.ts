@@ -1,8 +1,7 @@
 import { getToken } from 'next-auth/jwt';
 import Anthropic from '@anthropic-ai/sdk';
-import { NextRequest, NextResponse } from 'next/server';
-
 import { authSecret } from '@/lib/auth-secret';
+import { NextRequest, NextResponse } from 'next/server';
 import { organizeList, OrganizeProduct, getProductsForOrganize } from '@/lib/firestore-domain';
 
 const client = new Anthropic();
