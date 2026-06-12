@@ -26,13 +26,13 @@ function StatPill({ value, label }: StatPillProps) {
 }
 
 interface CategoryHeroCardProps {
+  isOrganizing?: boolean;
   category: CategoryProps;
   products: ProductProps[];
-  isOrganizing?: boolean;
   onOrganize?: () => Promise<void>;
 }
 
-export function CategoryHeroCard({ category, products, isOrganizing, onOrganize }: CategoryHeroCardProps) {
+export function CategoryHeroCard({ isOrganizing, category, products, onOrganize }: CategoryHeroCardProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   async function handleShare() {
