@@ -8,8 +8,8 @@ import { organizeList, OrganizeProduct, getProductsForOrganize } from '@/lib/fir
 const client = new Anthropic();
 
 type ClaudeOrganizeResponse = {
-  subcategoryOrder: string[];
   products: OrganizeProduct[];
+  subcategoryOrder: string[];
 };
 
 const SYSTEM_PROMPT = `Classifique cada produto em uma subcategoria.
