@@ -1,6 +1,6 @@
 interface SubcategoryHeaderProps {
-  title: string;
   count: number;
+  title: string;
 }
 
 export function SubcategoryHeader({ title, count }: SubcategoryHeaderProps) {
