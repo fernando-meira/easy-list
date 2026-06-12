@@ -15,18 +15,20 @@ interface RawCategory {
   name: string;
   createdAt: string;
   updatedAt: string;
+  subcategoryOrder?: string[];
 }
 
 interface RawProduct {
   id: string;
   name: string;
-  categoryId: string;
-  price?: string;
-  quantity?: string;
   unit?: string;
-  addToCart?: boolean;
+  price?: string;
   createdAt: string;
+  quantity?: string;
   updatedAt: string;
+  categoryId: string;
+  addToCart?: boolean;
+  subcategory?: string;
 }
 
 interface CategoriesContextType {
@@ -102,6 +104,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
           createdAt: cat.createdAt,
           updatedAt: cat.updatedAt,
           isShared: cat.isShared,
+          subcategoryOrder: cat.subcategoryOrder,
         };
 
         const products: ProductProps[] = allRawProds
@@ -114,6 +117,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
             unit: p.unit,
             categoryId: p.categoryId,
             addToCart: Boolean(p.addToCart),
+            subcategory: p.subcategory,
             createdAt: p.createdAt,
             updatedAt: p.updatedAt,
             category: catRef,
@@ -170,6 +174,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
             name: data.name as string,
             createdAt: timestampToIso(data.createdAt),
             updatedAt: timestampToIso(data.updatedAt),
+            subcategoryOrder: data.subcategoryOrder as string[] | undefined,
           };
         });
 
@@ -193,13 +198,14 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
           return {
             id: doc.id,
             name: data.name as string,
-            categoryId: data.categoryId as string,
-            price: data.price as string | undefined,
-            quantity: data.quantity as string | undefined,
             unit: data.unit as string | undefined,
-            addToCart: data.addToCart as boolean | undefined,
+            price: data.price as string | undefined,
             createdAt: timestampToIso(data.createdAt),
+            quantity: data.quantity as string | undefined,
             updatedAt: timestampToIso(data.updatedAt),
+            categoryId: data.categoryId as string,
+            addToCart: data.addToCart as boolean | undefined,
+            subcategory: data.subcategory as string | undefined,
           };
         });
 
@@ -225,6 +231,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
             name: data.name as string,
             createdAt: timestampToIso(data.createdAt),
             updatedAt: timestampToIso(data.updatedAt),
+            subcategoryOrder: data.subcategoryOrder as string[] | undefined,
           };
         });
 
@@ -261,13 +268,14 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
               return {
                 id: doc.id,
                 name: data.name as string,
-                categoryId: data.categoryId as string,
-                price: data.price as string | undefined,
-                quantity: data.quantity as string | undefined,
                 unit: data.unit as string | undefined,
-                addToCart: data.addToCart as boolean | undefined,
+                price: data.price as string | undefined,
                 createdAt: timestampToIso(data.createdAt),
+                quantity: data.quantity as string | undefined,
                 updatedAt: timestampToIso(data.updatedAt),
+                categoryId: data.categoryId as string,
+                addToCart: data.addToCart as boolean | undefined,
+                subcategory: data.subcategory as string | undefined,
               };
             });
 
