@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
-import { useMemo, useState, useEffect } from 'react';
+import { Fragment, useMemo, useState, useEffect } from 'react';
 
 import { ProductProps } from '@/types/interfaces';
 import { StateCard } from '@/components/state-card';
@@ -11,6 +11,7 @@ import { ProductRow } from '@/components/product-row';
 import { useProducts, useCategories } from '@/context';
 import { GroupHeader } from '@/components/group-header';
 import { StickyFooter } from '@/components/sticky-footer';
+import { SubcategoryHeader } from '@/components/subcategory-header';
 import { CategoryHeroCard } from '@/components/category-hero-card';
 import { UnitEnum, AddOrEditProductTypeEnum } from '@/types/enums';
 import { BarcodeScannerSheet } from '@/components/barcode-scanner-sheet';
@@ -18,9 +19,37 @@ import { ProductManagerSheet } from '@/components/product-manager-sheet';
 import { CategoryPageSkeleton } from '@/components/category-page-skeleton';
 import { BarcodeLookupResult, BarcodeProductPreview } from '@/components/barcode-product-preview';
 
+function groupProductsBySubcategory(
+  products: ProductProps[],
+  subcategoryOrder: string[]
+): { subcategory: string; products: ProductProps[] }[] {
+  const orderedMap = new Map<string, ProductProps[]>(
+    subcategoryOrder.map(s => [s, []])
+  );
+  const outros: ProductProps[] = [];
+
+  for (const product of products) {
+    if (product.subcategory && orderedMap.has(product.subcategory)) {
+      orderedMap.get(product.subcategory)!.push(product);
+    } else {
+      outros.push(product);
+    }
+  }
+
+  const result: { subcategory: string; products: ProductProps[] }[] = [];
+  for (const [sub, prods] of orderedMap) {
+    if (prods.length > 0) result.push({ subcategory: sub, products: prods });
+  }
+  if (outros.length > 0) {
+    result.push({ subcategory: 'Outros', products: outros });
+  }
+
+  return result;
+}
+
 export function CategoryClient() {
   const searchParams = useSearchParams();
-  const { setSelectedCategoryId, filteredCategory, isLoadingCategories } = useCategories();
+  const { setSelectedCategoryId, filteredCategory, isLoadingCategories, markLocalMutation } = useCategories();
   const { removeProduct, toggleCart, managerProduct, isProductLoading } = useProducts();
 
   const categoryId = searchParams.get('id');
@@ -33,6 +62,7 @@ export function CategoryClient() {
   const [lookupResult, setLookupResult] = useState<BarcodeLookupResult | null>(null);
   const [scannerInitialProduct, setScannerInitialProduct] = useState<Partial<ProductProps> | undefined>();
   const [isBarcodeBusy, setIsBarcodeBusy] = useState(false);
+  const [isOrganizing, setIsOrganizing] = useState(false);
 
   useEffect(() => {
     if (!categoryId) return;
@@ -145,6 +175,29 @@ export function CategoryClient() {
     setEditSheetOpen(true);
   };
 
+  const handleOrganize = async () => {
+    if (!filteredCategory?._id || isOrganizing) return;
+
+    setIsOrganizing(true);
+    markLocalMutation((filteredCategory.products?.length ?? 0) + 1);
+
+    try {
+      const response = await fetch('/api/ai/organize-list', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categoryId: filteredCategory._id }),
+      });
+
+      if (!response.ok) throw new Error('API error');
+
+      toast.success('Lista organizada!');
+    } catch {
+      toast.error('Não foi possível organizar a lista. Tente novamente.');
+    } finally {
+      setIsOrganizing(false);
+    }
+  };
+
   const { productsNotInCart, productsInCart } = useMemo(() => {
     const all = filteredCategory?.products ?? [];
     const sorted = [...all].sort((a, b) =>
@@ -168,6 +221,7 @@ export function CategoryClient() {
   }
 
   const allProducts = filteredCategory.products ?? [];
+  const subcategoryOrder = filteredCategory?.subcategoryOrder;
 
   return (
     <>
@@ -185,6 +239,8 @@ export function CategoryClient() {
         <CategoryHeroCard
           category={filteredCategory}
           products={allProducts}
+          isOrganizing={isOrganizing}
+          onOrganize={handleOrganize}
         />
 
         {allProducts.length === 0 && (
@@ -203,17 +259,35 @@ export function CategoryClient() {
               title="Fora do carrinho"
               count={productsNotInCart.length}
             />
-            {productsNotInCart.map(p => (
-              <ProductRow
-                key={p._id}
-                product={p}
-                variant="pending"
-                onToggleCart={toggleCart}
-                onEdit={handleEditProduct}
-                onDelete={removeProduct}
-                isProductLoading={isProductLoading}
-              />
-            ))}
+            {subcategoryOrder
+              ? groupProductsBySubcategory(productsNotInCart, subcategoryOrder).map(group => (
+                  <Fragment key={group.subcategory}>
+                    <SubcategoryHeader title={group.subcategory} count={group.products.length} />
+                    {group.products.map(p => (
+                      <ProductRow
+                        key={p._id}
+                        product={p}
+                        variant="pending"
+                        onToggleCart={toggleCart}
+                        onEdit={handleEditProduct}
+                        onDelete={removeProduct}
+                        isProductLoading={isProductLoading}
+                      />
+                    ))}
+                  </Fragment>
+                ))
+              : productsNotInCart.map(p => (
+                  <ProductRow
+                    key={p._id}
+                    product={p}
+                    variant="pending"
+                    onToggleCart={toggleCart}
+                    onEdit={handleEditProduct}
+                    onDelete={removeProduct}
+                    isProductLoading={isProductLoading}
+                  />
+                ))
+            }
           </>
         )}
 
@@ -223,17 +297,35 @@ export function CategoryClient() {
               title="Carrinho"
               count={productsInCart.length}
             />
-            {productsInCart.map(p => (
-              <ProductRow
-                key={p._id}
-                product={p}
-                variant="cart"
-                onToggleCart={toggleCart}
-                onEdit={handleEditProduct}
-                onDelete={removeProduct}
-                isProductLoading={isProductLoading}
-              />
-            ))}
+            {subcategoryOrder
+              ? groupProductsBySubcategory(productsInCart, subcategoryOrder).map(group => (
+                  <Fragment key={group.subcategory}>
+                    <SubcategoryHeader title={group.subcategory} count={group.products.length} />
+                    {group.products.map(p => (
+                      <ProductRow
+                        key={p._id}
+                        product={p}
+                        variant="cart"
+                        onToggleCart={toggleCart}
+                        onEdit={handleEditProduct}
+                        onDelete={removeProduct}
+                        isProductLoading={isProductLoading}
+                      />
+                    ))}
+                  </Fragment>
+                ))
+              : productsInCart.map(p => (
+                  <ProductRow
+                    key={p._id}
+                    product={p}
+                    variant="cart"
+                    onToggleCart={toggleCart}
+                    onEdit={handleEditProduct}
+                    onDelete={removeProduct}
+                    isProductLoading={isProductLoading}
+                  />
+                ))
+            }
           </>
         )}
       </div>
