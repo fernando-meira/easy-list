@@ -5,8 +5,9 @@ export interface CategoryProps {
   name: string;
   createdAt: string;
   updatedAt: string;
-  products?: Array<ProductProps>;
   isShared?: boolean;
+  subcategoryOrder?: string[];
+  products?: Array<ProductProps>;
 }
 
 export interface ProductProps {
@@ -20,6 +21,7 @@ export interface ProductProps {
   updatedAt: string;
   addToCart?: boolean;
   categoryId?: string;
+  subcategory?: string;
   category?: CategoryProps;
 }
 
