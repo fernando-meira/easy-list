@@ -101,9 +101,9 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         const catRef: CategoryProps = {
           _id: cat.id,
           name: cat.name,
+          isShared: cat.isShared,
           createdAt: cat.createdAt,
           updatedAt: cat.updatedAt,
-          isShared: cat.isShared,
           subcategoryOrder: cat.subcategoryOrder,
         };
 
@@ -112,15 +112,15 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
           .map((p) => ({
             _id: p.id,
             name: p.name,
-            price: p.price,
-            quantity: p.quantity,
             unit: p.unit,
-            categoryId: p.categoryId,
-            addToCart: Boolean(p.addToCart),
-            subcategory: p.subcategory,
+            price: p.price,
+            category: catRef,
+            quantity: p.quantity,
             createdAt: p.createdAt,
             updatedAt: p.updatedAt,
-            category: catRef,
+            categoryId: p.categoryId,
+            subcategory: p.subcategory,
+            addToCart: Boolean(p.addToCart),
           }))
           .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'pt-BR'));
 
