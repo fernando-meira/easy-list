@@ -279,7 +279,7 @@ export const ProductManagerSheet = ({
                   {filteredCategory.subcategoryOrder.map(sub => (
                     <option key={sub} value={sub}>{sub}</option>
                   ))}
-                  <option value="">Outros</option>
+                  <option key="" value="">Outros</option>
                 </select>
               </div>
             )}
