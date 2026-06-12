@@ -33,7 +33,7 @@ export const ProductManagerSheet = ({
   initialProduct,
 }: ProductManagerSheetProps) => {
   const { managerProduct, isProductLoading } = useProducts();
-  const { categories, selectedCategoryId, isLoadingCategories } = useCategories();
+  const { categories, filteredCategory, selectedCategoryId, isLoadingCategories } = useCategories();
 
   const isEdit = type === AddOrEditProductTypeEnum.edit;
   const formId = React.useId();
@@ -43,6 +43,7 @@ export const ProductManagerSheet = ({
       name: '',
       price: '',
       quantity: '',
+      subcategory: '',
       addToCart: false,
       unit: UnitEnum.unit,
       categoryId:
@@ -90,6 +91,7 @@ export const ProductManagerSheet = ({
             addToCart: data.addToCart,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
+            subcategory: data.subcategory,
             categoryId: selectedCategoryId || data.category?._id,
           });
         } catch (error) {
@@ -264,6 +266,23 @@ export const ProductManagerSheet = ({
               checked={!!addToCart}
               onCheckedChange={(val) => methods.setValue('addToCart', val)}
             />
+
+            {isEdit && filteredCategory?.subcategoryOrder && (
+              <div className="flex flex-col gap-[7px]">
+                <span className="text-[13px] font-bold leading-[1.35] text-foreground">
+                  Seção
+                </span>
+                <select
+                  className="h-10 rounded-lg border border-input bg-background px-3.5 text-base font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  {...methods.register('subcategory')}
+                >
+                  {filteredCategory.subcategoryOrder.map(sub => (
+                    <option key={sub} value={sub}>{sub}</option>
+                  ))}
+                  <option value="">Outros</option>
+                </select>
+              </div>
+            )}
           </form>
         </FormProvider>
       )}
