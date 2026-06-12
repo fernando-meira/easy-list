@@ -3,7 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authSecret } from '@/lib/auth-secret';
-import { OrganizeProduct, getProductsForOrganize, organizeList } from '@/lib/firestore-domain';
+import { organizeList, OrganizeProduct, getProductsForOrganize } from '@/lib/firestore-domain';
 
 const client = new Anthropic();
 
@@ -69,13 +69,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'São necessários pelo menos 2 produtos' }, { status: 400 });
     }
 
-    let result: ClaudeOrganizeResponse;
-
-    try {
-      result = await callClaude(products);
-    } catch {
-      result = await callClaude(products);
-    }
+    const result = await callClaude(products);
 
     const success = await organizeList(userId, categoryId, result.subcategoryOrder, result.products);
 
