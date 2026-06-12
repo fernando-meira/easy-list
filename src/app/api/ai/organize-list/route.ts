@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authSecret } from '@/lib/auth-secret';
 import { organizeList, OrganizeProduct, getProductsForOrganize } from '@/lib/firestore-domain';
 
+export const maxDuration = 60;
+
 const client = new Anthropic();
 
 type ClaudeOrganizeResponse = {
