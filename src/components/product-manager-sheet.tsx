@@ -210,14 +210,6 @@ export const ProductManagerSheet = ({
               />
             </div>
 
-            <CategoryPopover
-              value={categoryId}
-              categories={categories}
-              onChange={(id) =>
-                methods.setValue('categoryId', id, { shouldValidate: true })
-              }
-            />
-
             <div className="flex flex-col gap-3 rounded-xl border border-border bg-[#f5f5f5] p-3 dark:border-[#242424] dark:bg-[#1a1a1a]">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-[750] leading-[1.35] text-foreground">
@@ -267,7 +259,15 @@ export const ProductManagerSheet = ({
               onCheckedChange={(val) => methods.setValue('addToCart', val)}
             />
 
-            {isEdit && filteredCategory?.subcategoryOrder && (
+            <CategoryPopover
+              value={categoryId}
+              categories={categories}
+              onChange={(id) =>
+                methods.setValue('categoryId', id, { shouldValidate: true })
+              }
+            />
+
+            {filteredCategory?.subcategoryOrder && (
               <div className="flex flex-col gap-[7px]">
                 <span className="text-[13px] font-bold leading-[1.35] text-foreground">
                   Seção
