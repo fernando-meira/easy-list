@@ -1,7 +1,8 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 
 interface SectionHeaderProps {
   count: number;
@@ -10,7 +11,7 @@ interface SectionHeaderProps {
   onToggle: () => void;
 }
 
-export function SectionHeader({ title, count, isCollapsed, onToggle }: SectionHeaderProps) {
+export function SectionHeader({ count, title, isCollapsed, onToggle }: SectionHeaderProps) {
   return (
     <button
       onClick={onToggle}

@@ -311,12 +311,12 @@ export function CategoryClient() {
                         <SubcategoryHeader
                           title={group.subcategory}
                           count={group.products.length}
-                          isCollapsed={collapsedSections.has(`sub:${group.subcategory}`)}
-                          onToggle={() => toggleSection(`sub:${group.subcategory}`)}
+                          isCollapsed={collapsedSections.has(`sub:pending:${group.subcategory}`)}
+                          onToggle={() => toggleSection(`sub:pending:${group.subcategory}`)}
                         />
                         <div className={cn(
                           'grid transition-all duration-200',
-                          collapsedSections.has(`sub:${group.subcategory}`) ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+                          collapsedSections.has(`sub:pending:${group.subcategory}`) ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
                         )}>
                           <div className="overflow-hidden">
                             <div className="flex flex-col gap-4">
@@ -374,12 +374,12 @@ export function CategoryClient() {
                         <SubcategoryHeader
                           title={group.subcategory}
                           count={group.products.length}
-                          isCollapsed={collapsedSections.has(`sub:${group.subcategory}`)}
-                          onToggle={() => toggleSection(`sub:${group.subcategory}`)}
+                          isCollapsed={collapsedSections.has(`sub:cart:${group.subcategory}`)}
+                          onToggle={() => toggleSection(`sub:cart:${group.subcategory}`)}
                         />
                         <div className={cn(
                           'grid transition-all duration-200',
-                          collapsedSections.has(`sub:${group.subcategory}`) ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+                          collapsedSections.has(`sub:cart:${group.subcategory}`) ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
                         )}>
                           <div className="overflow-hidden">
                             <div className="flex flex-col gap-4">
