@@ -18,14 +18,14 @@ export function CategoryCard() {
   const { categories, isLoadingCategories } = useCategories();
 
   const [openEditDrawer, setOpenEditDrawer] = React.useState<boolean>(false);
-  const [olderCategories, setOlderCategories] = React.useState<CategoryProps[]>();
+  const [openLeaveDrawer, setOpenLeaveDrawer] = React.useState<boolean>(false);
   const [openRemoveDrawer, setOpenRemoveDrawer] = React.useState<boolean>(false);
+  const [olderCategories, setOlderCategories] = React.useState<CategoryProps[]>();
   const [recentCategories, setRecentCategories] = React.useState<CategoryProps[]>();
   const [sharedCategories, setSharedCategories] = React.useState<CategoryProps[]>();
   const [selectedCategoryToEdit, setSelectedCategoryToEdit] = React.useState<CategoryProps>();
-  const [selectedCategoryToRemove, setSelectedCategoryToRemove] = React.useState<CategoryProps>();
-  const [openLeaveDrawer, setOpenLeaveDrawer] = React.useState<boolean>(false);
   const [selectedCategoryToLeave, setSelectedCategoryToLeave] = React.useState<CategoryProps>();
+  const [selectedCategoryToRemove, setSelectedCategoryToRemove] = React.useState<CategoryProps>();
 
   const isOlderThanAWeek = (updatedAt: Date): boolean => {
     const oneWeekAgo = subWeeks(new Date(), 1);

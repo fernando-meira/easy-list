@@ -12,7 +12,7 @@ Allow users to remove a shared category from their view. Clicking the trash butt
 
 ### `firestore-domain.ts`
 
-New function `leaveSharedList(categoryId: string, userId: string)`:
+New function `leaveSharedList(userId: string, categoryId: string)`:
 - Updates the category document using `FieldValue.arrayRemove(userId)` on the `sharedWith` field
 - Does not modify any other field on the category
 
