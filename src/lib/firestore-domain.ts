@@ -467,8 +467,8 @@ export async function removeGrouping(userId: string, categoryId: string): Promis
 }
 
 export async function leaveSharedList(
+  userId: string,
   categoryId: string,
-  userId: string
 ): Promise<'ok' | 'not-found' | 'not-member'> {
   const categoryDoc = await categoriesCollection.doc(categoryId).get();
 
@@ -480,6 +480,7 @@ export async function leaveSharedList(
   if (!sharedWith.includes(userId)) return 'not-member';
 
   await categoriesCollection.doc(categoryId).update({
+    updatedAt: FieldValue.serverTimestamp(),
     sharedWith: FieldValue.arrayRemove(userId),
   });
 
