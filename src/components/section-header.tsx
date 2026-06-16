@@ -1,8 +1,7 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
-
 import { cn } from '@/lib/utils';
+import { ChevronDown } from 'lucide-react';
 
 interface SectionHeaderProps {
   count: number;
