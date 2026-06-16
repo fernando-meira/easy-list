@@ -292,7 +292,10 @@ export function CategoryClient() {
         )}
 
         {productsNotInCart.length > 0 && (
-          <>
+          <div className={cn(
+            'flex flex-col rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 dark:border-[var(--color-surface-dark-elevated)] dark:bg-[var(--color-surface-dark-elevated)]',
+            !collapsedSections.has('pending') && 'gap-4'
+          )}>
             <SectionHeader
               title="Fora do carrinho"
               count={productsNotInCart.length}
@@ -351,11 +354,14 @@ export function CategoryClient() {
                 </div>
               </div>
             </div>
-          </>
+          </div>
         )}
 
         {productsInCart.length > 0 && (
-          <>
+          <div className={cn(
+            'flex flex-col rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 dark:border-[var(--color-surface-dark-elevated)] dark:bg-[var(--color-surface-dark-elevated)]',
+            !collapsedSections.has('cart') && 'gap-4'
+          )}>
             <SectionHeader
               title="Carrinho"
               count={productsInCart.length}
@@ -414,7 +420,7 @@ export function CategoryClient() {
                 </div>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
 
