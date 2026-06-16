@@ -5,12 +5,13 @@ import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, Fragment, useState, useEffect } from 'react';
 
+import { cn } from '@/lib/utils';
 import { ProductProps } from '@/types/interfaces';
 import { StateCard } from '@/components/state-card';
 import { ProductRow } from '@/components/product-row';
 import { useProducts, useCategories } from '@/context';
-import { GroupHeader } from '@/components/group-header';
 import { StickyFooter } from '@/components/sticky-footer';
+import { SectionHeader } from '@/components/section-header';
 import { CategoryHeroCard } from '@/components/category-hero-card';
 import { UnitEnum, AddOrEditProductTypeEnum } from '@/types/enums';
 import { SubcategoryHeader } from '@/components/subcategory-header';
@@ -54,15 +55,17 @@ export function CategoryClient() {
 
   const categoryId = searchParams.get('id');
 
-  const [addSheetOpen, setAddSheetOpen] = useState(false);
-  const [editSheetOpen, setEditSheetOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<ProductProps>({} as ProductProps);
-  const [scannerOpen, setScannerOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [lookupResult, setLookupResult] = useState<BarcodeLookupResult | null>(null);
-  const [scannerInitialProduct, setScannerInitialProduct] = useState<Partial<ProductProps> | undefined>();
-  const [isBarcodeBusy, setIsBarcodeBusy] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [addSheetOpen, setAddSheetOpen] = useState(false);
   const [isOrganizing, setIsOrganizing] = useState(false);
+  const [editSheetOpen, setEditSheetOpen] = useState(false);
+  const [isBarcodeBusy, setIsBarcodeBusy] = useState(false);
+  const [isRemovingGrouping, setIsRemovingGrouping] = useState(false);
+  const [lookupResult, setLookupResult] = useState<BarcodeLookupResult | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductProps>({} as ProductProps);
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set(['cart']));
+  const [scannerInitialProduct, setScannerInitialProduct] = useState<Partial<ProductProps> | undefined>();
 
   useEffect(() => {
     if (!categoryId) return;
@@ -198,6 +201,39 @@ export function CategoryClient() {
     }
   };
 
+  function toggleSection(id: string) {
+    setCollapsedSections(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  const handleRemoveGrouping = async () => {
+    if (!filteredCategory?._id || isRemovingGrouping) return;
+
+    setIsRemovingGrouping(true);
+    markLocalMutation(1);
+
+    try {
+      const response = await fetch(`/api/categories/${filteredCategory._id}/grouping`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('API error');
+
+      toast.success('Agrupamento removido!');
+    } catch {
+      toast.error('Não foi possível remover o agrupamento. Tente novamente.');
+    } finally {
+      setIsRemovingGrouping(false);
+    }
+  };
+
   const { productsNotInCart, productsInCart } = useMemo(() => {
     const all = filteredCategory?.products ?? [];
     const sorted = [...all].sort((a, b) =>
@@ -241,6 +277,8 @@ export function CategoryClient() {
           products={allProducts}
           isOrganizing={isOrganizing}
           onOrganize={handleOrganize}
+          isRemovingGrouping={isRemovingGrouping}
+          onRemoveGrouping={handleRemoveGrouping}
         />
 
         {allProducts.length === 0 && (
@@ -255,77 +293,127 @@ export function CategoryClient() {
 
         {productsNotInCart.length > 0 && (
           <>
-            <GroupHeader
+            <SectionHeader
               title="Fora do carrinho"
               count={productsNotInCart.length}
+              isCollapsed={collapsedSections.has('pending')}
+              onToggle={() => toggleSection('pending')}
             />
-            {subcategoryOrder
-              ? groupProductsBySubcategory(productsNotInCart, subcategoryOrder).map(group => (
-                <Fragment key={group.subcategory}>
-                  <SubcategoryHeader title={group.subcategory} count={group.products.length} />
-                  {group.products.map(p => (
-                    <ProductRow
-                      key={p._id}
-                      product={p}
-                      variant="pending"
-                      onToggleCart={toggleCart}
-                      onEdit={handleEditProduct}
-                      onDelete={removeProduct}
-                      isProductLoading={isProductLoading}
-                    />
-                  ))}
-                </Fragment>
-              ))
-              : productsNotInCart.map(p => (
-                <ProductRow
-                  key={p._id}
-                  product={p}
-                  variant="pending"
-                  onToggleCart={toggleCart}
-                  onEdit={handleEditProduct}
-                  onDelete={removeProduct}
-                  isProductLoading={isProductLoading}
-                />
-              ))
-            }
+            <div className={cn(
+              'grid transition-all duration-200',
+              collapsedSections.has('pending') ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+            )}>
+              <div className="overflow-hidden">
+                <div className="flex flex-col gap-4">
+                  {subcategoryOrder
+                    ? groupProductsBySubcategory(productsNotInCart, subcategoryOrder).map(group => (
+                      <Fragment key={group.subcategory}>
+                        <SubcategoryHeader
+                          title={group.subcategory}
+                          count={group.products.length}
+                          isCollapsed={collapsedSections.has(`sub:pending:${group.subcategory}`)}
+                          onToggle={() => toggleSection(`sub:pending:${group.subcategory}`)}
+                        />
+                        <div className={cn(
+                          'grid transition-all duration-200',
+                          collapsedSections.has(`sub:pending:${group.subcategory}`) ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+                        )}>
+                          <div className="overflow-hidden">
+                            <div className="flex flex-col gap-4">
+                              {group.products.map(p => (
+                                <ProductRow
+                                  key={p._id}
+                                  product={p}
+                                  variant="pending"
+                                  onEdit={handleEditProduct}
+                                  onDelete={removeProduct}
+                                  onToggleCart={toggleCart}
+                                  isProductLoading={isProductLoading}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </Fragment>
+                    ))
+                    : productsNotInCart.map(p => (
+                      <ProductRow
+                        key={p._id}
+                        product={p}
+                        variant="pending"
+                        onEdit={handleEditProduct}
+                        onDelete={removeProduct}
+                        onToggleCart={toggleCart}
+                        isProductLoading={isProductLoading}
+                      />
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
           </>
         )}
 
         {productsInCart.length > 0 && (
           <>
-            <GroupHeader
+            <SectionHeader
               title="Carrinho"
               count={productsInCart.length}
+              isCollapsed={collapsedSections.has('cart')}
+              onToggle={() => toggleSection('cart')}
             />
-            {subcategoryOrder
-              ? groupProductsBySubcategory(productsInCart, subcategoryOrder).map(group => (
-                <Fragment key={group.subcategory}>
-                  <SubcategoryHeader title={group.subcategory} count={group.products.length} />
-                  {group.products.map(p => (
-                    <ProductRow
-                      key={p._id}
-                      product={p}
-                      variant="cart"
-                      onToggleCart={toggleCart}
-                      onEdit={handleEditProduct}
-                      onDelete={removeProduct}
-                      isProductLoading={isProductLoading}
-                    />
-                  ))}
-                </Fragment>
-              ))
-              : productsInCart.map(p => (
-                <ProductRow
-                  key={p._id}
-                  product={p}
-                  variant="cart"
-                  onToggleCart={toggleCart}
-                  onEdit={handleEditProduct}
-                  onDelete={removeProduct}
-                  isProductLoading={isProductLoading}
-                />
-              ))
-            }
+            <div className={cn(
+              'grid transition-all duration-200',
+              collapsedSections.has('cart') ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+            )}>
+              <div className="overflow-hidden">
+                <div className="flex flex-col gap-4">
+                  {subcategoryOrder
+                    ? groupProductsBySubcategory(productsInCart, subcategoryOrder).map(group => (
+                      <Fragment key={group.subcategory}>
+                        <SubcategoryHeader
+                          title={group.subcategory}
+                          count={group.products.length}
+                          isCollapsed={collapsedSections.has(`sub:cart:${group.subcategory}`)}
+                          onToggle={() => toggleSection(`sub:cart:${group.subcategory}`)}
+                        />
+                        <div className={cn(
+                          'grid transition-all duration-200',
+                          collapsedSections.has(`sub:cart:${group.subcategory}`) ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+                        )}>
+                          <div className="overflow-hidden">
+                            <div className="flex flex-col gap-4">
+                              {group.products.map(p => (
+                                <ProductRow
+                                  key={p._id}
+                                  product={p}
+                                  variant="cart"
+                                  onEdit={handleEditProduct}
+                                  onDelete={removeProduct}
+                                  onToggleCart={toggleCart}
+                                  isProductLoading={isProductLoading}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </Fragment>
+                    ))
+                    : productsInCart.map(p => (
+                      <ProductRow
+                        key={p._id}
+                        product={p}
+                        variant="cart"
+                        onEdit={handleEditProduct}
+                        onDelete={removeProduct}
+                        onToggleCart={toggleCart}
+                        isProductLoading={isProductLoading}
+                      />
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
           </>
         )}
       </div>

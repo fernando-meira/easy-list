@@ -453,3 +453,15 @@ export async function organizeList(
   await batch.commit();
   return true;
 }
+
+export async function removeGrouping(userId: string, categoryId: string): Promise<boolean> {
+  const category = await getOwnedCategory(categoryId, userId);
+  if (!category) return false;
+
+  await categoriesCollection.doc(categoryId).update({
+    subcategoryOrder: FieldValue.delete(),
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+
+  return true;
+}

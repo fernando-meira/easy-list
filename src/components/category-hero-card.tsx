@@ -2,7 +2,7 @@
 
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { Share2, Sparkles, ChevronUp, ChevronDown, ShoppingCart } from 'lucide-react';
+import { ListX, Share2, Sparkles, ChevronUp, ChevronDown, ShoppingCart } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -29,10 +29,12 @@ interface CategoryHeroCardProps {
   isOrganizing?: boolean;
   category: CategoryProps;
   products: ProductProps[];
+  isRemovingGrouping?: boolean;
   onOrganize?: () => Promise<void>;
+  onRemoveGrouping?: () => Promise<void>;
 }
 
-export function CategoryHeroCard({ isOrganizing, category, products, onOrganize }: CategoryHeroCardProps) {
+export function CategoryHeroCard({ isOrganizing, category, products, isRemovingGrouping, onOrganize, onRemoveGrouping }: CategoryHeroCardProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   async function handleShare() {
@@ -104,24 +106,31 @@ export function CategoryHeroCard({ isOrganizing, category, products, onOrganize 
               Compartilhar lista
             </Button>
 
-            <Button
-              variant="outline"
-              onClick={onOrganize}
-              disabled={isOrganizing || products.length < 2}
-              className="h-10 w-full border-[var(--color-hairline)] bg-[var(--color-surface-card)] text-sm font-semibold text-[var(--color-ink)] shadow-none hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-ink)] disabled:opacity-50 [&_svg]:size-4"
-            >
-              {isOrganizing ? (
-                <>
-                  <LoadingSpinner size={16} />
-                  Organizando...
-                </>
-              ) : (
-                <>
-                  <Sparkles aria-hidden="true" />
-                  Organizar lista
-                </>
+            <div className="flex items-center gap-1">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={onOrganize}
+                aria-label="Organizar lista"
+                disabled={isOrganizing || products.length < 2}
+                className="h-8 w-8 disabled:opacity-50 [&_svg]:size-4"
+              >
+                {isOrganizing ? <LoadingSpinner size={14} /> : <Sparkles aria-hidden="true" />}
+              </Button>
+
+              {(category.subcategoryOrder?.length ?? 0) > 0 && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={onRemoveGrouping}
+                  aria-label="Remover agrupamento"
+                  disabled={isRemovingGrouping}
+                  className="h-8 w-8 disabled:opacity-50 [&_svg]:size-4"
+                >
+                  {isRemovingGrouping ? <LoadingSpinner size={14} /> : <ListX aria-hidden="true" />}
+                </Button>
               )}
-            </Button>
+            </div>
           </>
         )}
 
