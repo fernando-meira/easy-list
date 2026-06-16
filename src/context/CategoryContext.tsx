@@ -40,6 +40,7 @@ interface CategoriesContextType {
   fetchCategories: () => Promise<void>;
   markLocalMutation: (count?: number) => void;
   removeCategory: (id: string) => Promise<void>;
+  leaveSharedCategory: (id: string) => Promise<void>;
   setSelectedCategoryId: (categoryId: string) => void;
   addCategory: (category: CategoryProps) => Promise<void>;
   updateCategory: (id: string, name: string) => Promise<void>;
@@ -336,6 +337,23 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
     }
   };
 
+  const leaveSharedCategory = async (id: string) => {
+    markLocalMutation();
+
+    const response = await fetch(`/api/categories/${id}/leave`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      localMutationCount.current -= 1;
+      toast('Erro ao sair da lista');
+      return;
+    }
+
+    setCategories((prev) => prev.filter((c) => c._id !== id));
+    toast('Você saiu da lista');
+  };
+
   const updateCategory = async (id: string, name: string) => {
     markLocalMutation();
 
@@ -417,6 +435,7 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
         markLocalMutation,
         selectedCategoryId,
         isLoadingCategories,
+        leaveSharedCategory,
         setSelectedCategoryId,
       }}
     >
