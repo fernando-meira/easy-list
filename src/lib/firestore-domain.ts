@@ -465,3 +465,23 @@ export async function removeGrouping(userId: string, categoryId: string): Promis
 
   return true;
 }
+
+export async function leaveSharedList(
+  categoryId: string,
+  userId: string
+): Promise<'ok' | 'not-found' | 'not-member'> {
+  const categoryDoc = await categoriesCollection.doc(categoryId).get();
+
+  if (!categoryDoc.exists) return 'not-found';
+
+  const data = categoryDoc.data()!;
+  const sharedWith = Array.isArray(data.sharedWith) ? (data.sharedWith as string[]) : [];
+
+  if (!sharedWith.includes(userId)) return 'not-member';
+
+  await categoriesCollection.doc(categoryId).update({
+    sharedWith: FieldValue.arrayRemove(userId),
+  });
+
+  return 'ok';
+}
