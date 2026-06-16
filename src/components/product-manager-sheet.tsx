@@ -33,7 +33,7 @@ export const ProductManagerSheet = ({
   initialProduct,
 }: ProductManagerSheetProps) => {
   const { managerProduct, isProductLoading } = useProducts();
-  const { categories, filteredCategory, selectedCategoryId, isLoadingCategories } = useCategories();
+  const { categories, selectedCategoryId, isLoadingCategories } = useCategories();
 
   const isEdit = type === AddOrEditProductTypeEnum.edit;
   const formId = React.useId();
@@ -267,7 +267,7 @@ export const ProductManagerSheet = ({
               }
             />
 
-            {filteredCategory?.subcategoryOrder && (
+            {categories.find(c => c._id === categoryId)?.subcategoryOrder && (
               <div className="flex flex-col gap-[7px]">
                 <span className="text-[13px] font-bold leading-[1.35] text-foreground">
                   Seção
@@ -276,7 +276,7 @@ export const ProductManagerSheet = ({
                   className="h-10 rounded-lg border border-input bg-background px-3.5 text-base font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   {...methods.register('subcategory')}
                 >
-                  {filteredCategory.subcategoryOrder.map(sub => (
+                  {categories.find(c => c._id === categoryId)!.subcategoryOrder!.map(sub => (
                     <option key={sub} value={sub}>{sub}</option>
                   ))}
                   <option key="" value="">Outros</option>
