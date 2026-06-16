@@ -112,7 +112,7 @@ export function ResponsiveProductDialog({
             className={cn(
               'pointer-events-auto flex w-full flex-col overflow-hidden rounded-t-2xl',
               'border border-border/60 bg-background shadow-[0_-4px_12px_rgba(0,0,0,0.08)]',
-              'max-h-[min(90dvh,calc(var(--product-dialog-available-height)-16px))]',
+              'min-h-[60dvh] max-h-[var(--product-dialog-available-height)]',
               'group-data-[state=closed]:animate-out group-data-[state=closed]:slide-out-to-bottom',
               'group-data-[state=open]:animate-in group-data-[state=open]:slide-in-from-bottom',
               'sm:mb-6 sm:max-w-[460px] sm:rounded-2xl'
