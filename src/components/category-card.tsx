@@ -10,6 +10,7 @@ import { CategoryProps } from '@/types/interfaces';
 import { CategoryListSkeleton } from '@/components/category-list-skeleton';
 
 import { NewCategoryDrawer } from './new-category-drawer';
+import { ConfirmLeaveCategoryDrawer } from './confirm-leave-category-drawer';
 import { ConfirmRemoveCategoryDrawer } from './confirm-remove-category-drawer';
 
 export function CategoryCard() {
@@ -17,11 +18,13 @@ export function CategoryCard() {
   const { categories, isLoadingCategories } = useCategories();
 
   const [openEditDrawer, setOpenEditDrawer] = React.useState<boolean>(false);
-  const [olderCategories, setOlderCategories] = React.useState<CategoryProps[]>();
+  const [openLeaveDrawer, setOpenLeaveDrawer] = React.useState<boolean>(false);
   const [openRemoveDrawer, setOpenRemoveDrawer] = React.useState<boolean>(false);
+  const [olderCategories, setOlderCategories] = React.useState<CategoryProps[]>();
   const [recentCategories, setRecentCategories] = React.useState<CategoryProps[]>();
   const [sharedCategories, setSharedCategories] = React.useState<CategoryProps[]>();
   const [selectedCategoryToEdit, setSelectedCategoryToEdit] = React.useState<CategoryProps>();
+  const [selectedCategoryToLeave, setSelectedCategoryToLeave] = React.useState<CategoryProps>();
   const [selectedCategoryToRemove, setSelectedCategoryToRemove] = React.useState<CategoryProps>();
 
   const isOlderThanAWeek = (updatedAt: Date): boolean => {
@@ -37,6 +40,11 @@ export function CategoryCard() {
   const handleEditClick = useCallback((category: CategoryProps) => {
     setSelectedCategoryToEdit(category);
     setOpenEditDrawer(true);
+  }, []);
+
+  const handleLeaveClick = useCallback((category: CategoryProps) => {
+    setSelectedCategoryToLeave(category);
+    setOpenLeaveDrawer(true);
   }, []);
 
   useEffect(() => {
@@ -131,6 +139,20 @@ export function CategoryCard() {
                   </button>
                 </>
               )}
+
+              {isShared && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    (e.currentTarget as HTMLButtonElement).blur();
+                    handleLeaveClick(category);
+                  }}
+                  aria-label="Sair da lista"
+                  className="w-8 h-8 rounded-full bg-[var(--color-surface-card)] flex items-center justify-center flex-shrink-0"
+                >
+                  <Trash2 className="h-4 w-4 text-[var(--color-error)]" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -138,7 +160,7 @@ export function CategoryCard() {
     }
 
     return null;
-  }, [router, handleEditClick, handleRemoveClick]);
+  }, [router, handleEditClick, handleLeaveClick, handleRemoveClick]);
 
   if (isLoadingCategories) return <CategoryListSkeleton />;
 
@@ -187,6 +209,15 @@ export function CategoryCard() {
           open={openRemoveDrawer}
           onOpenChange={setOpenRemoveDrawer}
           category={selectedCategoryToRemove}
+        />
+      )}
+
+      {selectedCategoryToLeave && (
+        <ConfirmLeaveCategoryDrawer
+          key={selectedCategoryToLeave._id}
+          open={openLeaveDrawer}
+          onOpenChange={setOpenLeaveDrawer}
+          category={selectedCategoryToLeave}
         />
       )}
     </main>

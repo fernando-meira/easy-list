@@ -293,7 +293,7 @@ export function CategoryClient() {
 
         {productsNotInCart.length > 0 && (
           <div className={cn(
-            'flex flex-col rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 dark:border-[var(--color-surface-dark-elevated)] dark:bg-[var(--color-surface-dark-elevated)]',
+            'flex flex-col rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4',
             !collapsedSections.has('pending') && 'gap-4'
           )}>
             <SectionHeader
@@ -359,7 +359,7 @@ export function CategoryClient() {
 
         {productsInCart.length > 0 && (
           <div className={cn(
-            'flex flex-col rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 dark:border-[var(--color-surface-dark-elevated)] dark:bg-[var(--color-surface-dark-elevated)]',
+            'flex flex-col rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4',
             !collapsedSections.has('cart') && 'gap-4'
           )}>
             <SectionHeader
