@@ -1,7 +1,8 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 
 interface SubcategoryHeaderProps {
   count: number;
