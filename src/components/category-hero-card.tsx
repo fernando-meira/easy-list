@@ -97,6 +97,30 @@ export function CategoryHeroCard({ isOrganizing, category, products, isRemovingG
 
         {!category.isShared && (
           <>
+            <div className="flex items-center gap-2.5">
+              <Button
+                variant="outline"
+                onClick={onOrganize}
+                disabled={isOrganizing || products.length < 2}
+                className="h-10 flex-1 border-[var(--color-hairline)] bg-[var(--color-surface-card)] text-sm font-semibold text-[var(--color-ink)] shadow-none hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-ink)] disabled:opacity-50 [&_svg]:size-4"
+              >
+                {isOrganizing ? <LoadingSpinner size={14} /> : <Sparkles aria-hidden="true" />}
+                Organizar lista
+              </Button>
+
+              {(category.subcategoryOrder?.length ?? 0) > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={onRemoveGrouping}
+                  disabled={isRemovingGrouping}
+                  className="h-10 flex-1 border-[var(--color-hairline)] bg-[var(--color-surface-card)] text-sm font-semibold text-[var(--color-ink)] shadow-none hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-ink)] disabled:opacity-50 [&_svg]:size-4"
+                >
+                  {isRemovingGrouping ? <LoadingSpinner size={14} /> : <ListX aria-hidden="true" />}
+                  Remover agrupamento
+                </Button>
+              )}
+            </div>
+
             <Button
               variant="outline"
               onClick={handleShare}
@@ -105,32 +129,6 @@ export function CategoryHeroCard({ isOrganizing, category, products, isRemovingG
               <Share2 aria-hidden="true" />
               Compartilhar lista
             </Button>
-
-            <div className="flex items-center gap-1">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={onOrganize}
-                aria-label="Organizar lista"
-                disabled={isOrganizing || products.length < 2}
-                className="h-8 w-8 disabled:opacity-50 [&_svg]:size-4"
-              >
-                {isOrganizing ? <LoadingSpinner size={14} /> : <Sparkles aria-hidden="true" />}
-              </Button>
-
-              {(category.subcategoryOrder?.length ?? 0) > 0 && (
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={onRemoveGrouping}
-                  aria-label="Remover agrupamento"
-                  disabled={isRemovingGrouping}
-                  className="h-8 w-8 disabled:opacity-50 [&_svg]:size-4"
-                >
-                  {isRemovingGrouping ? <LoadingSpinner size={14} /> : <ListX aria-hidden="true" />}
-                </Button>
-              )}
-            </div>
           </>
         )}
 
