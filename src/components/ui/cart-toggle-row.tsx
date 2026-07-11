@@ -17,7 +17,7 @@ export function CartToggleRow({ checked, onCheckedChange }: CartToggleRowProps) 
           style={{ color: checked ? '#10b981' : '#fb923c' }}
         />
         <div className="flex flex-col gap-0.5">
-          <span className="text-sm font-[750] leading-[1.35] text-foreground">
+          <span className="text-sm font-bold leading-[1.35] text-foreground">
             {checked ? 'Produto no carrinho' : 'Adicionar direto ao carrinho'}
           </span>
           <span className="text-xs font-semibold leading-[1.35] text-muted-foreground">
@@ -33,7 +33,7 @@ export function CartToggleRow({ checked, onCheckedChange }: CartToggleRowProps) 
         onClick={() => onCheckedChange(!checked)}
         className={cn(
           'relative flex h-[30px] w-[52px] flex-shrink-0 cursor-pointer items-center rounded-full p-[3px] transition-colors duration-200',
-          checked ? 'bg-[#10b981]' : 'bg-[#e5e7eb]'
+          checked ? 'bg-[#10b981]' : 'bg-input'
         )}
       >
         <span
