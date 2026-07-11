@@ -2,17 +2,20 @@
 
 import * as React from 'react';
 import { toast } from 'sonner';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, Loader2 } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
 
+import { cn } from '@/lib/utils';
 import { useCategories } from '@/context';
 import { Input } from '@/components/ui/input';
 import { ProductProps } from '@/types/interfaces';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useProducts } from '@/context/ProductContext';
 import { CartToggleRow } from '@/components/ui/cart-toggle-row';
 import { UnitEnum, AddOrEditProductTypeEnum } from '@/types/enums';
 import { UnitSegmentedControl } from '@/components/ui/unit-segmented-control';
 
+import { SelectField } from './select-field';
 import { CurrencyInput } from './currency-input';
 import { CategoryPopover } from './category-popover';
 import { ResponsiveProductDialog } from './responsive-product-dialog';
@@ -32,7 +35,7 @@ export const ProductManagerSheet = ({
   onOpenChange,
   initialProduct,
 }: ProductManagerSheetProps) => {
-  const { managerProduct, isProductLoading } = useProducts();
+  const { managerProduct } = useProducts();
   const { categories, selectedCategoryId, isLoadingCategories } = useCategories();
 
   const isEdit = type === AddOrEditProductTypeEnum.edit;
@@ -141,15 +144,31 @@ export const ProductManagerSheet = ({
     initialProduct?.categoryId,
   ]);
 
-  const [unit, categoryId, addToCart] = methods.watch(['unit', 'categoryId', 'addToCart']);
+  const [unit, addToCart, categoryId, subcategory] = methods.watch([
+    'unit',
+    'addToCart',
+    'categoryId',
+    'subcategory',
+  ]);
 
-  const isLoading = isLoadingCategories || isProductLoading.isLoading || isLoadingProduct;
+  const { errors, isSubmitting } = methods.formState;
+
+  const isInitialLoading = isLoadingCategories || isLoadingProduct;
+
+  const selectedCategory = categories.find((category) => category._id === categoryId);
+  const subcategoryOptions = selectedCategory?.subcategoryOrder;
 
   const quantityLabel = unit === UnitEnum.unit || !unit ? 'Qtd.' : 'Peso';
   const title = isEdit ? 'Editar produto' : 'Novo produto';
   const description = isEdit
     ? 'Ajuste só o necessário e salve.'
     : 'Digite o nome agora; detalhes podem ficar para depois.';
+
+  const submitLabel = isSubmitting
+    ? 'Salvando...'
+    : isEdit
+      ? 'Salvar alterações'
+      : 'Adicionar produto';
 
   return (
     <ResponsiveProductDialog
@@ -158,89 +177,129 @@ export const ProductManagerSheet = ({
       description={description}
       onOpenChange={onOpenChange}
       footer={
-        !isLoading ? (
+        isInitialLoading ? (
+          <Skeleton className="h-10 w-full rounded-lg" />
+        ) : (
           <div className="flex flex-col gap-2.5">
             <button
               form={formId}
               type="submit"
-              disabled={isLoading}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-foreground text-sm font-semibold text-background disabled:opacity-50"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-foreground text-sm font-semibold text-background transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isEdit ? (
-                <Check className="h-5 w-5" />
+              {isSubmitting ? (
+                <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+              ) : isEdit ? (
+                <Check className="h-5 w-5" aria-hidden="true" />
               ) : (
-                <Plus className="h-5 w-5" />
+                <Plus className="h-5 w-5" aria-hidden="true" />
               )}
-              {isEdit ? 'Salvar alterações' : 'Adicionar produto'}
+              {submitLabel}
             </button>
 
-            <p className="text-[13px] font-medium leading-[1.4] text-[#898989]">
+            <p className="text-[13px] font-medium leading-[1.4] text-muted-foreground">
               {isEdit
                 ? 'As alterações atualizam esta lista imediatamente.'
                 : 'Enter também salva quando o nome estiver preenchido.'}
             </p>
           </div>
-        ) : null
+        )
       }
     >
-      {isLoading ? (
-        <div
-          role="status"
-          aria-live="polite"
-          aria-label="Carregando produto"
-          className="flex h-40 items-center justify-center"
-        >
-          <span className="text-sm text-muted-foreground" aria-hidden="true">
-            Carregando...
-          </span>
+      {isInitialLoading ? (
+        <div role="status" aria-live="polite" className="flex flex-col gap-5">
+          <span className="sr-only">Carregando produto</span>
+          <div className="flex flex-col gap-[7px]" aria-hidden="true">
+            <Skeleton className="h-3.5 w-16" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div className="flex flex-col gap-3" aria-hidden="true">
+            <Skeleton className="h-3.5 w-full" />
+            <div className="flex gap-2.5">
+              <Skeleton className="h-10 flex-1 rounded-lg" />
+              <Skeleton className="h-10 rounded-lg" style={{ width: 102 }} />
+            </div>
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div className="flex flex-col gap-3" aria-hidden="true">
+            <Skeleton className="h-14 w-full rounded-xl" />
+            <Skeleton className="h-12 w-full rounded-xl" />
+          </div>
         </div>
       ) : (
         <FormProvider {...methods}>
-          <form id={formId} onSubmit={onSubmit} className="flex flex-col gap-4">
+          <form id={formId} onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
             <div className="flex flex-col gap-[7px]">
-              <span className="text-[13px] font-bold leading-[1.35] text-foreground">
+              <label
+                htmlFor={`${formId}-name`}
+                className="text-[13px] font-bold leading-[1.35] text-foreground"
+              >
                 Produto
-              </span>
+              </label>
               <Input
-                required
+                id={`${formId}-name`}
                 type="text"
                 placeholder="Nome do produto"
-                className="h-10 rounded-lg px-3.5 text-base font-semibold"
-                {...methods.register('name')}
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? `${formId}-name-error` : undefined}
+                className={cn(
+                  'h-11 rounded-lg px-3.5 text-base font-semibold',
+                  errors.name &&
+                    'border-destructive focus-visible:ring-destructive'
+                )}
+                {...methods.register('name', {
+                  required: 'Informe o nome do produto.',
+                })}
               />
+              {errors.name ? (
+                <span
+                  role="alert"
+                  id={`${formId}-name-error`}
+                  className="text-[13px] font-medium leading-[1.4] text-destructive"
+                >
+                  {errors.name.message}
+                </span>
+              ) : null}
             </div>
 
-            <div className="flex flex-col gap-3 rounded-xl border border-border bg-[#f5f5f5] p-3 dark:border-[#242424] dark:bg-[#1a1a1a]">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-[750] leading-[1.35] text-foreground">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <span className="text-[13px] font-bold leading-[1.35] text-foreground">
                   Detalhes opcionais
                 </span>
-                <span className="text-xs font-semibold leading-[1.35] text-muted-foreground">
-                  pode preencher depois
-                </span>
+                <span className="h-px flex-1 bg-border" aria-hidden="true" />
               </div>
 
               <div className="flex gap-2.5">
                 <div className="flex flex-1 flex-col gap-[7px]">
-                  <span className="text-[13px] font-bold leading-[1.35] text-foreground">
+                  <label
+                    htmlFor={`${formId}-price`}
+                    className="text-[13px] font-bold leading-[1.35] text-foreground"
+                  >
                     Preço
-                  </span>
+                  </label>
                   <CurrencyInput
                     label=""
+                    id={`${formId}-price`}
                     placeholder="R$ 0,00"
                     value={methods.watch('price')}
                     onValueChange={(value) => methods.setValue('price', value)}
                   />
                 </div>
                 <div className="flex flex-col gap-[7px]" style={{ width: 102 }}>
-                  <span className="text-[13px] font-bold leading-[1.35] text-foreground">
+                  <label
+                    htmlFor={`${formId}-quantity`}
+                    className="text-[13px] font-bold leading-[1.35] text-foreground"
+                  >
                     {quantityLabel}
-                  </span>
+                  </label>
                   <Input
                     min={0}
                     step={0.1}
                     type="number"
                     inputMode="decimal"
+                    id={`${formId}-quantity`}
                     placeholder={quantityLabel}
                     className="h-10 rounded-lg px-3.5 text-base"
                     {...methods.register('quantity')}
@@ -254,35 +313,39 @@ export const ProductManagerSheet = ({
               />
             </div>
 
-            <CartToggleRow
-              checked={!!addToCart}
-              onCheckedChange={(val) => methods.setValue('addToCart', val)}
-            />
+            <div className="flex flex-col gap-3">
+              <CartToggleRow
+                checked={!!addToCart}
+                onCheckedChange={(val) => methods.setValue('addToCart', val)}
+              />
 
-            <CategoryPopover
-              value={categoryId}
-              categories={categories}
-              onChange={(id) =>
-                methods.setValue('categoryId', id, { shouldValidate: true })
-              }
-            />
+              {isEdit ? (
+                <CategoryPopover
+                  value={categoryId}
+                  categories={categories}
+                  onChange={(id) =>
+                    methods.setValue('categoryId', id, { shouldValidate: true })
+                  }
+                />
+              ) : null}
 
-            {categories.find(c => c._id === categoryId)?.subcategoryOrder && (
-              <div className="flex flex-col gap-[7px]">
-                <span className="text-[13px] font-bold leading-[1.35] text-foreground">
-                  Seção
-                </span>
-                <select
-                  className="h-10 rounded-lg border border-input bg-background px-3.5 text-base font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  {...methods.register('subcategory')}
-                >
-                  {categories.find(c => c._id === categoryId)!.subcategoryOrder!.map(sub => (
-                    <option key={sub} value={sub}>{sub}</option>
-                  ))}
-                  <option key="" value="">Outros</option>
-                </select>
-              </div>
-            )}
+              {subcategoryOptions && subcategoryOptions.length > 0 ? (
+                <SelectField
+                  label="Seção"
+                  value={subcategory ?? ''}
+                  onChange={(val) => methods.setValue('subcategory', val)}
+                  options={[
+                    ...subcategoryOptions.map((sub) => ({ value: sub, label: sub })),
+                    { value: '', label: 'Outros' },
+                  ]}
+                  getAriaLabel={(selected) =>
+                    selected
+                      ? `Seção selecionada: ${selected.label}. Clique para trocar.`
+                      : 'Selecionar seção'
+                  }
+                />
+              ) : null}
+            </div>
           </form>
         </FormProvider>
       )}

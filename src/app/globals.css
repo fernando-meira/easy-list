@@ -109,14 +109,11 @@
   }
 }
 
-/* Garantir que o drawer não seja afetado pelo teclado virtual */
-[data-vaul-drawer] {
-  touch-action: none;
-  will-change: transform;
-  max-height: 90vh; /* fallback para navegadores sem suporte a dvh */
-  max-height: 90dvh; /* viewport dinâmico — reduz automaticamente quando o teclado abre */
-}
-
-[data-vaul-drawer][data-vaul-drawer-visible='true'] {
-  transform: translate3d(0, 0, 0) !important;
+/* Respeitar preferência de redução de movimento: mantém o arrastar (manipulação
+   direta) mas torna a abertura/fechamento do drawer instantâneos. */
+@media (prefers-reduced-motion: reduce) {
+  [data-vaul-drawer],
+  [data-vaul-overlay] {
+    transition-duration: 0.01ms !important;
+  }
 }
