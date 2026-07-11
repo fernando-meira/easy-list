@@ -12,6 +12,7 @@ import { ProductRow } from '@/components/product-row';
 import { useProducts, useCategories } from '@/context';
 import { StickyFooter } from '@/components/sticky-footer';
 import { SectionHeader } from '@/components/section-header';
+import { CategorySelect } from '@/components/category-select';
 import { CategoryHeroCard } from '@/components/category-hero-card';
 import { UnitEnum, AddOrEditProductTypeEnum } from '@/types/enums';
 import { SubcategoryHeader } from '@/components/subcategory-header';
@@ -178,8 +179,27 @@ export function CategoryClient() {
     setEditSheetOpen(true);
   };
 
+  const handleUndoOrganize = async (categoryId: string) => {
+    markLocalMutation(1);
+
+    try {
+      const response = await fetch(`/api/categories/${categoryId}/grouping`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('API error');
+
+      toast.success('Organização desfeita.');
+    } catch {
+      markLocalMutation(-1);
+      toast.error('Não foi possível desfazer. Tente novamente.');
+    }
+  };
+
   const handleOrganize = async () => {
     if (!filteredCategory?._id || isOrganizing) return;
+
+    const categoryId = filteredCategory._id;
 
     setIsOrganizing(true);
     markLocalMutation((filteredCategory.products?.length ?? 0) + 1);
@@ -188,12 +208,18 @@ export function CategoryClient() {
       const response = await fetch('/api/ai/organize-list', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ categoryId: filteredCategory._id }),
+        body: JSON.stringify({ categoryId }),
       });
 
       if (!response.ok) throw new Error('API error');
 
-      toast.success('Lista organizada!');
+      toast.success('Lista organizada!', {
+        duration: 8000,
+        action: {
+          label: 'Desfazer',
+          onClick: () => { void handleUndoOrganize(categoryId); },
+        },
+      });
     } catch {
       toast.error('Não foi possível organizar a lista. Tente novamente.');
     } finally {
@@ -267,9 +293,7 @@ export function CategoryClient() {
             Home
           </Link>
           <span className="text-[12px] text-[var(--color-muted)]">/</span>
-          <span className="text-[12px] font-semibold text-[var(--color-muted)]" aria-current="page">
-            {filteredCategory.name}
-          </span>
+          <CategorySelect />
         </nav>
 
         <CategoryHeroCard
