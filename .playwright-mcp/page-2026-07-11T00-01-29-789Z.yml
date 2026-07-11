@@ -1,0 +1,148 @@
+- generic [ref=f8e1]:
+  - region "Notifications alt+T"
+  - main [ref=f8e2]:
+    - generic [ref=f8e3]:
+      - generic [ref=f8e4]:
+        - generic [ref=f8e36]: FM
+        - generic [ref=f8e6]:
+          - generic [ref=f8e38]: Olá, Fernando
+          - generic [ref=f8e39]: f.lasso.h@gmail.com
+      - generic [ref=f8e9]:
+        - button "Alternar tema" [ref=f8e10] [cursor=pointer]
+        - button "Sair" [ref=f8e46] [cursor=pointer]
+    - generic [ref=f8e12]:
+      - generic [ref=f8e50]:
+        - navigation "breadcrumb" [ref=f8e51]:
+          - link "Home" [ref=f8e52] [cursor=pointer]:
+            - /url: /
+          - generic [ref=f8e53]: /
+          - 'combobox "Lista atual: Açougue. Trocar de lista" [ref=f8e54] [cursor=pointer]':
+            - generic [ref=f8e55]: Açougue
+        - generic [ref=f8e60]:
+          - heading "Açougue" [level=1] [ref=f8e61]
+          - generic [ref=f8e62]:
+            - progressbar "3 de 11 itens no carrinho" [ref=f8e63]
+            - generic [ref=f8e65]:
+              - generic [ref=f8e66]: 3 de 11
+              - text: itens no carrinho
+          - button "Expandir detalhes da categoria" [active] [ref=f8e333] [cursor=pointer]
+        - generic [ref=f8e75]:
+          - button "Fora do carrinho 8" [ref=f8e76] [cursor=pointer]:
+            - generic [ref=f8e77]: Fora do carrinho
+            - generic [ref=f8e78]: "8"
+          - generic [ref=f8e85]:
+            - button "Carnes e Aves 7" [ref=f8e86] [cursor=pointer]:
+              - generic [ref=f8e89]: Carnes e Aves
+              - generic [ref=f8e90]: "7"
+            - generic [ref=f8e93]:
+              - generic [ref=f8e94]:
+                - button "Adicionar ao carrinho" [ref=f8e95] [cursor=pointer]
+                - generic [ref=f8e96]:
+                  - generic [ref=f8e97]: Alcatra em bifes
+                  - generic [ref=f8e98]: 1 kg
+                - generic [ref=f8e99]:
+                  - button "Editar produto" [ref=f8e100] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e104] [cursor=pointer]
+              - generic [ref=f8e108]:
+                - button "Adicionar ao carrinho" [ref=f8e109] [cursor=pointer]
+                - generic [ref=f8e110]:
+                  - generic [ref=f8e111]: Contrafilé
+                  - generic [ref=f8e112]: 1 kg
+                - generic [ref=f8e113]:
+                  - button "Editar produto" [ref=f8e114] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e118] [cursor=pointer]
+              - generic [ref=f8e122]:
+                - button "Adicionar ao carrinho" [ref=f8e123] [cursor=pointer]
+                - generic [ref=f8e124]:
+                  - generic [ref=f8e125]: Coxa e sobrecoxa de frango
+                  - generic [ref=f8e126]: 1.5 kg
+                - generic [ref=f8e127]:
+                  - button "Editar produto" [ref=f8e128] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e132] [cursor=pointer]
+              - generic [ref=f8e136]:
+                - button "Adicionar ao carrinho" [ref=f8e137] [cursor=pointer]
+                - generic [ref=f8e138]:
+                  - generic [ref=f8e139]: Filé de tilápia
+                  - generic [ref=f8e140]: 1 kg
+                - generic [ref=f8e141]:
+                  - button "Editar produto" [ref=f8e142] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e146] [cursor=pointer]
+              - generic [ref=f8e150]:
+                - button "Adicionar ao carrinho" [ref=f8e151] [cursor=pointer]
+                - generic [ref=f8e152]:
+                  - generic [ref=f8e153]: Músculo bovino
+                  - generic [ref=f8e154]: 500 g.
+                - generic [ref=f8e155]:
+                  - button "Editar produto" [ref=f8e156] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e160] [cursor=pointer]
+              - generic [ref=f8e164]:
+                - button "Adicionar ao carrinho" [ref=f8e165] [cursor=pointer]
+                - generic [ref=f8e166]:
+                  - generic [ref=f8e167]: Patinho moído
+                  - generic [ref=f8e168]: 1 kg
+                - generic [ref=f8e169]:
+                  - button "Editar produto" [ref=f8e170] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e174] [cursor=pointer]
+              - generic [ref=f8e178]:
+                - button "Adicionar ao carrinho" [ref=f8e179] [cursor=pointer]
+                - generic [ref=f8e180]:
+                  - generic [ref=f8e181]: Peito de frango sem osso
+                  - generic [ref=f8e182]: 2 kg
+                - generic [ref=f8e183]:
+                  - button "Editar produto" [ref=f8e184] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e188] [cursor=pointer]
+            - button "Laticínios 1" [ref=f8e192] [cursor=pointer]:
+              - generic [ref=f8e195]: Laticínios
+              - generic [ref=f8e196]: "1"
+            - generic [ref=f8e200]:
+              - button "Adicionar ao carrinho" [ref=f8e201] [cursor=pointer]
+              - generic [ref=f8e202]:
+                - generic [ref=f8e203]: Ovo caipira
+                - generic [ref=f8e204]: 30 uni.
+              - generic [ref=f8e205]:
+                - button "Editar produto" [ref=f8e206] [cursor=pointer]
+                - button "Excluir produto" [ref=f8e210] [cursor=pointer]
+        - generic [ref=f8e214]:
+          - button "Carrinho 3" [ref=f8e215] [cursor=pointer]:
+            - generic [ref=f8e216]: Carrinho
+            - generic [ref=f8e217]: "3"
+          - generic [ref=f8e222]:
+            - button "Carnes e Aves 3" [ref=f8e223] [cursor=pointer]:
+              - generic [ref=f8e226]: Carnes e Aves
+              - generic [ref=f8e227]: "3"
+            - generic [ref=f8e230]:
+              - generic [ref=f8e231]:
+                - button "Remover do carrinho" [ref=f8e232] [cursor=pointer]
+                - generic [ref=f8e235]:
+                  - generic [ref=f8e236]: Carne suína lombo em bifes
+                  - generic [ref=f8e237]: 1 kg
+                - generic [ref=f8e238]:
+                  - button "Editar produto" [ref=f8e239] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e243] [cursor=pointer]
+              - generic [ref=f8e247]:
+                - button "Remover do carrinho" [ref=f8e248] [cursor=pointer]
+                - generic [ref=f8e251]:
+                  - generic [ref=f8e252]: Filé de frango (sassami)
+                  - generic [ref=f8e253]: 1 kg
+                - generic [ref=f8e254]:
+                  - button "Editar produto" [ref=f8e255] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e259] [cursor=pointer]
+              - generic [ref=f8e263]:
+                - button "Remover do carrinho" [ref=f8e264] [cursor=pointer]
+                - generic [ref=f8e267]:
+                  - generic [ref=f8e268]: Frango inteiro
+                  - generic [ref=f8e269]: 2 kg
+                - generic [ref=f8e270]:
+                  - button "Editar produto" [ref=f8e271] [cursor=pointer]
+                  - button "Excluir produto" [ref=f8e275] [cursor=pointer]
+      - generic [ref=f8e280]:
+        - generic [ref=f8e281]:
+          - generic [ref=f8e282]:
+            - generic [ref=f8e283]: Total
+            - generic [ref=f8e284]: "Carrinho: R$ 0,00"
+          - generic [ref=f8e285]: R$ 0,00
+        - generic [ref=f8e286]:
+          - button "Adicionar produto" [ref=f8e287] [cursor=pointer]
+          - button "Escanear produto" [ref=f8e290] [cursor=pointer]
+  - alert [ref=f8e296]
+  - button "Open Next.js Dev Tools" [ref=f8e332] [cursor=pointer]

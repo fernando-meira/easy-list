@@ -123,6 +123,7 @@ const ANTIPATTERNS = [
   {
     id: 'overused-font',
     category: 'slop',
+    scopes: ['type'],
     name: 'Overused font',
     description:
       'Inter, Roboto, Fraunces, Geist, Plus Jakarta Sans, and Space Grotesk are used on so many sites they no longer feel distinctive. Each new wave of AI-generated UIs converges on the same handful of faces. Choose a face that gives your interface personality.',
@@ -132,6 +133,7 @@ const ANTIPATTERNS = [
   {
     id: 'single-font',
     category: 'slop',
+    scopes: ['type'],
     name: 'Single font for everything',
     description:
       'Only one font family is used for the entire page. Pair a distinctive display font with a refined body font to create typographic hierarchy.',
@@ -141,6 +143,7 @@ const ANTIPATTERNS = [
   {
     id: 'flat-type-hierarchy',
     category: 'slop',
+    scopes: ['type'],
     name: 'Flat type hierarchy',
     description:
       'Font sizes are too close together — no clear visual hierarchy. Use fewer sizes with more contrast (aim for at least a 1.25 ratio between steps).',
@@ -177,6 +180,7 @@ const ANTIPATTERNS = [
   {
     id: 'nested-cards',
     category: 'slop',
+    scopes: ['layout'],
     name: 'Nested cards',
     description:
       'Cards inside cards create visual noise and excessive depth. Flatten the hierarchy — use spacing, typography, and dividers instead of nesting containers.',
@@ -186,6 +190,7 @@ const ANTIPATTERNS = [
   {
     id: 'monotonous-spacing',
     category: 'slop',
+    scopes: ['layout'],
     name: 'Monotonous spacing',
     description:
       'The same spacing value used everywhere — no rhythm, no variation. Use tight groupings for related items and generous separations between sections.',
@@ -213,6 +218,7 @@ const ANTIPATTERNS = [
   {
     id: 'icon-tile-stack',
     category: 'slop',
+    scopes: ['layout'],
     name: 'Icon tile stacked above heading',
     description:
       'A small rounded-square icon container above a heading is the universal AI feature-card template — every generator outputs this exact shape. Try a side-by-side icon and heading, or let the icon sit in flow without its own container.',
@@ -222,6 +228,7 @@ const ANTIPATTERNS = [
   {
     id: 'italic-serif-display',
     category: 'slop',
+    scopes: ['type'],
     name: 'Italic serif display headline',
     description:
       'Oversized italic serif (Fraunces, Recoleta, Playfair, Newsreader-italic) as the primary hero headline reads as taste in isolation but has become the universal AI-startup landing page hero. Set roman, or move to a non-serif display face. Editorial / magazine register may legitimately want this — judge by context.',
@@ -231,6 +238,7 @@ const ANTIPATTERNS = [
   {
     id: 'hero-eyebrow-chip',
     category: 'slop',
+    scopes: ['type'],
     name: 'Hero eyebrow / pill chip',
     description:
       'A tiny uppercase letter-spaced label sitting immediately above an oversized hero headline — or the same shape rendered as a pill chip — is now the default AI SaaS hero. Drop the eyebrow, integrate the kicker into the headline, or run it as a navigation breadcrumb instead.',
@@ -240,6 +248,7 @@ const ANTIPATTERNS = [
   {
     id: 'repeated-section-kickers',
     category: 'slop',
+    scopes: ['type'],
     severity: 'advisory',
     name: 'Repeated section kicker labels',
     description:
@@ -250,6 +259,7 @@ const ANTIPATTERNS = [
   {
     id: 'numbered-section-markers',
     category: 'slop',
+    scopes: ['layout'],
     severity: 'advisory',
     name: 'Numbered section markers (01 / 02 / 03)',
     description:
@@ -287,6 +297,7 @@ const ANTIPATTERNS = [
   {
     id: 'oversized-h1',
     category: 'slop',
+    scopes: ['type'],
     name: 'Oversized hero headline',
     description:
       'A full-sentence headline set at display size ends up dominating the viewport, leaving no room for anything else above the fold. A punchy one- or two-word headline at that size is fine — the problem is a long headline blown up too large. Set long headlines smaller, or tighten the copy.',
@@ -296,6 +307,7 @@ const ANTIPATTERNS = [
   {
     id: 'extreme-negative-tracking',
     category: 'slop',
+    scopes: ['type'],
     name: 'Crushed letter spacing',
     description:
       'Letter-spacing pulled tighter than the point where characters keep their own shapes costs legibility. Tighten display type optically, not destructively.',
@@ -341,6 +353,7 @@ const ANTIPATTERNS = [
   {
     id: 'line-length',
     category: 'quality',
+    scopes: ['type', 'layout'],
     name: 'Line length too long',
     description:
       'Text lines wider than ~80 characters are hard to read. The eye loses its place tracking back to the start of the next line. Add a max-width (65ch to 75ch) to text containers.',
@@ -350,6 +363,7 @@ const ANTIPATTERNS = [
   {
     id: 'cramped-padding',
     category: 'quality',
+    scopes: ['layout'],
     name: 'Cramped padding',
     description:
       'Text is too close to the edge of its container. Two shapes: (1) an element with its own text where the padding is too low for the font size, and (2) a wrapper with text-bearing children and near-zero padding against a visible boundary (border, outline, or non-transparent background) — children land flush against the boundary line. Add at least 8px (ideally 12–16px) of padding inside bordered, outlined, or colored containers.',
@@ -359,6 +373,7 @@ const ANTIPATTERNS = [
   {
     id: 'body-text-viewport-edge',
     category: 'quality',
+    scopes: ['layout'],
     name: 'Body text touching viewport edge',
     description:
       'Body paragraphs render flush against the left or right viewport edge with no container providing horizontal padding. Wrap content in a container with at least 16px (ideally 24-32px) of horizontal padding, or apply max-width with mx-auto.',
@@ -366,6 +381,7 @@ const ANTIPATTERNS = [
   {
     id: 'tight-leading',
     category: 'quality',
+    scopes: ['type'],
     name: 'Tight line height',
     description:
       'Line height below 1.3x the font size makes multi-line text hard to read. Use 1.5 to 1.7 for body text so lines have room to breathe.',
@@ -373,6 +389,7 @@ const ANTIPATTERNS = [
   {
     id: 'skipped-heading',
     category: 'quality',
+    scopes: ['type'],
     name: 'Skipped heading level',
     description:
       'Heading levels should not skip (e.g. h1 then h3 with no h2). Screen readers use heading hierarchy for navigation. Skipping levels breaks the document outline.',
@@ -380,6 +397,7 @@ const ANTIPATTERNS = [
   {
     id: 'justified-text',
     category: 'quality',
+    scopes: ['type'],
     name: 'Justified text',
     description:
       'Justified text without hyphenation creates uneven word spacing ("rivers of white"). Use text-align: left for body text, or enable hyphens: auto if you must justify.',
@@ -387,6 +405,7 @@ const ANTIPATTERNS = [
   {
     id: 'tiny-text',
     category: 'quality',
+    scopes: ['type'],
     name: 'Tiny body text',
     description:
       'Body text below 12px is hard to read, especially on high-DPI screens. Use at least 14px for body content, 16px is ideal.',
@@ -394,6 +413,7 @@ const ANTIPATTERNS = [
   {
     id: 'all-caps-body',
     category: 'quality',
+    scopes: ['type'],
     name: 'All-caps body text',
     description:
       'Long passages in uppercase are hard to read. We recognize words by shape (ascenders and descenders), which all-caps removes. Reserve uppercase for short labels and headings.',
@@ -403,6 +423,7 @@ const ANTIPATTERNS = [
   {
     id: 'wide-tracking',
     category: 'quality',
+    scopes: ['type'],
     name: 'Wide letter spacing on body text',
     description:
       'Letter spacing above 0.05em on body text disrupts natural character groupings and slows reading. Reserve wide tracking for short uppercase labels only.',
@@ -410,6 +431,7 @@ const ANTIPATTERNS = [
   {
     id: 'text-overflow',
     category: 'quality',
+    scopes: ['layout'],
     name: 'Content overflowing its container',
     description:
       'Content renders wider than its container, spilling out or forcing a horizontal scrollbar. Let text wrap, constrain widths, or give the region a deliberate scroll affordance.',
@@ -419,11 +441,53 @@ const ANTIPATTERNS = [
   {
     id: 'clipped-overflow-container',
     category: 'quality',
+    scopes: ['layout'],
     name: 'Positioned child clipped by overflow container',
     description:
       'A clipping container (overflow hidden or clip) wrapping an absolutely-positioned child cuts off tooltips, menus, and popovers that need to escape. Let the overflow be visible, or move the positioned layer out of the clip.',
     skillSection: 'Layout & Space',
     skillGuideline: 'overflow container clipping positioned children',
+  },
+  {
+    id: 'design-system-font',
+    category: 'quality',
+    scopes: ['type'],
+    name: 'Font outside DESIGN.md',
+    description:
+      'A font is used that is not declared in DESIGN.md typography. Use the documented type system or update DESIGN.md if this is an intentional brand addition.',
+    skillSection: 'Typography',
+    skillGuideline: 'font family outside the project design system',
+  },
+  {
+    id: 'design-system-color',
+    category: 'quality',
+    severity: 'advisory',
+    name: 'Color outside DESIGN.md',
+    description:
+      'A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.',
+    skillSection: 'Color & Contrast',
+    skillGuideline: 'literal color outside the project design system',
+  },
+  {
+    id: 'design-system-radius',
+    category: 'quality',
+    severity: 'advisory',
+    name: 'Radius outside DESIGN.md',
+    description:
+      'A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.',
+    skillSection: 'Visual Details',
+    skillGuideline: 'border radius outside the project design system',
+  },
+  {
+    id: 'design-system-font-size',
+    category: 'quality',
+    severity: 'advisory',
+    scopes: ['type'],
+    name: 'Font size outside DESIGN.md',
+    description:
+      'A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.',
+    skillSection: 'Typography',
+    skillGuideline: 'font size outside the project design system',
   },
 
   // ── Provider tells: opt-in via --gpt / --gemini (gated off by default) ──
@@ -448,6 +512,17 @@ const ANTIPATTERNS = [
       'Repeating-gradient stripes used as surface decoration are a recurring generated-UI signature. Reach for a deliberate texture or leave the surface plain.',
     skillSection: 'Visual Details',
     skillGuideline: 'repeating-gradient decorative stripes',
+  },
+  {
+    id: 'codex-grid-background',
+    category: 'slop',
+    severity: 'advisory',
+    gated: 'gpt',
+    name: 'Decorative grid-line background',
+    description:
+      'A two-axis grid drawn with hairline linear-gradient layers ("1px, transparent 1px" on both axes) is a recurring generated-UI signature. Reserve grid overlays for actual canvas, map, blueprint, or measurement surfaces; elsewhere use product structure or a plain surface.',
+    skillSection: 'Visual Details',
+    skillGuideline: 'two-axis grid-line gradient background',
   },
   {
     id: 'theater-slop-phrase',
@@ -586,6 +661,36 @@ function getHue(c) {
 function colorToHex(c) {
   if (!c) return '?';
   return '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+// --- cli/engine/shared/fonts.mjs ---
+const GOOGLE_FONTS_URL_RE = /fonts\.googleapis\.com\/css2?\?[^"'\s)<>]*/gi;
+
+function normalizeGoogleFontFamilyParam(value) {
+  return String(value || '')
+    .split('|')
+    .map(part => part.split(':')[0].trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function extractGoogleFontFamilies(text) {
+  const families = [];
+  if (!text) return families;
+
+  GOOGLE_FONTS_URL_RE.lastIndex = 0;
+  let urlMatch;
+  while ((urlMatch = GOOGLE_FONTS_URL_RE.exec(text)) !== null) {
+    const url = urlMatch[0];
+    const queryStart = url.indexOf('?');
+    if (queryStart === -1) continue;
+
+    const params = new URLSearchParams(url.slice(queryStart + 1).replace(/&amp;/g, '&'));
+    for (const value of params.getAll('family')) {
+      families.push(...normalizeGoogleFontFamilyParam(value));
+    }
+  }
+
+  return families;
 }
 
 // --- cli/engine/rules/checks.mjs ---
@@ -1084,9 +1189,13 @@ function checkHtmlPatterns(html) {
   // --- Motion ---
 
   // Bounce/elastic animation names
-  const bounceRe = /animation(?:-name)?\s*:\s*[^;]*\b(bounce|elastic|wobble|jiggle|spring)\b/gi;
-  if (bounceRe.test(html)) {
-    findings.push({ id: 'bounce-easing', snippet: 'Bounce/elastic animation in CSS' });
+  const bounceRe = /animation(?:-name)?\s*:\s*([^;{}]*(?:bounce|elastic|wobble|jiggle|spring)[^;{}]*)/gi;
+  const bounceMatch = bounceRe.exec(html);
+  if (bounceMatch) {
+    const animationToken = bounceMatch[1]
+      .split(/[,\s]+/)
+      .find((part) => /bounce|elastic|wobble|jiggle|spring/i.test(part));
+    findings.push({ id: 'bounce-easing', snippet: `animation: ${animationToken || bounceMatch[1].trim()}` });
   }
 
   // Overshoot cubic-bezier
@@ -1137,6 +1246,42 @@ function checkHtmlPatterns(html) {
   // --- Provider tells (gated): repeating-gradient stripes (GPT) ---
   if (/repeating-(?:linear|radial|conic)-gradient\s*\(/i.test(html)) {
     findings.push({ id: 'repeating-stripes-gradient', snippet: 'repeating-gradient decorative stripes' });
+  }
+
+  // --- Provider tells (gated): two-axis grid-line background (Codex/GPT) ---
+  // The Codex grid tell is two hairline `linear-gradient(... <color> 1px,
+  // transparent 1px)` layers (one per axis) tiled by a repeating
+  // `background-size` cell. Both signals must co-occur in the SAME style block
+  // (a CSS rule body or one inline `style="..."`): two hairline stops WITHOUT a
+  // tiling background-size is a fixed crosshair, not a grid, and a single
+  // hairline is a legitimate ruled line. Scoping to one block also stops
+  // unrelated single-axis rules on separate elements from adding up across the
+  // page. Count hairlines only inside `background`/`background-image` values so
+  // a hairline in an unrelated property (mask-image, border-image) can't stand
+  // in for the second axis. Colors like `oklch(96% 0.012 82 / 0.055)` carry
+  // nested parens, so match the hairline stop directly rather than parsing
+  // whole gradient layers.
+  {
+    const hairlineRe = /\b\d{1,3}px\s*,\s*transparent\s+\d{1,3}px/gi;
+    const gridSizeRe = /background-size\s*:[^;{}"']*\b\d{1,3}px\b/i;
+    const bgDeclRe = /\bbackground(?:-image)?\s*:\s*([^;{}"']*)/gi;
+    const blockRe = /\{([^{}]*)\}|style\s*=\s*"([^"]*)"|style\s*=\s*'([^']*)'/gi;
+    let blk;
+    while ((blk = blockRe.exec(html)) !== null) {
+      const block = blk[1] || blk[2] || blk[3] || '';
+      if (!gridSizeRe.test(block)) continue;
+      let hairlineCount = 0;
+      let bm;
+      bgDeclRe.lastIndex = 0;
+      while ((bm = bgDeclRe.exec(block)) !== null) {
+        const stops = bm[1].match(hairlineRe);
+        if (stops) hairlineCount += stops.length;
+      }
+      if (hairlineCount >= 2) {
+        findings.push({ id: 'codex-grid-background', snippet: 'two-axis grid-line gradient background' });
+        break;
+      }
+    }
   }
 
   // --- Provider tells (gated): "X theater" framing copy (GPT) ---
@@ -2602,14 +2747,9 @@ function checkPageTypography(doc, win) {
 
   // Check Google Fonts links in HTML
   const html = doc.documentElement?.outerHTML || '';
-  const gfRe = /fonts\.googleapis\.com\/css2?\?family=([^&"'\s]+)/gi;
-  let m;
-  while ((m = gfRe.exec(html)) !== null) {
-    const families = m[1].split('|').map(f => f.split(':')[0].replace(/\+/g, ' ').toLowerCase());
-    for (const f of families) {
-      fonts.add(f);
-      if (OVERUSED_FONTS.has(f)) overusedFound.add(f);
-    }
+  for (const f of extractGoogleFontFamilies(html)) {
+    fonts.add(f);
+    if (OVERUSED_FONTS.has(f)) overusedFound.add(f);
   }
 
   // Also parse raw HTML/style content for font-family (jsdom may not expose all via CSSOM)
@@ -4390,6 +4530,7 @@ if (IS_BROWSER) {
           category: ap ? ap.category : 'quality',
           severity: ap?.severity || 'warning',
           detail: f.detail || f.snippet,
+          ignoreValue: f.ignoreValue || f.value || '',
           name: ap ? ap.name : (f.type || f.id),
           description: ap ? ap.description : '',
         };
@@ -4426,10 +4567,203 @@ if (IS_BROWSER) {
     return [...groupMap.entries()].map(([el, findings]) => ({ el, findings }));
   }
 
+  const DESIGN_COLOR_TOLERANCE = 6;
+  const DESIGN_RADIUS_TOLERANCE_PX = 0.5;
+  const DESIGN_SKIP_TAGS = new Set(['head', 'title', 'meta', 'link', 'style', 'script', 'noscript', 'template', 'source']);
+
+  function normalizeBrowserFontName(value) {
+    return String(value || '')
+      .trim()
+      .replace(/^["']|["']$/g, '')
+      .replace(/\+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+  }
+
+  function browserPrimaryFont(stack) {
+    if (!stack || /var\(/i.test(stack)) return '';
+    return String(stack || '')
+      .split(',')
+      .map(normalizeBrowserFontName)
+      .find(font => font && !GENERIC_FONTS.has(font)) || '';
+  }
+
+  function browserDesignSystemConfig() {
+    const raw = window.__IMPECCABLE_CONFIG__?.designSystem;
+    if (!raw?.present) return null;
+    const allowedFonts = new Set((raw.allowedFonts || []).map(normalizeBrowserFontName).filter(Boolean));
+    const allowedColors = (raw.allowedColors || [])
+      .filter(color => color && Number.isFinite(color.r) && Number.isFinite(color.g) && Number.isFinite(color.b))
+      .map(color => ({ r: color.r, g: color.g, b: color.b }));
+    const allowedRadii = (raw.allowedRadii || [])
+      .map(Number)
+      .filter(px => Number.isFinite(px));
+    return {
+      present: true,
+      hasFonts: raw.hasFonts === true && allowedFonts.size > 0,
+      allowedFonts,
+      hasColors: raw.hasColors === true && allowedColors.length > 0,
+      allowedColors,
+      hasRadii: raw.hasRadii === true && allowedRadii.length > 0,
+      allowedRadii,
+      hasPillRadius: raw.hasPillRadius === true,
+    };
+  }
+
+  function browserColorsClose(a, b) {
+    if (!a || !b) return false;
+    return Math.max(
+      Math.abs(a.r - b.r),
+      Math.abs(a.g - b.g),
+      Math.abs(a.b - b.b),
+    ) <= DESIGN_COLOR_TOLERANCE;
+  }
+
+  function isBrowserDesignColorAllowed(raw, designSystem) {
+    if (!designSystem?.hasColors) return true;
+    const text = String(raw || '').trim().toLowerCase();
+    if (!text || text === 'transparent' || text === 'currentcolor' || text === 'inherit' || text === 'initial') return true;
+    if (text.includes('var(')) return true;
+    const parsed = parseAnyColor(text);
+    if (!parsed) return true;
+    if ((parsed.a ?? 1) <= 0.05) return true;
+    return designSystem.allowedColors.some(color => browserColorsClose(parsed, color));
+  }
+
+  function isBrowserTransparentCss(value) {
+    const text = String(value || '').trim().toLowerCase();
+    if (!text || text === 'transparent') return true;
+    const parsed = parseAnyColor(text);
+    return parsed ? (parsed.a ?? 1) <= 0.05 : false;
+  }
+
+  function isBrowserDesignRadiusAllowed(raw, designSystem) {
+    if (!designSystem?.hasRadii) return true;
+    const text = String(raw || '').trim().toLowerCase();
+    if (!text || text === '0' || text === 'none' || text === 'initial' || text === 'inherit') return true;
+    if (text.includes('var(') || text.includes('%')) return true;
+    const px = resolveLengthPx(text, 16);
+    if (px == null || !Number.isFinite(px) || px <= DESIGN_RADIUS_TOLERANCE_PX) return true;
+    if (designSystem.hasPillRadius && px >= 99) return true;
+    return designSystem.allowedRadii.some(allowed => Math.abs(allowed - px) <= DESIGN_RADIUS_TOLERANCE_PX);
+  }
+
+  function browserRadiusTokens(value) {
+    return String(value || '')
+      .replace(/\s*\/\s*/g, ' ')
+      .split(/\s+/)
+      .map(token => token.trim())
+      .filter(Boolean);
+  }
+
+  function browserHasDirectText(el) {
+    return [...(el.childNodes || [])].some(node => node.nodeType === 3 && node.textContent.trim().length > 0);
+  }
+
+  function browserSampleText(el) {
+    const text = String(el.textContent || '').replace(/\s+/g, ' ').trim();
+    return text ? ` "${text.slice(0, 40)}"` : '';
+  }
+
+  function shouldSkipDesignElement(el) {
+    const tag = el.tagName?.toLowerCase?.() || '';
+    return DESIGN_SKIP_TAGS.has(tag) || isElementHidden(el);
+  }
+
+  function checkElementDesignSystemDOM(el, designSystem, seen) {
+    if (!designSystem?.present || shouldSkipDesignElement(el)) return [];
+    const findings = [];
+    const tag = el.tagName?.toLowerCase?.() || 'unknown';
+    const style = getComputedStyle(el);
+
+    if (designSystem.hasFonts && browserHasDirectText(el)) {
+      const font = browserPrimaryFont(style.fontFamily || '');
+      if (font && !designSystem.allowedFonts.has(font) && !seen.fonts.has(font)) {
+        seen.fonts.add(font);
+        findings.push({
+          type: 'design-system-font',
+          detail: `${tag}${browserSampleText(el)} uses ${font}; not declared in DESIGN.md typography`,
+          ignoreValue: font,
+        });
+      }
+    }
+
+    if (designSystem.hasColors) {
+      const colorChecks = [];
+      if (browserHasDirectText(el)) colorChecks.push(['text color', style.color]);
+      if (!isBrowserTransparentCss(style.backgroundColor)) colorChecks.push(['background', style.backgroundColor]);
+      for (const side of ['Top', 'Right', 'Bottom', 'Left']) {
+        if ((parseFloat(style[`border${side}Width`]) || 0) > 0) {
+          colorChecks.push([`border-${side.toLowerCase()}`, style[`border${side}Color`]]);
+        }
+      }
+      if ((parseFloat(style.outlineWidth) || 0) > 0) colorChecks.push(['outline', style.outlineColor]);
+
+      for (const [kind, raw] of colorChecks) {
+        const label = String(raw || '').trim().replace(/\s+/g, ' ');
+        if (isBrowserDesignColorAllowed(label, designSystem)) continue;
+        const key = `${kind}:${label}`;
+        if (seen.colors.has(key)) continue;
+        seen.colors.add(key);
+        findings.push({
+          type: 'design-system-color',
+          detail: `${kind} ${label} on ${tag}${browserSampleText(el)} is outside DESIGN.md colors`,
+          ignoreValue: label,
+        });
+      }
+    }
+
+    if (designSystem.hasRadii) {
+      for (const token of browserRadiusTokens(style.borderRadius || '')) {
+        if (isBrowserDesignRadiusAllowed(token, designSystem)) continue;
+        if (seen.radii.has(token)) continue;
+        seen.radii.add(token);
+        findings.push({
+          type: 'design-system-radius',
+          detail: `border-radius ${token} on ${tag}${browserSampleText(el)} is outside the DESIGN.md rounded scale`,
+          ignoreValue: token,
+        });
+      }
+    }
+
+    return findings;
+  }
+
+  function decodeBrowserGoogleFamily(value) {
+    const family = String(value || '').split(':')[0].replace(/\+/g, ' ');
+    try {
+      return decodeURIComponent(family);
+    } catch {
+      return family;
+    }
+  }
+
+  function checkBrowserDesignSystemSources(designSystem, seen) {
+    if (!designSystem?.hasFonts) return [];
+    const findings = [];
+    for (const link of document.querySelectorAll('link[href*="fonts.googleapis.com/css"]')) {
+      const href = link.getAttribute('href') || '';
+      for (const match of href.matchAll(/[?&]family=([^&]+)/g)) {
+        const display = decodeBrowserGoogleFamily(match[1]);
+        const font = normalizeBrowserFontName(display);
+        if (!font || designSystem.allowedFonts.has(font) || seen.fonts.has(font)) continue;
+        seen.fonts.add(font);
+        findings.push({
+          type: 'design-system-font',
+          detail: `Google Fonts: ${display} is not declared in DESIGN.md typography`,
+          ignoreValue: display,
+        });
+      }
+    }
+    return findings;
+  }
+
   function collectBrowserFindings() {
     const groupMap = new Map();
     const _disabled = EXTENSION_MODE ? (window.__IMPECCABLE_CONFIG__?.disabledRules || []) : [];
     const _ruleOk = (id) => !_disabled.length || !_disabled.includes(id);
+    const designSystem = browserDesignSystemConfig();
+    const designSeen = { fonts: new Set(), colors: new Set(), radii: new Set() };
     // Note: provider-gated rules (--gpt / --gemini) are NOT filtered here. In a
     // real browser env (detector page, live overlay, extension) running every
     // check is free, so we always surface them; the gating is purely a CLI
@@ -4460,6 +4794,7 @@ if (IS_BROWSER) {
         ...checkElementClippedOverflowDOM(el).map(f => ({ type: f.id, detail: f.snippet })),
         ...checkElementGptBorderShadowDOM(el).map(f => ({ type: f.id, detail: f.snippet })),
         ...checkElementTextOverflowDOM(el).map(f => ({ type: f.id, detail: f.snippet })),
+        ...checkElementDesignSystemDOM(el, designSystem, designSeen),
       ].filter(f => _ruleOk(f.type));
 
       addBrowserFindings(groupMap, el, findings);
@@ -4475,6 +4810,13 @@ if (IS_BROWSER) {
     }
 
     const pageLevelFindings = [];
+
+    const designSourceFindings = checkBrowserDesignSystemSources(designSystem, designSeen)
+      .filter(f => _ruleOk(f.type));
+    if (designSourceFindings.length > 0) {
+      pageLevelFindings.push(...designSourceFindings);
+      addBrowserFindings(groupMap, document.body, designSourceFindings);
+    }
 
     const typoFindings = checkTypography().filter(f => _ruleOk(f.type));
     if (typoFindings.length > 0) {

@@ -1,0 +1,20 @@
+- generic [ref=e1]:
+  - region "Notifications alt+T"
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - button "Alternar tema" [ref=e10] [cursor=pointer]
+    - generic [ref=e13]:
+      - paragraph [ref=e15]: Passo 1 de 2
+      - generic [ref=e18]:
+        - heading "Acesse sua conta" [level=1] [ref=e19]
+        - paragraph [ref=e20]: Digite seu email para continuar
+      - generic [ref=e21]:
+        - button "Continuar com Google" [ref=e22] [cursor=pointer]
+        - generic [ref=e23]: ou continue com email
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - text: Email
+          - textbox "Email" [active] [ref=e28]:
+            - /placeholder: seu@email.com
+        - button "Continuar" [ref=e29] [cursor=pointer]
+        - paragraph [ref=e30]: Você receberá um link e um código de 4 dígitos
