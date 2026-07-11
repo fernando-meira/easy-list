@@ -179,8 +179,27 @@ export function CategoryClient() {
     setEditSheetOpen(true);
   };
 
+  const handleUndoOrganize = async (categoryId: string) => {
+    markLocalMutation(1);
+
+    try {
+      const response = await fetch(`/api/categories/${categoryId}/grouping`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('API error');
+
+      toast.success('Organização desfeita.');
+    } catch {
+      markLocalMutation(-1);
+      toast.error('Não foi possível desfazer. Tente novamente.');
+    }
+  };
+
   const handleOrganize = async () => {
     if (!filteredCategory?._id || isOrganizing) return;
+
+    const categoryId = filteredCategory._id;
 
     setIsOrganizing(true);
     markLocalMutation((filteredCategory.products?.length ?? 0) + 1);
@@ -189,12 +208,18 @@ export function CategoryClient() {
       const response = await fetch('/api/ai/organize-list', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ categoryId: filteredCategory._id }),
+        body: JSON.stringify({ categoryId }),
       });
 
       if (!response.ok) throw new Error('API error');
 
-      toast.success('Lista organizada!');
+      toast.success('Lista organizada!', {
+        duration: 8000,
+        action: {
+          label: 'Desfazer',
+          onClick: () => { void handleUndoOrganize(categoryId); },
+        },
+      });
     } catch {
       toast.error('Não foi possível organizar a lista. Tente novamente.');
     } finally {

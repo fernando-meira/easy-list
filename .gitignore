@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# design tooling artifacts (impeccable / playwright sessions)
+.playwright-mcp/
+.impeccable/critique/
+.impeccable/design.json
+/hero-critique-*.png
