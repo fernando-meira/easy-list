@@ -1,0 +1,171 @@
+- generic:
+  - region "Notifications alt+T"
+  - main:
+    - generic:
+      - generic:
+        - generic: FM
+        - generic:
+          - generic: Olá, Fernando
+          - generic: f.lasso.h@gmail.com
+      - generic:
+        - button
+        - button
+    - generic:
+      - generic:
+        - navigation:
+          - link:
+            - /url: /
+            - text: Home
+          - generic: /
+          - combobox [expanded]:
+            - generic: Açougue
+        - generic:
+          - generic:
+            - heading [level=1]: Açougue
+            - generic:
+              - progressbar
+              - generic:
+                - generic: 3 de 11
+                - text: itens no carrinho
+            - button [expanded]
+          - generic:
+            - generic:
+              - button: Organizar lista
+              - button: Remover agrupamento
+            - button: Compartilhar lista
+        - generic:
+          - button:
+            - generic: Fora do carrinho
+            - generic: "8"
+          - generic:
+            - generic:
+              - generic:
+                - button:
+                  - generic: Carnes e Aves
+                  - generic: "7"
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - button
+                        - generic:
+                          - generic: Alcatra em bifes
+                          - generic: 1 kg
+                        - generic:
+                          - button
+                          - button
+                      - generic:
+                        - button
+                        - generic:
+                          - generic: Contrafilé
+                          - generic: 1 kg
+                        - generic:
+                          - button
+                          - button
+                      - generic:
+                        - button
+                        - generic:
+                          - generic: Coxa e sobrecoxa de frango
+                          - generic: 1.5 kg
+                        - generic:
+                          - button
+                          - button
+                      - generic:
+                        - button
+                        - generic:
+                          - generic: Filé de tilápia
+                          - generic: 1 kg
+                        - generic:
+                          - button
+                          - button
+                      - generic:
+                        - button
+                        - generic:
+                          - generic: Músculo bovino
+                          - generic: 500 g.
+                        - generic:
+                          - button
+                          - button
+                      - generic:
+                        - button
+                        - generic:
+                          - generic: Patinho moído
+                          - generic: 1 kg
+                        - generic:
+                          - button
+                          - button
+                      - generic:
+                        - button
+                        - generic:
+                          - generic: Peito de frango sem osso
+                          - generic: 2 kg
+                        - generic:
+                          - button
+                          - button
+                - button:
+                  - generic: Laticínios
+                  - generic: "1"
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - button
+                        - generic:
+                          - generic: Ovo caipira
+                          - generic: 30 uni.
+                        - generic:
+                          - button
+                          - button
+        - generic:
+          - button:
+            - generic: Carrinho
+            - generic: "3"
+          - generic:
+            - button:
+              - generic: Carnes e Aves
+              - generic: "3"
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - button
+                    - generic:
+                      - generic: Carne suína lombo em bifes
+                      - generic: 1 kg
+                    - generic:
+                      - button
+                      - button
+                  - generic:
+                    - button
+                    - generic:
+                      - generic: Filé de frango (sassami)
+                      - generic: 1 kg
+                    - generic:
+                      - button
+                      - button
+                  - generic:
+                    - button
+                    - generic:
+                      - generic: Frango inteiro
+                      - generic: 2 kg
+                    - generic:
+                      - button
+                      - button
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - generic: Total
+              - generic: "Carrinho: R$ 0,00"
+            - generic: R$ 0,00
+          - generic:
+            - button:
+              - generic: Adicionar produto
+            - button
+  - alert
+  - button [ref=f8e306] [cursor=pointer]
+  - listbox [ref=f8e307]:
+    - option "Açougue" [active] [selected] [ref=f8e308]
+    - option "Casa" [ref=f8e315]
+    - option [ref=f8e319]
+    - option "Supermercado" [ref=f8e328]

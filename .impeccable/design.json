@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-10T00:00:00Z",
+  "title": "Design System: Easy List",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "primary", "displayName": "Tinta", "canonical": "#111111", "tonalRamp": ["#000000", "#111111", "#242424", "#3d3d3d", "#6b7280", "#9ca3af", "#d1d5db", "#f5f5f5"] },
+      "primary": { "role": "primary", "displayName": "Ação Tinta", "canonical": "#111111", "tonalRamp": ["#000000", "#111111", "#242424", "#3d3d3d", "#6b7280", "#9ca3af", "#d1d5db", "#f5f5f5"] },
+      "canvas": { "role": "neutral", "displayName": "Canvas Branco", "canonical": "#ffffff", "tonalRamp": ["#101010", "#1a1a1a", "#3d3d3d", "#6b7280", "#9ca3af", "#e5e7eb", "#f5f5f5", "#ffffff"] },
+      "surface-card": { "role": "neutral", "displayName": "Cinza de Superfície", "canonical": "#f5f5f5", "tonalRamp": ["#1a1a1a", "#3d3d3d", "#6b7280", "#9ca3af", "#d1d5db", "#e5e7eb", "#f5f5f5", "#fafafa"] },
+      "hairline": { "role": "neutral", "displayName": "Fio Hairline", "canonical": "#e5e7eb", "tonalRamp": ["#27272a", "#3f3f46", "#52525b", "#71717a", "#a1a1aa", "#d4d4d8", "#e5e7eb", "#f4f4f5"] },
+      "muted": { "role": "neutral", "displayName": "Texto Secundário", "canonical": "#6b7280", "tonalRamp": ["#111827", "#1f2937", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#d1d5db", "#f3f4f6"] },
+      "success": { "role": "secondary", "displayName": "Verde de Sucesso", "canonical": "#10b981", "tonalRamp": ["#064e3b", "#065f46", "#047857", "#059669", "#10b981", "#34d399", "#6ee7b7", "#d1fae5"] },
+      "error": { "role": "secondary", "displayName": "Vermelho de Erro", "canonical": "#ef4444", "tonalRamp": ["#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fca5a5", "#fee2e2"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "h1 de tela ('Categorias'). Cal Sans 600, 28px. Teto tipográfico do produto." },
+      "title": { "displayName": "Title", "purpose": "Títulos de drawer/sheet e cabeçalhos de seção com peso. Cal Sans 600, 18px." },
+      "body-strong": { "displayName": "Body Strong", "purpose": "Nome de produto e categoria, rótulo primário da linha. Inter 600, 15px." },
+      "body": { "displayName": "Body", "purpose": "Texto corrido e valor de input. Inter 400, 15px." },
+      "label": { "displayName": "Label", "purpose": "Rótulo de botão, contagem em pílula, chips curtos. Inter 500, 13px." },
+      "meta": { "displayName": "Meta", "purpose": "Metadados de produto, texto de state-card, e-mail no cabeçalho. Inter 400, 12px." }
+    },
+    "shadows": [
+      { "name": "shadcn-sm", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "Sombra leve herdada dos primitivos shadcn (button/input). Tolerada em formulários e diálogos; nunca propagar para telas de produto." },
+      { "name": "shadcn-base", "value": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)", "purpose": "Sombra padrão do ui/card e do Button default do shadcn. Fora das telas de produto, que são planas." }
+    ],
+    "motion": [
+      { "name": "opacity-delete", "value": "opacity 200ms ease", "purpose": "Fade da linha de produto ao excluir (opacity 1 → 0.5)." },
+      { "name": "accordion", "value": "0.2s ease-out", "purpose": "accordion-down / accordion-up (Radix Collapsible) via tailwindcss-animate." },
+      { "name": "colors", "value": "transition-colors 150ms", "purpose": "Transição de cor padrão em botões, inputs e toggles." }
+    ],
+    "breakpoints": [
+      { "name": "container", "value": "max-w-3xl (768px)" },
+      { "name": "md", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "CTA primário monocromático: tinta sobre branco, cantos de 8px, altura 40px.",
+      "html": "<button class=\"ds-btn-primary\">Salvar alterações</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 8px 16px; background: var(--color-primary, #111111); color: var(--color-on-primary, #ffffff); font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; border: none; border-radius: 8px; cursor: pointer; transition: background 150ms ease; } .ds-btn-primary:hover { background: #242424; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 1px var(--color-ink, #111111); }"
+    },
+    {
+      "name": "Circular Icon Button",
+      "kind": "button",
+      "refersTo": "icon-button-circular",
+      "description": "Assinatura de ação do produto: botão redondo de 34px em superfície-cinza. Ícone ink, ou vermelho para excluir.",
+      "html": "<button class=\"ds-icon-btn\" aria-label=\"Editar\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20h9\"/><path d=\"M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z\"/></svg></button>",
+      "css": ".ds-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: var(--color-surface-card, #f5f5f5); color: var(--color-ink, #111111); border: none; border-radius: 9999px; cursor: pointer; flex-shrink: 0; transition: background 150ms ease; } .ds-icon-btn:hover { background: #e5e7eb; } .ds-icon-btn:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Count Pill",
+      "kind": "chip",
+      "refersTo": "count-pill",
+      "description": "Pílula de contagem em superfície-cinza. Ganha ícone de pessoas quando a lista é compartilhada.",
+      "html": "<span class=\"ds-count-pill\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/></svg><span>12</span><span>produtos</span></span>",
+      "css": ".ds-count-pill { display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px; background: var(--color-surface-card, #f5f5f5); color: var(--color-ink, #111111); font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; border-radius: 9999px; }"
+    },
+    {
+      "name": "Category Row",
+      "kind": "card",
+      "refersTo": "category-row",
+      "description": "Linha de categoria clicável: nome em body-strong, pílula de contagem e ações circulares. Plana, contornada por hairline.",
+      "html": "<div class=\"ds-cat-row\"><span class=\"ds-cat-name\">Mercado da semana</span><div class=\"ds-cat-actions\"><span class=\"ds-cat-count\">8 produtos</span></div></div>",
+      "css": ".ds-cat-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 16px; background: var(--color-canvas, #ffffff); border: 1px solid var(--color-hairline, #e5e7eb); border-radius: 12px; cursor: pointer; } .ds-cat-name { flex: 1; font-family: Inter, sans-serif; font-size: 16px; font-weight: 600; line-height: 1.3; color: var(--color-ink, #111111); } .ds-cat-count { display: inline-flex; align-items: center; padding: 9px 12px; background: var(--color-surface-card, #f5f5f5); color: var(--color-ink, #111111); font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; border-radius: 9999px; }"
+    },
+    {
+      "name": "Product Row (pending / cart)",
+      "kind": "custom",
+      "refersTo": "product-row-pending",
+      "description": "Componente central. Pendente = branco + tinta cheia + círculo vazio. No carrinho = cinza + texto apagado + check preenchido. Altura fixa 68px.",
+      "html": "<div class=\"ds-prow-stack\"><div class=\"ds-prow ds-prow--pending\"><button class=\"ds-prow-toggle\" aria-label=\"Adicionar ao carrinho\"></button><div class=\"ds-prow-body\"><span class=\"ds-prow-name\">Arroz integral</span><span class=\"ds-prow-meta\">2 un · R$ 12,90</span></div></div><div class=\"ds-prow ds-prow--cart\"><button class=\"ds-prow-toggle ds-prow-toggle--on\" aria-label=\"Remover do carrinho\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 6 9 17 4 12\"/></svg></button><div class=\"ds-prow-body\"><span class=\"ds-prow-name ds-prow-name--muted\">Leite</span><span class=\"ds-prow-meta\">1 L · R$ 4,50</span></div></div></div>",
+      "css": ".ds-prow-stack { display: flex; flex-direction: column; gap: 8px; } .ds-prow { display: flex; align-items: center; gap: 12px; height: 68px; padding: 10px 12px; border: 1px solid var(--color-hairline, #e5e7eb); border-radius: 12px; } .ds-prow--pending { background: var(--color-canvas, #ffffff); } .ds-prow--cart { background: var(--color-surface-card, #f5f5f5); } .ds-prow-toggle { width: 34px; height: 34px; border-radius: 9999px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--color-canvas, #ffffff); border: 2px solid var(--color-hairline, #e5e7eb); cursor: pointer; } .ds-prow-toggle--on { background: var(--color-primary, #111111); border-color: var(--color-primary, #111111); color: var(--color-on-primary, #ffffff); } .ds-prow-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; } .ds-prow-name { font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; color: var(--color-ink, #111111); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-prow-name--muted { color: var(--color-muted, #6b7280); } .ds-prow-meta { font-family: Inter, sans-serif; font-size: 12px; color: var(--color-muted, #6b7280); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Input padrão: branco, borda hairline, cantos de 8px, altura 40px, foco por ring de 1px.",
+      "html": "<input class=\"ds-input\" placeholder=\"Nome do produto\" />",
+      "css": ".ds-input { display: flex; width: 100%; height: 40px; padding: 4px 12px; background: var(--color-canvas, #ffffff); color: var(--color-ink, #111111); font-family: Inter, sans-serif; font-size: 15px; border: 1px solid var(--color-hairline, #e5e7eb); border-radius: 8px; transition: border-color 150ms ease; } .ds-input::placeholder { color: var(--color-muted, #6b7280); } .ds-input:focus-visible { outline: none; box-shadow: 0 0 0 1px var(--color-ink, #111111); } .ds-input:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "State Card",
+      "kind": "card",
+      "refersTo": "state-card",
+      "description": "Estado vazio/erro que ensina a interface: ícone semântico, mensagem e uma ação em texto.",
+      "html": "<div class=\"ds-state\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#10b981\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16 16h6\"/><path d=\"M19 13v6\"/><path d=\"M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0\"/></svg><p class=\"ds-state-msg\">Nenhum produto nesta categoria ainda.</p><button class=\"ds-state-action\">Adicionar primeiro produto</button></div>",
+      "css": ".ds-state { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--color-surface-card, #f5f5f5); border: 1px solid var(--color-hairline, #e5e7eb); border-radius: 12px; } .ds-state-msg { margin: 0; font-family: Inter, sans-serif; font-size: 12px; font-weight: 600; color: var(--color-ink, #111111); } .ds-state-action { align-self: flex-start; background: none; border: none; padding: 0; font-family: Inter, sans-serif; font-size: 12px; font-weight: 600; color: var(--color-ink, #111111); cursor: pointer; text-align: left; }"
+    },
+    {
+      "name": "Header Bar",
+      "kind": "nav",
+      "refersTo": "header-bar",
+      "description": "Cabeçalho fixo de 56px, branco, borda inferior hairline. Identidade à esquerda, tema + sessão à direita.",
+      "html": "<header class=\"ds-header\"><div class=\"ds-header-id\"><div class=\"ds-header-logo\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m5 11 4-7\"/><path d=\"m19 11-4-7\"/><path d=\"M2 11h20\"/><path d=\"m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4\"/><path d=\"m9 11 1 9\"/><path d=\"M4.5 15.5h15\"/><path d=\"m15 11-1 9\"/></svg></div><div class=\"ds-header-txt\"><span class=\"ds-header-name\">EasyList</span><span class=\"ds-header-sub\">Organize suas compras</span></div></div><button class=\"ds-icon-btn ds-header-toggle\" aria-label=\"Alternar tema\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\"/></svg></button></header>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 12px; background: var(--color-canvas, #ffffff); border-bottom: 1px solid var(--color-hairline, #e5e7eb); } .ds-header-id { display: flex; align-items: center; gap: 8px; } .ds-header-logo { width: 36px; height: 36px; border-radius: 9999px; background: var(--color-ink, #111111); display: flex; align-items: center; justify-content: center; flex-shrink: 0; } .ds-header-txt { display: flex; flex-direction: column; gap: 2px; } .ds-header-name { font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; line-height: 1; color: var(--color-ink, #111111); } .ds-header-sub { font-family: Inter, sans-serif; font-size: 11px; line-height: 1; color: var(--color-muted, #6b7280); } .ds-header-toggle { border: 1px solid var(--color-hairline, #e5e7eb); background: var(--color-canvas, #ffffff); width: 36px; height: 36px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Lista de Bolso",
+    "overview": "Easy List é uma lista de compras que cabe no bolso e no polegar. A interface se comporta como um app nativo leve: compacta, previsível de tela em tela, e sem nenhuma decoração que compita com a tarefa. A superfície é branca e quieta (#ffffff), a tipografia é nítida, e a profundidade vem de fios de 1px (#e5e7eb) e da troca de fundo, nunca de sombras teatrais. O sistema roda em duas camadas de token que coexistem de propósito: a camada shadcn/Radix (HSL) veste os primitivos de formulário e diálogo, e a camada de produto (--color-* em hex) veste as telas de assinatura. As duas apontam para o mesmo espírito monocromático: tinta quase-preta (#111111) sobre branco, com um único cinza de superfície (#f5f5f5) fazendo a separação. Cor saturada só aparece com significado: verde de sucesso e vermelho de erro.",
+    "keyCharacteristics": [
+      "Monocromático no nível da ação: ink #111 sobre canvas branco. Cor só com significado (sucesso, erro).",
+      "Profundidade por hairline (1px #e5e7eb) e troca de fundo (canvas vs surface-card), não por sombra.",
+      "Mobile-first de verdade: container max-w-3xl, cabeçalho fixo de 56px, alvos de toque redondos de 34px.",
+      "Estado do item legível de relance: pendente = fundo branco + tinta cheia; no carrinho = fundo cinza + texto apagado + check preenchido.",
+      "Cal Sans carrega os títulos; Inter carrega o corpo. Nunca o contrário.",
+      "Duas camadas de token (shadcn HSL + produto hex) que compartilham a mesma paleta e nunca se contradizem."
+    ],
+    "rules": [
+      { "name": "A Regra do Cinza Único", "body": "Toda separação de superfície é feita por hairline ou por trocar entre canvas e surface-card. Não invente uma terceira superfície cinza; a escassez é o que mantém a tela calma.", "section": "colors" },
+      { "name": "A Regra da Cor com Significado", "body": "Success e error só aparecem quando comunicam estado ou ação (sucesso, excluir, erro). Cor saturada nunca é enfeite e nunca aparece em estado inativo.", "section": "colors" },
+      { "name": "A Regra dos Dois Papéis", "body": "Cal Sans só para título; Inter só para corpo e UI. Nunca coloque nome de produto ou metadado em Cal Sans, nunca coloque um h1 em Inter.", "section": "typography" },
+      { "name": "A Regra do Teto Baixo", "body": "O maior tipo do produto é 28px. É uma ferramenta de bolso; não há headline de 4rem. Ênfase vem de peso e posição, não de tamanho gigante.", "section": "typography" },
+      { "name": "A Regra do Plano-por-Padrão", "body": "Superfícies são planas em repouso. Se você vai adicionar box-shadow a uma tela de produto, use hairline ou troca de fundo. Sombra é resíduo da lib, não linguagem do sistema.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do manter ink #111 sobre canvas branco como a relação de ação padrão. O produto é monocromático no nível da ação.",
+      "Do separar superfícies com hairline de 1px (#e5e7eb) ou troca de fundo canvas↔surface-card. Nada mais.",
+      "Do usar success e error só quando comunicam estado ou ação.",
+      "Do deixar Cal Sans nos títulos e Inter no corpo; a fronteira não se mistura.",
+      "Do manter alvos de toque redondos de 34px+ e ações frequentes perto do polegar.",
+      "Do distinguir estado pendente vs carrinho por fundo + cor de texto + círculo, não só por um deles.",
+      "Do usar skeletons de carregamento (não spinner no meio do conteúdo) e state-cards que ensinam."
+    ],
+    "donts": [
+      "Don't adicionar box-shadow a telas de produto. Plano por padrão; profundidade é hairline.",
+      "Don't aninhar cards. Uma linha, uma superfície, um hairline.",
+      "Don't introduzir uma terceira superfície cinza além de surface-card / surface-soft.",
+      "Don't fazer o produto parecer dashboard corporativo, landing SaaS genérica, app de produtividade complexo, ou experiência gamificada/chamativa.",
+      "Don't usar cor saturada como enfeite ou em estado inativo.",
+      "Don't colocar título em Inter ou nome de produto/metadado em Cal Sans.",
+      "Don't usar tipo gigante (heróis com clamp). O teto do produto é 28px.",
+      "Don't empilhar modais nem usar animação que atrase a marcação de um item."
+    ]
+  }
+}

@@ -20,17 +20,13 @@ export function CategorySelect() {
 
   return (
     <Select value={selectedCategoryId || ''} onValueChange={handleCategoryChange}>
-      <SelectTrigger className="flex h-16 w-full items-center justify-between gap-2 rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[var(--color-surface-card)] px-[14px] py-[13px] shadow-none [&>svg]:hidden">
-        <div className="flex min-w-0 flex-1 flex-col items-start gap-[3px]">
-          <span className="text-[10px] font-bold leading-none text-[var(--color-muted)]">
-            Lista atual
-          </span>
-          <span className="w-full truncate text-left text-[14px] font-semibold leading-[1.15] text-[var(--color-ink)]">
-            {selectedName}
-          </span>
-        </div>
+      <SelectTrigger
+        aria-label={`Lista atual: ${selectedName}. Trocar de lista`}
+        className="relative flex h-auto w-fit items-center gap-1 rounded-sm border-0 bg-transparent p-0 py-0.5 text-[12px] font-semibold leading-none text-[var(--color-ink)] shadow-none before:absolute before:-inset-x-1.5 before:-inset-y-2.5 before:content-[''] focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ink)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)] [&>svg]:hidden"
+      >
+        <span className="max-w-[55vw] truncate" aria-current="page">{selectedName}</span>
         <span className="flex shrink-0 items-center">
-          <ChevronDown className="h-[18px] w-[18px] text-[var(--color-ink)]" />
+          <ChevronDown className="h-3.5 w-3.5 text-[var(--color-muted)]" aria-hidden="true" />
         </span>
       </SelectTrigger>
 

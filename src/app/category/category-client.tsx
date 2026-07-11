@@ -12,6 +12,7 @@ import { ProductRow } from '@/components/product-row';
 import { useProducts, useCategories } from '@/context';
 import { StickyFooter } from '@/components/sticky-footer';
 import { SectionHeader } from '@/components/section-header';
+import { CategorySelect } from '@/components/category-select';
 import { CategoryHeroCard } from '@/components/category-hero-card';
 import { UnitEnum, AddOrEditProductTypeEnum } from '@/types/enums';
 import { SubcategoryHeader } from '@/components/subcategory-header';
@@ -267,9 +268,7 @@ export function CategoryClient() {
             Home
           </Link>
           <span className="text-[12px] text-[var(--color-muted)]">/</span>
-          <span className="text-[12px] font-semibold text-[var(--color-muted)]" aria-current="page">
-            {filteredCategory.name}
-          </span>
+          <CategorySelect />
         </nav>
 
         <CategoryHeroCard

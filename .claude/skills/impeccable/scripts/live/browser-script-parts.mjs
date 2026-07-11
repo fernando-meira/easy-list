@@ -3,6 +3,7 @@ import path from 'node:path';
 
 export const LIVE_BROWSER_SCRIPT_PARTS = Object.freeze([
   Object.freeze({ name: 'session-state', file: 'live-browser-session.js' }),
+  Object.freeze({ name: 'dom-helpers', file: 'live-browser-dom.js' }),
   Object.freeze({ name: 'browser-ui', file: 'live-browser.js' }),
 ]);
 
@@ -31,10 +32,11 @@ export function readLiveBrowserScriptParts(parts, readFile = (filePath) => fs.re
   }));
 }
 
-export function assembleLiveBrowserScript({ token, port, vocabulary, parts }) {
+export function assembleLiveBrowserScript({ token, port, vocabulary, commandPrefix = '/', parts }) {
   const prelude =
     `window.__IMPECCABLE_TOKEN__ = '${token}';\n` +
     `window.__IMPECCABLE_PORT__ = ${port};\n` +
+    `window.__IMPECCABLE_COMMAND_PREFIX__ = ${JSON.stringify(commandPrefix)};\n` +
     // Canonical command vocabulary (values + labels + icons). live-browser.js
     // builds its action picker from this instead of an inline copy.
     `window.__IMPECCABLE_VOCAB__ = ${JSON.stringify(vocabulary)};\n`;

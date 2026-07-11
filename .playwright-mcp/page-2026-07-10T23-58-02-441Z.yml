@@ -1,0 +1,4 @@
+- generic [active] [ref=f6e1]:
+  - region "Notifications alt+T"
+  - main [ref=f6e2]:
+    - button "Alternar tema" [ref=f6e10] [cursor=pointer]
