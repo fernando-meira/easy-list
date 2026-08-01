@@ -16,9 +16,9 @@ export function useScrollDirection({
   threshold = 15,
   bottomOffset = 0,
 }: UseScrollDirectionOptions = {}): UseScrollDirectionResult {
-  const rafIdRef = useRef<number | null>(null);
-  const tickingRef = useRef(false);
   const lastScrollYRef = useRef(0);
+  const tickingRef = useRef(false);
+  const rafIdRef = useRef<number | null>(null);
 
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [isScrollingDown, setIsScrollingDown] = useState(false);
