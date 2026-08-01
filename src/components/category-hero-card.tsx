@@ -18,7 +18,14 @@ interface CategoryHeroCardProps {
   onRemoveGrouping?: () => Promise<void>;
 }
 
-export function CategoryHeroCard({ isOrganizing, category, products, isRemovingGrouping, onOrganize, onRemoveGrouping }: CategoryHeroCardProps) {
+export function CategoryHeroCard({
+  isOrganizing,
+  category,
+  products,
+  isRemovingGrouping,
+  onOrganize,
+  onRemoveGrouping,
+}: CategoryHeroCardProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   async function handleShare() {

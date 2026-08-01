@@ -31,6 +31,7 @@ interface ProductsContextType {
   toggleCart: (id: string) => Promise<void>;
   removeProduct: (id: string) => Promise<void>;
   managerProduct: ({ product }: { product: ProductProps }) => Promise<void>;
+  toggleBatchCart: (categoryId: string, addToCart: boolean, productIds?: string[]) => Promise<void>;
 }
 
 interface ProductsProviderProps {
@@ -280,6 +281,59 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
     }
   };
 
+  const toggleBatchCart = async (
+    categoryId: string,
+    addToCart: boolean,
+    productIds?: string[]
+  ) => {
+    if (!categoryId) return;
+
+    const previousCategories = categories;
+
+    setCategories(prev => prev.map(category => {
+      if (category._id !== categoryId) return category;
+
+      return {
+        ...category,
+        products: category.products?.map(product => {
+          if (!productIds || productIds.includes(product._id!)) {
+            return { ...product, addToCart };
+          }
+          return product;
+        })
+      };
+    }));
+
+    try {
+      const affectedCount = productIds ? productIds.length : (
+        categories.find(c => c._id === categoryId)?.products?.length ?? 1
+      );
+      markLocalMutation(affectedCount);
+
+      const response = await fetch(`/api/categories/${categoryId}/cart`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ addToCart, productIds }),
+      });
+
+      if (!response.ok) {
+        markLocalMutation(-affectedCount);
+        setCategories(previousCategories);
+        toast.error('Erro ao atualizar produtos no carrinho');
+        throw new Error('Failed to update products in cart');
+      }
+
+      if (addToCart) {
+        toast.success('Produtos adicionados ao carrinho');
+      } else {
+        toast.success('Produtos removidos do carrinho');
+      }
+    } catch (err) {
+      setCategories(previousCategories);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    }
+  };
+
   useEffect(() => {
     verifyHasAnyProduct();
   }, [allProductsCategory, verifyHasAnyProduct]);
@@ -291,6 +345,7 @@ function ProductsContextProvider({ children }: ProductsProviderProps) {
         filter,
         setFilter,
         toggleCart,
+        toggleBatchCart,
         hasAnyProduct,
         removeProduct,
         managerProduct,

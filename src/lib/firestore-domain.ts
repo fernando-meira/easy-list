@@ -315,6 +315,45 @@ export async function updateProduct(userId: string, productId: string, product: 
   return productFromDoc(updatedProductDoc, category);
 }
 
+export async function toggleBatchCart(
+  userId: string,
+  categoryId: string,
+  addToCart: boolean,
+  productIds?: string[]
+): Promise<boolean> {
+  const result = await getAccessibleCategory(categoryId, userId);
+
+  if (!result) return false;
+
+  const { ownerUserId } = result;
+
+  const snapshot = await productsCollection
+    .where('userId', '==', ownerUserId)
+    .where('categoryId', '==', categoryId)
+    .get();
+
+  if (snapshot.empty) return true;
+
+  const batch = firestore.batch();
+  let count = 0;
+
+  for (const doc of snapshot.docs) {
+    if (!productIds || productIds.includes(doc.id)) {
+      batch.update(doc.ref, {
+        addToCart,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      count++;
+    }
+  }
+
+  if (count > 0) {
+    await batch.commit();
+  }
+
+  return true;
+}
+
 export async function deleteProduct(userId: string, productId: string) {
   const productDoc = await getAccessibleProductDoc(productId, userId);
 

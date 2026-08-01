@@ -373,8 +373,25 @@ function CategoriesContextProvider({ children }: CategoryProviderProps) {
   };
 
   const fetchCategories = useCallback(async () => {
-    // No-op: initial load is handled by onSnapshot
+    try {
+      setIsLoadingCategories(true);
+      const response = await fetch('/api/categories');
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch categories:', err);
+    } finally {
+      setIsLoadingCategories(false);
+    }
   }, []);
+
+  useEffect(() => {
+    if (sessionStatus === AuthStatusEnum.authenticated) {
+      void fetchCategories();
+    }
+  }, [sessionStatus, fetchCategories]);
 
   const filterCategory = useCallback(
     (categoryId: string) => {
