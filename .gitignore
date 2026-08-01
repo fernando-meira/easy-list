@@ -46,3 +46,6 @@ next-env.d.ts
 .impeccable/critique/
 .impeccable/design.json
 /hero-critique-*.png
+
+# scratch de brainstorm/execucao assistida (mockups, ledgers, review packages)
+.superpowers/
