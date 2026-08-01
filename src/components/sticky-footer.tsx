@@ -20,6 +20,7 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
     bottomOffset: FOOTER_CLEARANCE_PX,
   });
 
+  const [isSettling, setIsSettling] = useState(false);
   const [forceExpanded, setForceExpanded] = useState(false);
 
   const { totalProductsValue, filteredProductsValue } =
@@ -28,6 +29,14 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
   useEffect(() => {
     if (isScrollingDown) setForceExpanded(false);
   }, [isScrollingDown]);
+
+  useEffect(() => {
+    if (!isSettling) return;
+
+    const timeoutId = setTimeout(() => setIsSettling(false), 250);
+
+    return () => clearTimeout(timeoutId);
+  }, [isSettling]);
 
   const isCompact = isScrollingDown && !isNearBottom && !forceExpanded;
 
@@ -39,9 +48,8 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
           aria-hidden={isCompact}
           className={cn(
             'flex flex-col gap-3 rounded-[var(--radius-xl)] bg-[var(--color-canvas)] border border-[var(--color-hairline)] p-3 origin-bottom transition-all duration-200 ease-out motion-reduce:transition-none',
-            isCompact
-              ? 'pointer-events-none translate-y-2 scale-95 opacity-0'
-              : 'pointer-events-auto translate-y-0 scale-100 opacity-100'
+            isCompact ? 'translate-y-2 scale-95 opacity-0' : 'translate-y-0 scale-100 opacity-100',
+            !isCompact && !isSettling ? 'pointer-events-auto' : 'pointer-events-none'
           )}
         >
           {/* Totals row */}
@@ -95,7 +103,10 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
           inert={!isCompact}
           aria-hidden={!isCompact}
           tabIndex={isCompact ? 0 : -1}
-          onClick={() => setForceExpanded(true)}
+          onClick={() => {
+            setIsSettling(true);
+            setForceExpanded(true);
+          }}
           aria-label="Expandir resumo do carrinho"
           className={cn(
             'absolute bottom-3 right-3 flex h-12 items-center gap-2 rounded-full bg-[var(--color-primary)] px-4 shadow-lg origin-bottom-right transition-all duration-200 ease-out motion-reduce:transition-none',
