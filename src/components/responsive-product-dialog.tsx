@@ -15,6 +15,22 @@ interface ResponsiveProductDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+interface KeyboardViewportOverride {
+  bottom: number;
+  maxHeight: number;
+}
+
+const getKeyboardViewportOverride = (): KeyboardViewportOverride | null => {
+  if (typeof window === 'undefined' || !window.visualViewport) return null;
+
+  const { height, offsetTop } = window.visualViewport;
+  const bottom = Math.max(0, Math.round(window.innerHeight - height - offsetTop));
+
+  if (bottom === 0) return null;
+
+  return { bottom, maxHeight: Math.round(height) };
+};
+
 export function ResponsiveProductDialog({
   open,
   title,
@@ -23,12 +39,52 @@ export function ResponsiveProductDialog({
   description,
   onOpenChange,
 }: ResponsiveProductDialogProps) {
+  const [keyboardOverride, setKeyboardOverride] = React.useState<KeyboardViewportOverride | null>(
+    null
+  );
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    let frame = 0;
+    const visualViewport = window.visualViewport;
+
+    const updateOverride = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        setKeyboardOverride(getKeyboardViewportOverride());
+      });
+    };
+
+    updateOverride();
+    visualViewport?.addEventListener('resize', updateOverride);
+    visualViewport?.addEventListener('scroll', updateOverride);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      setKeyboardOverride(null);
+      visualViewport?.removeEventListener('resize', updateOverride);
+      visualViewport?.removeEventListener('scroll', updateOverride);
+    };
+  }, [open]);
+
+  let contentStyle: React.CSSProperties | undefined;
+
+  if (keyboardOverride) {
+    contentStyle = {
+      minHeight: 0,
+      bottom: keyboardOverride.bottom,
+      maxHeight: keyboardOverride.maxHeight,
+    };
+  }
+
   return (
-    <Drawer.Root open={open} onOpenChange={onOpenChange} repositionInputs autoFocus>
+    <Drawer.Root open={open} onOpenChange={onOpenChange} repositionInputs={false} autoFocus>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-50 bg-black/60" />
 
         <Drawer.Content
+          style={contentStyle}
           className={cn(
             'fixed inset-x-0 bottom-0 z-50 flex max-h-[96dvh] min-h-[60dvh] flex-col outline-none',
             'rounded-t-2xl border border-border/60 bg-background shadow-[0_-4px_12px_rgba(0,0,0,0.08)]',
