@@ -49,7 +49,7 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
           className={cn(
             'flex flex-col gap-3 rounded-[var(--radius-xl)] bg-[var(--color-canvas)] border border-[var(--color-hairline)] p-3 origin-bottom transition-all duration-200 ease-out motion-reduce:transition-none',
             isCompact ? 'translate-y-2 scale-95 opacity-0' : 'translate-y-0 scale-100 opacity-100',
-            !isCompact && !isSettling ? 'pointer-events-auto' : 'pointer-events-none'
+            !isCompact ? 'pointer-events-auto' : 'pointer-events-none'
           )}
         >
           {/* Totals row */}
@@ -75,7 +75,10 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
                 (e.currentTarget as HTMLButtonElement).blur();
                 onAddProduct();
               }}
-              className="flex h-12 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)]"
+              className={cn(
+                'flex h-12 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)]',
+                isSettling && 'pointer-events-none'
+              )}
             >
               <Plus className="h-[18px] w-[18px] text-[var(--color-on-primary)]" />
               <span className="text-[14px] font-semibold text-[var(--color-on-primary)]">
@@ -91,7 +94,10 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
                 (e.currentTarget as HTMLButtonElement).blur();
                 onScanProduct();
               }}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-surface-card)]"
+              className={cn(
+                'flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-surface-card)]',
+                isSettling && 'pointer-events-none'
+              )}
             >
               <ScanLine className="h-[15px] w-[15px] text-[var(--color-ink)]" />
             </button>
