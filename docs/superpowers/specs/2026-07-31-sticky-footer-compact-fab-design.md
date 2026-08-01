@@ -50,7 +50,7 @@ export function useScrollDirection(
   window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - bottomOffset
   ```
   `isNearBottom` é recalculado em todo tick (não é gated pelo `threshold`), porque atingir o fim da página precisa ser detectado mesmo em movimentos pequenos.
-- Cleanup no `useEffect`: remove o listener e cancela qualquer `requestAnimationFrame` pendente.
+- Cleanup no `useEffect`: remove o listener e cancela qualquer `requestAnimationFrame` pendente (o id do frame é guardado em ref para isso), evitando `setState` após o unmount.
 - Executa uma medição inicial no mount, para o caso de a página já abrir rolada (restauração de scroll do browser).
 
 **Isolamento:** o hook é chamado **apenas** dentro de `StickyFooter`. A lista de produtos e o resto da árvore não re-renderizam a cada tick de scroll.

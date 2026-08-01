@@ -46,7 +46,7 @@ Crie `src/hooks/useScrollDirection.ts` com exatamente este conteúdo:
 ```ts
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 interface UseScrollDirectionOptions {
   threshold?: number;
@@ -62,8 +62,9 @@ export function useScrollDirection({
   threshold = 15,
   bottomOffset = 0,
 }: UseScrollDirectionOptions = {}): UseScrollDirectionResult {
-  const tickingRef = useRef(false);
   const lastScrollYRef = useRef(0);
+  const tickingRef = useRef(false);
+  const rafIdRef = useRef<number | null>(null);
 
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [isScrollingDown, setIsScrollingDown] = useState(false);
@@ -90,7 +91,7 @@ export function useScrollDirection({
 
       tickingRef.current = true;
 
-      window.requestAnimationFrame(() => {
+      rafIdRef.current = window.requestAnimationFrame(() => {
         measure();
         tickingRef.current = false;
       });
@@ -102,6 +103,9 @@ export function useScrollDirection({
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
+      if (rafIdRef.current !== null) {
+        window.cancelAnimationFrame(rafIdRef.current);
+      }
       window.removeEventListener('scroll', handleScroll);
       tickingRef.current = false;
     };
@@ -117,6 +121,9 @@ export function useScrollDirection({
 - `lastScrollYRef` só é atualizado **dentro** do `if` do threshold. Isso é intencional: scrolls pequenos e sucessivos na mesma direção acumulam até cruzar o limite, em vez de serem descartados um a um.
 - `setIsNearBottom` é chamado em todo tick (fora do `if` do threshold) porque atingir o fim da página precisa ser detectado mesmo em movimentos pequenos.
 - `tickingRef.current = false` no cleanup evita que um `rAF` já agendado deixe a flag travada em `true` caso o componente remonte.
+- O cleanup também chama `cancelAnimationFrame` no id guardado em `rafIdRef`: sem isso, um frame agendado imediatamente antes do unmount ainda executaria `measure()` e chamaria `setState` num componente desmontado.
+
+**Ordenação das declarações:** `.claude/rules/organization.md` ordena pela contagem de caracteres da **linha completa** (não do nome da variável), com empate resolvido alfabeticamente. Aqui: `const lastScrollYRef = useRef(0);` (33) e `const tickingRef = useRef(false);` (33) empatam → alfabética; `const rafIdRef = useRef<number | null>(null);` (45) vai por último. Para imports essa regra é **machine-enforced** por `eslint-plugin-perfectionist` (`sort-imports` e `sort-named-imports` com `type: line-length, order: asc`) — em caso de dúvida, rode `npx eslint --fix <arquivo>` e deixe o plugin posicionar.
 
 - [ ] **Step 2: Verificar tipos e lint**
 
