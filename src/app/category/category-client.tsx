@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { X, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, Fragment, useState, useEffect } from 'react';
 
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { ProductProps } from '@/types/interfaces';
 import { StateCard } from '@/components/state-card';
 import { ProductRow } from '@/components/product-row';
@@ -21,6 +24,13 @@ import { BarcodeScannerSheet } from '@/components/barcode-scanner-sheet';
 import { ProductManagerSheet } from '@/components/product-manager-sheet';
 import { CategoryPageSkeleton } from '@/components/category-page-skeleton';
 import { BarcodeLookupResult, BarcodeProductPreview } from '@/components/barcode-product-preview';
+
+function normalizeText(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
 
 function groupProductsBySubcategory(
   products: ProductProps[],
@@ -57,6 +67,7 @@ export function CategoryClient() {
 
   const categoryId = searchParams.get('id');
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [addSheetOpen, setAddSheetOpen] = useState(false);
@@ -263,7 +274,13 @@ export function CategoryClient() {
 
   const { productsNotInCart, productsInCart } = useMemo(() => {
     const all = filteredCategory?.products ?? [];
-    const sorted = [...all].sort((a, b) =>
+    const normalizedQuery = normalizeText(searchQuery.trim());
+
+    const filtered = normalizedQuery
+      ? all.filter(p => normalizeText(p.name ?? '').includes(normalizedQuery))
+      : all;
+
+    const sorted = [...filtered].sort((a, b) =>
       (a.name ?? '').toLowerCase().localeCompare(
         (b.name ?? '').toLowerCase(),
         'pt-BR'
@@ -273,7 +290,7 @@ export function CategoryClient() {
       productsNotInCart: sorted.filter(p => !p.addToCart),
       productsInCart: sorted.filter(p => p.addToCart),
     };
-  }, [filteredCategory?.products]);
+  }, [filteredCategory?.products, searchQuery]);
 
   const handleToggleAllPending = () => {
     if (!filteredCategory?._id || productsNotInCart.length === 0) return;
@@ -318,6 +335,29 @@ export function CategoryClient() {
           onRemoveGrouping={handleRemoveGrouping}
         />
 
+        {allProducts.length > 0 && (
+          <div className="relative flex items-center w-full">
+            <Search className="absolute left-3.5 h-4 w-4 text-[var(--color-muted)] pointer-events-none" />
+            <Input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar produtos..."
+              className="pl-9 pr-9 h-11 rounded-[var(--radius-lg)] border-[var(--color-hairline)] bg-[var(--color-canvas)] text-sm font-medium text-[var(--color-ink)] placeholder:text-[var(--color-muted)] shadow-none focus-visible:ring-2 focus-visible:ring-[var(--color-ink)]"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3.5 flex h-5 w-5 items-center justify-center rounded-full text-[var(--color-muted)] hover:text-[var(--color-ink)] transition-colors"
+                aria-label="Limpar busca"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        )}
+
         {allProducts.length === 0 && (
           <StateCard
             variant="empty"
@@ -326,6 +366,22 @@ export function CategoryClient() {
               setAddSheetOpen(true);
             }}
           />
+        )}
+
+        {allProducts.length > 0 && searchQuery.trim() !== '' && productsNotInCart.length === 0 && productsInCart.length === 0 && (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-[var(--radius-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-8 text-center">
+            <p className="text-sm text-[var(--color-muted)]">
+              Nenhum produto encontrado para <strong className="text-[var(--color-ink)]">&quot;{searchQuery}&quot;</strong>.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSearchQuery('')}
+              className="text-xs font-semibold"
+            >
+              Limpar busca
+            </Button>
+          </div>
         )}
 
         {productsNotInCart.length > 0 && (
