@@ -56,14 +56,14 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
           <div className="flex items-center justify-between w-full">
             <div className="flex flex-col gap-0.5 min-w-0">
               <span className="text-[12px] font-semibold text-[var(--color-muted)] truncate">
-                Total
+                Carrinho
               </span>
               <span className="text-[12px] font-medium text-[var(--color-muted)] truncate">
-                Carrinho: {convertToCurrency(filteredProductsValue)}
+                Total da lista: {convertToCurrency(totalProductsValue)}
               </span>
             </div>
-            <span className="text-[22px] font-semibold text-[var(--color-ink)] shrink-0">
-              {convertToCurrency(totalProductsValue)}
+            <span className="text-[22px] font-bold text-[var(--color-success)] shrink-0">
+              {convertToCurrency(filteredProductsValue)}
             </span>
           </div>
 
@@ -123,7 +123,7 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
         >
           <Plus className="h-[18px] w-[18px] text-[var(--color-on-primary)]" />
           <span className="text-[14px] font-semibold text-[var(--color-on-primary)]">
-            {convertToCurrency(totalProductsValue)}
+            {convertToCurrency(filteredProductsValue)}
           </span>
         </button>
       </div>
