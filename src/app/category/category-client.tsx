@@ -53,7 +53,7 @@ function groupProductsBySubcategory(
 export function CategoryClient() {
   const searchParams = useSearchParams();
   const { setSelectedCategoryId, filteredCategory, isLoadingCategories, markLocalMutation } = useCategories();
-  const { removeProduct, toggleCart, managerProduct, isProductLoading } = useProducts();
+  const { removeProduct, toggleCart, toggleBatchCart, managerProduct, isProductLoading } = useProducts();
 
   const categoryId = searchParams.get('id');
 
@@ -275,6 +275,18 @@ export function CategoryClient() {
     };
   }, [filteredCategory?.products]);
 
+  const handleToggleAllPending = () => {
+    if (!filteredCategory?._id || productsNotInCart.length === 0) return;
+    const productIds = productsNotInCart.map(p => p._id!).filter(Boolean);
+    void toggleBatchCart(filteredCategory._id, true, productIds);
+  };
+
+  const handleToggleAllInCart = () => {
+    if (!filteredCategory?._id || productsInCart.length === 0) return;
+    const productIds = productsInCart.map(p => p._id!).filter(Boolean);
+    void toggleBatchCart(filteredCategory._id, false, productIds);
+  };
+
   if (isLoadingCategories && !filteredCategory) {
     return <CategoryPageSkeleton />;
   }
@@ -326,6 +338,8 @@ export function CategoryClient() {
               count={productsNotInCart.length}
               isCollapsed={collapsedSections.has('pending')}
               onToggle={() => toggleSection('pending')}
+              onToggleAll={handleToggleAllPending}
+              isAllSelected={false}
             />
             <div className={cn(
               'grid transition-all duration-200',
@@ -392,6 +406,8 @@ export function CategoryClient() {
               count={productsInCart.length}
               isCollapsed={collapsedSections.has('cart')}
               onToggle={() => toggleSection('cart')}
+              onToggleAll={handleToggleAllInCart}
+              isAllSelected={true}
             />
             <div className={cn(
               'grid transition-all duration-200',
