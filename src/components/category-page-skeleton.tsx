@@ -1,8 +1,10 @@
+import { FOOTER_CLEARANCE_PX } from '@/lib/constants';
+
 const skel = 'bg-[var(--color-hairline)] animate-pulse';
 
 export function CategoryPageSkeleton() {
   return (
-    <div className="flex flex-col gap-4 pb-[140px]">
+    <div className="flex flex-col gap-4" style={{ paddingBottom: FOOTER_CLEARANCE_PX }}>
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5">
         <div className={`${skel} h-3 w-9 rounded-sm`} />

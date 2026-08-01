@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { ProductProps } from '@/types/interfaces';
 import { StateCard } from '@/components/state-card';
 import { ProductRow } from '@/components/product-row';
+import { FOOTER_CLEARANCE_PX } from '@/lib/constants';
 import { useProducts, useCategories } from '@/context';
 import { StickyFooter } from '@/components/sticky-footer';
 import { SectionHeader } from '@/components/section-header';
@@ -287,7 +288,7 @@ export function CategoryClient() {
 
   return (
     <>
-      <div className="flex flex-col gap-4 pb-[140px]">
+      <div className="flex flex-col gap-4" style={{ paddingBottom: FOOTER_CLEARANCE_PX }}>
         <nav aria-label="breadcrumb" className="flex items-center gap-1.5">
           <Link href="/" className="text-[12px] font-semibold text-[var(--color-ink)]">
             Home
