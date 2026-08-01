@@ -9,7 +9,9 @@ import { cn } from '@/lib/utils';
 import { ProductProps } from '@/types/interfaces';
 import { StateCard } from '@/components/state-card';
 import { ProductRow } from '@/components/product-row';
+import { FOOTER_CLEARANCE_PX } from '@/lib/constants';
 import { useProducts, useCategories } from '@/context';
+import { StickyFooter } from '@/components/sticky-footer';
 import { SectionHeader } from '@/components/section-header';
 import { CategorySelect } from '@/components/category-select';
 import { CategoryHeroCard } from '@/components/category-hero-card';
@@ -18,7 +20,6 @@ import { SubcategoryHeader } from '@/components/subcategory-header';
 import { BarcodeScannerSheet } from '@/components/barcode-scanner-sheet';
 import { ProductManagerSheet } from '@/components/product-manager-sheet';
 import { CategoryPageSkeleton } from '@/components/category-page-skeleton';
-import { StickyFooter, FOOTER_CLEARANCE_PX } from '@/components/sticky-footer';
 import { BarcodeLookupResult, BarcodeProductPreview } from '@/components/barcode-product-preview';
 
 function groupProductsBySubcategory(

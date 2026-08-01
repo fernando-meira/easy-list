@@ -1,4 +1,4 @@
-import { FOOTER_CLEARANCE_PX } from '@/components/sticky-footer';
+import { FOOTER_CLEARANCE_PX } from '@/lib/constants';
 
 const skel = 'bg-[var(--color-hairline)] animate-pulse';
 

@@ -5,10 +5,9 @@ import { Plus, ScanLine } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { ProductProps } from '@/types/interfaces';
+import { FOOTER_CLEARANCE_PX } from '@/lib/constants';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { convertToCurrency, calculateTotalValue } from '@/utils';
-
-export const FOOTER_CLEARANCE_PX = 140;
 
 interface StickyFooterProps {
   products: ProductProps[];
@@ -36,6 +35,7 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
     <div className="fixed inset-x-0 bottom-0 z-10 pointer-events-none">
       <div className="relative mx-auto max-w-3xl p-3">
         <div
+          inert={isCompact}
           aria-hidden={isCompact}
           className={cn(
             'flex flex-col gap-3 rounded-[var(--radius-xl)] bg-[var(--color-canvas)] border border-[var(--color-hairline)] p-3 origin-bottom transition-all duration-200 ease-out motion-reduce:transition-none',
@@ -46,15 +46,15 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
         >
           {/* Totals row */}
           <div className="flex items-center justify-between w-full">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[12px] font-semibold text-[var(--color-muted)]">
+            <div className="flex flex-col gap-0.5 min-w-0">
+              <span className="text-[12px] font-semibold text-[var(--color-muted)] truncate">
                 Total
               </span>
-              <span className="text-[12px] font-medium text-[var(--color-muted)]">
+              <span className="text-[12px] font-medium text-[var(--color-muted)] truncate">
                 Carrinho: {convertToCurrency(filteredProductsValue)}
               </span>
             </div>
-            <span className="text-[22px] font-semibold text-[var(--color-ink)]">
+            <span className="text-[22px] font-semibold text-[var(--color-ink)] shrink-0">
               {convertToCurrency(totalProductsValue)}
             </span>
           </div>
@@ -92,6 +92,7 @@ export function StickyFooter({ products, onAddProduct, onScanProduct }: StickyFo
 
         <button
           type="button"
+          inert={!isCompact}
           aria-hidden={!isCompact}
           tabIndex={isCompact ? 0 : -1}
           onClick={() => setForceExpanded(true)}
