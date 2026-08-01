@@ -29,6 +29,7 @@
 | `src/hooks/useScrollDirection.ts` | **Criar.** Única responsabilidade: observar o scroll de `window` e expor direção + proximidade do fim do documento. Nenhum conhecimento de footer, produtos ou UI. |
 | `src/components/sticky-footer.tsx` | **Modificar.** Deriva o estado visual do hook, exporta `FOOTER_CLEARANCE_PX`, renderiza as duas camadas (card + FAB). |
 | `src/app/category/category-client.tsx` | **Modificar (1 linha + 1 import).** Consome `FOOTER_CLEARANCE_PX` para o espaço reservado na base da lista. |
+| `src/components/category-page-skeleton.tsx` | **Modificar (1 linha + 1 import).** Tem o mesmo container `flex flex-col gap-4 pb-[140px]` reservando espaço para o mesmo footer, então consome a mesma constante. |
 
 A fronteira importante: o hook não sabe nada sobre o footer, e o footer não fala com `window` diretamente. Isso mantém o hook reutilizável e o footer testável a olho.
 
@@ -364,6 +365,8 @@ git grep -n "140px" -- src/
 ```
 
 Esperado: nenhuma saída. Se aparecer alguma ocorrência, ela é um resquício do valor mágico antigo e deve passar a usar `FOOTER_CLEARANCE_PX`.
+
+Sabe-se que `src/components/category-page-skeleton.tsx` tem uma ocorrência: o skeleton da mesma página usa o container idêntico (`flex flex-col gap-4 pb-[140px]`) reservando espaço para o mesmo footer. Aplique nele a mesma troca (import + `style={{ paddingBottom: FOOTER_CLEARANCE_PX }}`).
 
 - [ ] **Step 5: Commit**
 
