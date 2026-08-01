@@ -10,7 +10,6 @@ import { ProductProps } from '@/types/interfaces';
 import { StateCard } from '@/components/state-card';
 import { ProductRow } from '@/components/product-row';
 import { useProducts, useCategories } from '@/context';
-import { StickyFooter } from '@/components/sticky-footer';
 import { SectionHeader } from '@/components/section-header';
 import { CategorySelect } from '@/components/category-select';
 import { CategoryHeroCard } from '@/components/category-hero-card';
@@ -19,6 +18,7 @@ import { SubcategoryHeader } from '@/components/subcategory-header';
 import { BarcodeScannerSheet } from '@/components/barcode-scanner-sheet';
 import { ProductManagerSheet } from '@/components/product-manager-sheet';
 import { CategoryPageSkeleton } from '@/components/category-page-skeleton';
+import { StickyFooter, FOOTER_CLEARANCE_PX } from '@/components/sticky-footer';
 import { BarcodeLookupResult, BarcodeProductPreview } from '@/components/barcode-product-preview';
 
 function groupProductsBySubcategory(
@@ -287,7 +287,7 @@ export function CategoryClient() {
 
   return (
     <>
-      <div className="flex flex-col gap-4 pb-[140px]">
+      <div className="flex flex-col gap-4" style={{ paddingBottom: FOOTER_CLEARANCE_PX }}>
         <nav aria-label="breadcrumb" className="flex items-center gap-1.5">
           <Link href="/" className="text-[12px] font-semibold text-[var(--color-ink)]">
             Home
