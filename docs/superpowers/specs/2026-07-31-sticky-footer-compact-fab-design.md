@@ -51,7 +51,7 @@ export function useScrollDirection(
   ```
   `isNearBottom` é recalculado em todo tick (não é gated pelo `threshold`), porque atingir o fim da página precisa ser detectado mesmo em movimentos pequenos.
 - Cleanup no `useEffect`: remove o listener e cancela qualquer `requestAnimationFrame` pendente (o id do frame é guardado em ref para isso), evitando `setState` após o unmount.
-- Executa uma medição inicial no mount, para o caso de a página já abrir rolada (restauração de scroll do browser).
+- Executa uma medição inicial no mount para inicializar `isNearBottom`, cobrindo o caso de a página já abrir rolada (restauração de scroll do browser). Note que essa medição **não** pode definir `isScrollingDown`: `lastScrollY` é igualado a `window.scrollY` imediatamente antes dela, então `delta` é sempre `0` no mount e o estado inicial permanece expandido — que é o padrão correto.
 
 **Isolamento:** o hook é chamado **apenas** dentro de `StickyFooter`. A lista de produtos e o resto da árvore não re-renderizam a cada tick de scroll.
 
@@ -59,14 +59,16 @@ export function useScrollDirection(
 
 ### 2. Constante `FOOTER_CLEARANCE_PX`
 
-Hoje o valor `140` existe duplicado implicitamente: como `pb-[140px]` em [category-client.tsx:290](../../../src/app/category/category-client.tsx) e como a altura real do card. Ele passa a ser exportado de `sticky-footer.tsx`:
+Hoje o valor `140` existe duplicado: como `pb-[140px]` em [category-client.tsx](../../../src/app/category/category-client.tsx), como `pb-[140px]` em [category-page-skeleton.tsx](../../../src/components/category-page-skeleton.tsx) (o skeleton da mesma página, com o container idêntico) e como a altura real do card. Ele passa a viver num módulo próprio, [src/lib/constants.ts](../../../src/lib/constants.ts):
 
 ```ts
 export const FOOTER_CLEARANCE_PX = 140;
 ```
 
 - `StickyFooter` usa como `bottomOffset` do hook.
-- `category-client.tsx` troca `pb-[140px]` por `style={{ paddingBottom: FOOTER_CLEARANCE_PX }}` no container da lista.
+- `category-client.tsx` e `category-page-skeleton.tsx` trocam `pb-[140px]` por `style={{ paddingBottom: FOOTER_CLEARANCE_PX }}` nos seus containers.
+
+**Motivo de um módulo separado em vez de exportar de `sticky-footer.tsx`:** `sticky-footer.tsx` é `'use client'`. Se a constante morasse lá, o skeleton (que não declara diretiva) estaria importando um export não-componente de um módulo client — o que funciona hoje só porque o único consumidor do skeleton também é client, e passaria a ser rejeitado pelo Next.js no dia em que alguém renderizasse `<CategoryPageSkeleton />` de um Server Component. `src/lib/constants.ts` não tem diretiva e é seguro nos dois lados da fronteira.
 
 **Motivo do `style` em vez de classe Tailwind:** o JIT do Tailwind não resolve valores arbitrários a partir de constantes JS (`pb-[${X}px]` não gera CSS). Usar `style` garante uma fonte única de verdade compartilhada entre o espaço reservado e a detecção de fim de lista, evitando que os dois dessincronizem.
 
@@ -150,7 +152,7 @@ Duas camadas irmãs dentro de um wrapper `fixed`, com cross-fade + `scale`/`tran
 
 ### 5. Acessibilidade
 
-- A camada inativa recebe `aria-hidden` **e** `pointer-events-none` **e** (no caso do FAB) `tabIndex={-1}`. Nunca fica clicável nem focável enquanto invisível — evita foco em elemento oculto e cliques fantasma.
+- A camada inativa recebe `inert`, `aria-hidden` e `pointer-events-none` (e `tabIndex={-1}` nos botões). Nunca fica clicável nem focável enquanto invisível — evita foco em elemento oculto e cliques fantasma. O `inert` é o que realmente cumpre a garantia: `tabIndex={-1}` remove da ordem de tabulação, mas **não** desfoca um elemento que já estava focado, então sem ele um usuário de teclado poderia dar Tab em "Adicionar produto", rolar até o card colapsar e apertar Enter num controle invisível. `tabIndex` e `aria-hidden` são mantidos junto como redundância defensiva.
 - `motion-reduce:transition-none` respeita `prefers-reduced-motion`: a troca acontece instantaneamente, sem animação.
 - O FAB tem `aria-label="Expandir resumo do carrinho"`. Apesar do ícone `Plus`, sua ação é **reexpandir**, não adicionar produto — rotulá-lo como "Adicionar produto" enganaria leitores de tela.
 - O botão "Adicionar produto" permanece funcional e acessível sempre que o card está expandido, incluindo após reexpansão via FAB.
@@ -161,9 +163,11 @@ Duas camadas irmãs dentro de um wrapper `fixed`, com cross-fade + `scale`/`tran
 
 | Arquivo | Mudança |
 |---|---|
+| `src/lib/constants.ts` | Novo — declara `FOOTER_CLEARANCE_PX` fora da fronteira client |
 | `src/hooks/useScrollDirection.ts` | Novo — hook de direção de scroll + detecção de fim de página |
-| `src/components/sticky-footer.tsx` | Refatoração: dois estados visuais, `FOOTER_CLEARANCE_PX`, FAB compacto |
+| `src/components/sticky-footer.tsx` | Refatoração: dois estados visuais, FAB compacto |
 | `src/app/category/category-client.tsx` | `pb-[140px]` → `style={{ paddingBottom: FOOTER_CLEARANCE_PX }}` |
+| `src/components/category-page-skeleton.tsx` | `pb-[140px]` → `style={{ paddingBottom: FOOTER_CLEARANCE_PX }}` |
 
 ---
 
