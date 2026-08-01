@@ -16,6 +16,7 @@ export function useScrollDirection({
   threshold = 15,
   bottomOffset = 0,
 }: UseScrollDirectionOptions = {}): UseScrollDirectionResult {
+  const rafIdRef = useRef<number | null>(null);
   const tickingRef = useRef(false);
   const lastScrollYRef = useRef(0);
 
@@ -44,7 +45,7 @@ export function useScrollDirection({
 
       tickingRef.current = true;
 
-      window.requestAnimationFrame(() => {
+      rafIdRef.current = window.requestAnimationFrame(() => {
         measure();
         tickingRef.current = false;
       });
@@ -56,6 +57,9 @@ export function useScrollDirection({
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
+      if (rafIdRef.current !== null) {
+        window.cancelAnimationFrame(rafIdRef.current);
+      }
       window.removeEventListener('scroll', handleScroll);
       tickingRef.current = false;
     };
